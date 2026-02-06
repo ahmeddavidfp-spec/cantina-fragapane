@@ -5,7 +5,7 @@ from telegram.ext import Application, MessageHandler, filters, ContextTypes
 import google.generativeai as genai
 from PIL import Image
 
-# --- BLOC DE DEBUG ---
+# --- BLOC DE DEBUG (Affiche les modèles disponibles au démarrage) ---
 print("🔍 LISTE DES MODÈLES DISPONIBLES :")
 try:
     for m in genai.list_models():
@@ -23,7 +23,7 @@ GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 
 # 2. Configuration de l'IA Gemini
 genai.configure(api_key=GEMINI_KEY)
-# Utilisation du modèle stable identifié
+# Utilisation du modèle stable
 model = genai.GenerativeModel('gemini-1.5-flash-001')
 
 async def analyze_palette(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -81,4 +81,20 @@ async def analyze_palette(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await status_msg.edit_text(error_msg)
 
 def main():
-    if not TOKEN or not GEMINI_
+    if not TOKEN or not GEMINI_KEY:
+        print("Erreur : Clés API manquantes dans l'environnement !")
+        return
+
+    app = Application.builder().token(TOKEN).build()
+    
+    # Gère les photos envoyées
+    app.add_handler(MessageHandler(filters.PHOTO, analyze_palette))
+    # Gère le texte pour dire bonjour
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, 
+        lambda u, c: u.message.reply_text("Envoyez-moi une photo de palette pour analyse.")))
+
+    print("Agent CoPeDi prêt !")
+    app.run_polling()
+
+if __name__ == "__main__":
+    main()
