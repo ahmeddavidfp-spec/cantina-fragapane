@@ -5,7 +5,7 @@ from telegram.ext import Application, MessageHandler, filters, ContextTypes
 import google.generativeai as genai
 from PIL import Image
 
-# --- BLOC DE DEBUG (Affiche les modèles disponibles au démarrage) ---
+# --- BLOC DE DEBUG ---
 print("🔍 LISTE DES MODÈLES DISPONIBLES :")
 try:
     for m in genai.list_models():
@@ -23,7 +23,6 @@ GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 
 # 2. Configuration de l'IA Gemini
 genai.configure(api_key=GEMINI_KEY)
-# Utilisation du modèle stable
 model = genai.GenerativeModel('gemini-1.5-flash-001')
 
 async def analyze_palette(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -50,48 +49,50 @@ async def analyze_palette(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "🔍 *Confiance :* [X]%"
         )
 
-        # --- REGLAGES DE SÉCURITÉ (Anti-blocage) ---
+        # --- SÉCURITÉ : Tout autoriser pour éviter les réponses vides ---
         safety_settings = [
             {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
             {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
             {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
             {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
         ]
-        # -------------------------------------------
+        # ---------------------------------------------------------------
 
         # Envoi à Gemini
         img = Image.open(photo_path)
         response = model.generate_content([prompt, img], safety_settings=safety_settings)
         
-        # Vérification avant envoi pour éviter l'erreur Telegram
+        # --- PROTECTION CONTRE L'ERREUR "EMPTY MESSAGE" ---
         if response.text and response.text.strip():
             await status_msg.edit_text(response.text, parse_mode='Markdown')
         else:
-            await status_msg.edit_text("⚠️ L'IA a analysé l'image mais la réponse est vide (Erreur modèle ou format).")
-            
+            await status_msg.edit_text("⚠️ Réponse vide de l'IA. Essayez une photo plus claire.")
+        # --------------------------------------------------
+
         if os.path.exists(photo_path):
-            os.remove(photo_path) # Nettoyage
+            os.remove(photo_path)
 
     except Exception as e:
-        error_msg = f"❌ Erreur : {str(e)}"
-        # Si c'est une erreur de sécurité Google, on l'affiche plus clairement
+        error_msg = f"❌ Erreur technique : {str(e)}"
+        # Si c'est un blocage de sécurité Google
         if "safety" in str(e).lower() or "blocked" in str(e).lower():
-            error_msg = "❌ Erreur : L'image a été bloquée par le filtre de sécurité."
+            error_msg = "❌ Erreur : L'image a été bloquée par le filtre de sécurité Google."
         
-        await status_msg.edit_text(error_msg)
+        # On essaie d'envoyer l'erreur, si ça échoue, on log juste
+        try:
+            await status_msg.edit_text(error_msg)
+        except:
+            print(f"Erreur critique lors de l'envoi du message d'erreur : {e}")
 
 def main():
     if not TOKEN or not GEMINI_KEY:
-        print("Erreur : Clés API manquantes dans l'environnement !")
+        print("Erreur : Clés API manquantes !")
         return
 
     app = Application.builder().token(TOKEN).build()
-    
-    # Gère les photos envoyées
     app.add_handler(MessageHandler(filters.PHOTO, analyze_palette))
-    # Gère le texte pour dire bonjour
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, 
-        lambda u, c: u.message.reply_text("Envoyez-moi une photo de palette pour analyse.")))
+        lambda u, c: u.message.reply_text("Envoyez une photo.")))
 
     print("Agent CoPeDi prêt !")
     app.run_polling()
