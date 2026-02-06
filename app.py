@@ -63,10 +63,11 @@ async def analyze_palette(update: Update, context: ContextTypes.DEFAULT_TYPE):
         response = model.generate_content([prompt, img], safety_settings=safety_settings)
         
         # --- PROTECTION CONTRE L'ERREUR "EMPTY MESSAGE" ---
+        # C'est ici que ça plantait avant. Maintenant, on vérifie.
         if response.text and response.text.strip():
             await status_msg.edit_text(response.text, parse_mode='Markdown')
         else:
-            await status_msg.edit_text("⚠️ Réponse vide de l'IA. Essayez une photo plus claire.")
+            await status_msg.edit_text("⚠️ L'IA n'a rien renvoyé (Image trop sombre ou bloquée par sécurité). Essayez une autre photo.")
         # --------------------------------------------------
 
         if os.path.exists(photo_path):
@@ -76,9 +77,9 @@ async def analyze_palette(update: Update, context: ContextTypes.DEFAULT_TYPE):
         error_msg = f"❌ Erreur technique : {str(e)}"
         # Si c'est un blocage de sécurité Google
         if "safety" in str(e).lower() or "blocked" in str(e).lower():
-            error_msg = "❌ Erreur : L'image a été bloquée par le filtre de sécurité Google."
+            error_msg = "❌ Erreur : L'image a été bloquée par le filtre de sécurité Google (Jugée non sûre)."
         
-        # On essaie d'envoyer l'erreur, si ça échoue, on log juste
+        # On essaie d'envoyer l'erreur proprement
         try:
             await status_msg.edit_text(error_msg)
         except:
@@ -92,7 +93,7 @@ def main():
     app = Application.builder().token(TOKEN).build()
     app.add_handler(MessageHandler(filters.PHOTO, analyze_palette))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, 
-        lambda u, c: u.message.reply_text("Envoyez une photo.")))
+        lambda u, c: u.message.reply_text("Envoyez une photo de palette.")))
 
     print("Agent CoPeDi prêt !")
     app.run_polling()
