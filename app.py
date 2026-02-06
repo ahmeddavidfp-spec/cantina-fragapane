@@ -5,7 +5,7 @@ from telegram.ext import Application, MessageHandler, filters, ContextTypes
 import google.generativeai as genai
 from PIL import Image
 
-# --- BLOC DE DEBUG ---
+# --- BLOC DE DEBUG (Affiche les modèles disponibles au démarrage) ---
 print("🔍 LISTE DES MODÈLES DISPONIBLES :")
 try:
     for m in genai.list_models():
@@ -23,7 +23,13 @@ GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 
 # 2. Configuration de l'IA Gemini
 genai.configure(api_key=GEMINI_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash-001')
+
+# --- CHANGEMENT ICI : On utilise le modèle universel "gemini-pro" ---
+try:
+    model = genai.GenerativeModel('gemini-pro')
+except:
+    model = genai.GenerativeModel('models/gemini-pro')
+# -------------------------------------------------------------------
 
 async def analyze_palette(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Message de patience
@@ -63,11 +69,10 @@ async def analyze_palette(update: Update, context: ContextTypes.DEFAULT_TYPE):
         response = model.generate_content([prompt, img], safety_settings=safety_settings)
         
         # --- PROTECTION CONTRE L'ERREUR "EMPTY MESSAGE" ---
-        # C'est ici que ça plantait avant. Maintenant, on vérifie.
         if response.text and response.text.strip():
             await status_msg.edit_text(response.text, parse_mode='Markdown')
         else:
-            await status_msg.edit_text("⚠️ L'IA n'a rien renvoyé (Image trop sombre ou bloquée par sécurité). Essayez une autre photo.")
+            await status_msg.edit_text("⚠️ L'IA n'a rien renvoyé. Essayez une autre photo.")
         # --------------------------------------------------
 
         if os.path.exists(photo_path):
@@ -77,7 +82,7 @@ async def analyze_palette(update: Update, context: ContextTypes.DEFAULT_TYPE):
         error_msg = f"❌ Erreur technique : {str(e)}"
         # Si c'est un blocage de sécurité Google
         if "safety" in str(e).lower() or "blocked" in str(e).lower():
-            error_msg = "❌ Erreur : L'image a été bloquée par le filtre de sécurité Google (Jugée non sûre)."
+            error_msg = "❌ Erreur : L'image a été bloquée par le filtre de sécurité Google."
         
         # On essaie d'envoyer l'erreur proprement
         try:
