@@ -22,7 +22,7 @@ GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 
 # 2. Configuration de l'IA Gemini
 genai.configure(api_key=GEMINI_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-1.5-flash-001')
 
 async def analyze_palette(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Message de patience
