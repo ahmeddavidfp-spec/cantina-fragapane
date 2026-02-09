@@ -4,20 +4,20 @@ import google.generativeai as genai
 from PIL import Image
 
 # --- CONFIGURATION ---
-st.set_page_config(page_title="Auto-Count AI", page_icon="📦", layout="centered")
+st.set_page_config(page_title="Auto-Count Flash", page_icon="⚡", layout="centered")
 
-# --- STYLE CSS (Pour rendre le résultat clair) ---
+# --- STYLE CSS (Tableau de bord) ---
 st.markdown("""
     <style>
-    .result-card { background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin-bottom: 20px; text-align: center; }
-    .big-number { font-size: 3em; font-weight: bold; color: #1f77b4; margin: 0; }
-    .label { font-size: 1.2em; color: #555; }
-    .details { text-align: left; background-color: white; padding: 15px; border-radius: 5px; border: 1px solid #ddd; }
+    .result-container { background-color: #f0f2f6; padding: 20px; border-radius: 10px; border-left: 5px solid #ff4b4b; }
+    .metric { text-align: center; }
+    .metric-value { font-size: 40px; font-weight: bold; color: #000; }
+    .metric-label { font-size: 14px; color: #666; }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("📦 Auto-Count AI")
-st.caption("Mode : Déduction Structurelle Automatique")
+st.title("⚡ Auto-Count (Version Illimitée)")
+st.info("Modèle : Gemini 1.5 Flash (Rapide & Gratuit)")
 
 # --- API ---
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
@@ -25,88 +25,64 @@ if not GEMINI_KEY:
     st.error("🚨 Clé API manquante !")
     st.stop()
 
+# --- MODÈLE FORCÉ SUR FLASH (Anti-Erreur 429) ---
 genai.configure(api_key=GEMINI_KEY)
-
-# --- CHOIX INTELLIGENT DU MODÈLE ---
-try:
-    valid_models = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-    # On cherche le modèle Pro (plus intelligent pour la logique) ou Flash 1.5
-    model_name = next((m for m in valid_models if "gemini-1.5-pro" in m), None)
-    if not model_name:
-        model_name = next((m for m in valid_models if "gemini-pro" in m), valid_models[0])
-    
-    model = genai.GenerativeModel(model_name)
-    # st.toast(f"Cerveau activé : {model_name}") # Optionnel : pour debug
-except:
-    st.error("Erreur connexion Google.")
-    st.stop()
+# On ne cherche plus, on impose le modèle gratuit.
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 # --- INTERFACE ---
 uploaded_file = st.file_uploader("📸 Photo de la palette", type=["jpg", "png", "jpeg"])
 
 if uploaded_file:
     image = Image.open(uploaded_file)
-    # Optimisation (pour que ça passe vite)
+    # Optimisation taille
     if image.width > 1024:
         ratio = 1024 / image.width
         image = image.resize((1024, int(image.height * ratio)))
     
     st.image(image, use_container_width=True)
     
-    if st.button("🚀 ANALYSER LA STRUCTURE (AUTO)", type="primary", use_container_width=True):
-        with st.spinner("🧠 L'IA déduit les rangées cachées..."):
+    if st.button("🚀 LANCER L'ANALYSE AUTOMATIQUE", type="primary", use_container_width=True):
+        with st.spinner("⚡ Flash analyse la symétrie 5x5..."):
             try:
-                # --- LE SECRET EST DANS CE PROMPT ---
-                # On force l'IA à "deviner" la partie cachée par symétrie
+                # --- PROMPT SPÉCIAL "SYMÉTRIE 5x5" ---
                 prompt = """
-                Tu es un expert en logistique industrielle. Ta mission est de déduire le nombre TOTAL de cartons sur cette palette, y compris ceux qui sont cachés au centre ou derrière.
+                Tu es un expert logistique. Analyse cette palette.
                 
-                RÈGLE D'OR : Les palettes sont construites par COUCHES complètes et symétriques.
-                Si tu vois 5 cartons en façade, et que la profondeur semble similaire, c'est probablement une grille de 5x5, même si tu ne vois que 4 cartons sur le côté à cause de l'angle.
+                RÈGLE DE DÉDUCTION (SYMÉTRIE) :
+                Sur ce type de palette, la structure est souvent CARRÉE au sol.
+                - Si tu comptes 5 cartons en façade (largeur), tu DOIS supposer qu'il y en a 5 en profondeur.
+                - Donc la Base = 5 x 5 = 25 cartons par couche.
                 
-                ÉTAPES DE DÉDUCTION :
-                1. IDENTIFIE LA GRILLE AU SOL (Base) :
-                   - Compte les cartons visibles en Largeur (Façade).
-                   - Estime les cartons en Profondeur (Côté).
-                   - ATTENTION : Si c'est ambigu entre 4 et 5 en profondeur, choisis la symétrie (ex: 5x5 est plus standard que 5x4 pour des petits cartons).
-                   - Calcul de la Base = Largeur x Profondeur.
+                INSTRUCTIONS DE CALCUL :
+                1. Base : Confirme le 5x5 (ou 4x4 selon la photo) -> Calcule le nombre par couche.
+                2. Hauteur : Compte les couches complètes.
+                3. Reste : Compte les cartons isolés sur le dessus.
+                4. Total : (Base x Hauteur) + Reste.
+                5. Pièces : Cherche "6 per carton", "QTY 6", ou similaire sur l'étiquette.
                 
-                2. COMPTE LES COUCHES :
-                   - Combien de couches complètes sont empilées ?
+                Réponds UNIQUEMENT avec ce format Markdown exact :
                 
-                3. LE RESTE (VRAC) :
-                   - Combien de cartons isolés sur la toute dernière couche incomplète ?
+                ### 📊 RÉSULTAT ANALYSE
+                | Indicateur | Valeur |
+                | :--- | :--- |
+                | **📦 TOTAL BOÎTES** | **[TOTAL]** |
+                | **🧩 Structure** | [LARGEUR] x [PROFONDEUR] x [COUCHES] (+ [RESTE]) |
+                | **🔢 Pièces / Boîte** | [QTY] |
+                | **🎯 TOTAL PIÈCES** | **[TOTAL_PIECES]** |
                 
-                4. CALCUL FINAL : (Base x Couches Complètes) + Reste.
-                
-                5. ÉTIQUETTE : Cherche "QTY", "PCS" ou "6 per carton" pour le nombre de pièces.
-                
-                Réponds UNIQUEMENT avec ce format exact (Markdown) :
-                
-                <div class="result-card">
-                    <div class="label">Total Estimé</div>
-                    <div class="big-number">[TOTAL_BOITES]</div>
-                    <p>📦 [TOTAL_PIECES] Pièces (x[QTY_PAR_BOITE])</p>
-                </div>
-                
-                <div class="details">
-                    <strong>🏗️ Analyse Structurelle :</strong>
-                    <ul>
-                        <li><strong>Grille (Base) :</strong> [LARGEUR] x [PROFONDEUR] = <strong>[BASE]</strong> cartons/couche</li>
-                        <li><strong>Hauteur :</strong> [COUCHES] couches complètes</li>
-                        <li><strong>Dessus :</strong> + [RESTE] cartons</li>
-                        <li><strong>Formule :</strong> ([BASE] x [COUCHES]) + [RESTE] = [TOTAL_BOITES]</li>
-                    </ul>
-                    <p><em>💡 Note IA : [Explique en une phrase pourquoi tu as choisi cette profondeur, ex: "J'ai déduit une profondeur de 5 car la palette semble carrée."]</em></p>
-                </div>
+                > **Détail du calcul :** ([LARGEUR] x [PROFONDEUR] = [BASE]/couche). [BASE] x [COUCHES] couches + [RESTE] vrac = [TOTAL].
                 """
                 
                 response = model.generate_content([prompt, image])
                 
                 if response.text:
-                    st.markdown(response.text, unsafe_allow_html=True)
+                    st.markdown(response.text)
                 else:
-                    st.warning("L'IA n'a pas réussi à conclure.")
+                    st.warning("Réponse vide.")
                     
             except Exception as e:
-                st.error(f"Erreur technique : {e}")
+                if "429" in str(e):
+                    st.error("⏳ Ralentissez ! Trop de requêtes à la minute.")
+                else:
+                    st.error(f"Erreur : {e}")
