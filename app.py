@@ -3,20 +3,46 @@ import os
 import google.generativeai as genai
 from PIL import Image
 
-# --- CONFIGURATION ---
 st.set_page_config(page_title="Agent CoPeDi", page_icon="📦")
-st.title("📦 Agent CoPeDi (Standard)")
+st.title("📦 Agent CoPeDi (Auto-Détection)")
 
-# --- API KEY ---
+# --- CLÉ API ---
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 if not GEMINI_KEY:
     st.error("🚨 Clé API manquante !")
     st.stop()
 
-# --- MODÈLE UNIVERSEL (Anti-404) ---
 genai.configure(api_key=GEMINI_KEY)
-# On utilise 'gemini-pro' qui est disponible partout sans erreur 404
-model = genai.GenerativeModel('gemini-pro')
+
+# --- DÉTECTION AUTOMATIQUE DU MODÈLE (Anti-404) ---
+# On ne devine plus le nom, on prend celui que Google nous donne.
+try:
+    valid_models = []
+    for m in genai.list_models():
+        if 'generateContent' in m.supported_generation_methods:
+            valid_models.append(m.name)
+    
+    # Stratégie : On cherche "flash" (rapide/gratuit), sinon on prend le premier dispo
+    model_name = None
+    for m in valid_models:
+        if "flash" in m and "1.5" in m: # Priorité au 1.5 Flash
+            model_name = m
+            break
+    
+    if not model_name and valid_models:
+        model_name = valid_models[0] # Roue de secours : le premier de la liste
+        
+    if not model_name:
+        st.error("🚨 Aucun modèle disponible pour votre clé API. Vérifiez votre compte Google AI.")
+        st.stop()
+        
+    # On affiche le modèle trouvé pour info (en petit)
+    st.caption(f"✅ Connecté au modèle : `{model_name}`")
+    model = genai.GenerativeModel(model_name)
+
+except Exception as e:
+    st.error(f"Erreur de connexion Google : {e}")
+    st.stop()
 
 # --- INTERFACE ---
 uploaded_file = st.file_uploader("📸 Chargez votre photo", type=["jpg", "jpeg", "png"])
@@ -24,19 +50,16 @@ uploaded_file = st.file_uploader("📸 Chargez votre photo", type=["jpg", "jpeg"
 if uploaded_file is not None:
     image = Image.open(uploaded_file)
     
-    # Optimisation taille (Anti-Crash 502)
-    max_width = 1024
-    if image.width > max_width:
-        ratio = max_width / image.width
-        new_height = int(image.height * ratio)
-        image = image.resize((max_width, new_height))
+    # Optimisation (Anti-Crash)
+    if image.width > 1024:
+        ratio = 1024 / image.width
+        image = image.resize((1024, int(image.height * ratio)))
     
     st.image(image, caption='Votre palette', use_container_width=True)
 
     if st.button("🚀 Compter les cartons", type="primary"):
         with st.spinner('🔍 Analyse structurelle en cours...'):
             try:
-                # Prompt spécial "Structure" pour trouver les 80 boites
                 prompt = (
                     "Agis comme un expert logistique. Analyse la structure de cette palette."
                     "1. STRUCTURE : Combien de boîtes en largeur x profondeur par couche ?"
@@ -58,6 +81,5 @@ if uploaded_file is not None:
                     st.markdown(response.text)
                 else:
                     st.warning("Réponse vide.")
-
             except Exception as e:
-                st.error(f"Erreur : {e}")
+                st.error(f"Erreur pendant l'analyse : {e}")
