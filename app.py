@@ -1,107 +1,68 @@
+import streamlit as st
 import os
-import logging
-from telegram import Update
-from telegram.ext import Application, MessageHandler, filters, ContextTypes
 import google.generativeai as genai
 from PIL import Image
 
-# --- BLOC DE DEBUG (Affiche les modèles disponibles au démarrage) ---
-print("🔍 LISTE DES MODÈLES DISPONIBLES :")
-try:
-    for m in genai.list_models():
-        if 'generateContent' in m.supported_generation_methods:
-            print(f" -> {m.name}")
-except Exception as e:
-    print(f"⚠️ Impossible de lister les modèles : {e}")
-print("-------------------------------")
-# ---------------------
+# 1. Configuration de la page
+st.set_page_config(page_title="Agent CoPeDi", page_icon="📦")
 
-# 1. Configuration des logs et des clés
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-TOKEN = os.environ.get("TELEGRAM_TOKEN")
+st.title("📦 Agent CoPeDi")
+st.write("Analysez vos palettes logistiques en une seconde.")
+
+# 2. Récupération de la clé API
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 
-# 2. Configuration de l'IA Gemini
+if not GEMINI_KEY:
+    st.error("❌ Erreur : Clé API manquante dans les variables Render !")
+    st.stop()
+
+# 3. Configuration Gemini
 genai.configure(api_key=GEMINI_KEY)
+model = genai.GenerativeModel('gemini-1.5-flash')
 
-# --- CHANGEMENT ICI : On utilise le modèle universel "gemini-pro" ---
-try:
-    model = genai.GenerativeModel('gemini-pro')
-except:
-    model = genai.GenerativeModel('models/gemini-pro')
-# -------------------------------------------------------------------
+# 4. Interface d'upload
+uploaded_file = st.file_uploader("Prenez une photo ou importez une image", type=["jpg", "jpeg", "png"])
 
-async def analyze_palette(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # Message de patience
-    status_msg = await update.message.reply_text("⏳ CoPeDi analyse votre palette... Un instant.")
-    
-    try:
-        # Récupération de la photo
-        photo_file = await update.message.photo[-1].get_file()
-        photo_path = "temp_palette.jpg"
-        await photo_file.download_to_drive(photo_path)
+if uploaded_file is not None:
+    # Affichage de l'image
+    image = Image.open(uploaded_file)
+    st.image(image, caption='Photo envoyée', use_container_width=True)
 
-        # Prompt
-        prompt = (
-            "Analyse cette photo de palette logistique. "
-            "1. Compte le nombre de boîtes visibles et déduis le total (couches x boîtes). "
-            "2. Estime les dimensions totales (L x l x H) en utilisant la palette comme échelle. "
-            "3. Estime le poids total et le nombre de pièces si des étiquettes sont lisibles. "
-            "Réponds strictement sous ce format :\n"
-            "📦 *Nombre de boîtes :* [Nb]\n"
-            "🔢 *Nombre de pièces :* [Estimation]\n"
-            "📐 *Dimensions :* [L x l x H] cm\n"
-            "⚖️ *Poids estimé :* [X] kg\n"
-            "🔍 *Confiance :* [X]%"
-        )
+    # Bouton d'analyse
+    if st.button("🔍 Lancer l'analyse"):
+        with st.spinner('CoPeDi compte les cartons...'):
+            try:
+                # Le Prompt (identique à avant)
+                prompt = (
+                    "Analyse cette photo de palette logistique. "
+                    "1. Compte le nombre de boîtes visibles et déduis le total (couches x boîtes). "
+                    "2. Estime les dimensions totales (L x l x H) en utilisant la palette comme échelle. "
+                    "3. Estime le poids total et le nombre de pièces si des étiquettes sont lisibles. "
+                    "Réponds strictement sous ce format :\n"
+                    "📦 *Nombre de boîtes :* [Nb]\n"
+                    "🔢 *Nombre de pièces :* [Estimation]\n"
+                    "📐 *Dimensions :* [L x l x H] cm\n"
+                    "⚖️ *Poids estimé :* [X] kg\n"
+                    "🔍 *Confiance :* [X]%"
+                )
 
-        # --- SÉCURITÉ : Tout autoriser pour éviter les réponses vides ---
-        safety_settings = [
-            {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
-        ]
-        # ---------------------------------------------------------------
+                # Sécurité (Anti-blocage)
+                safety_settings = [
+                    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+                    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+                    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+                    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+                ]
 
-        # Envoi à Gemini
-        img = Image.open(photo_path)
-        response = model.generate_content([prompt, img], safety_settings=safety_settings)
-        
-        # --- PROTECTION CONTRE L'ERREUR "EMPTY MESSAGE" ---
-        if response.text and response.text.strip():
-            await status_msg.edit_text(response.text, parse_mode='Markdown')
-        else:
-            await status_msg.edit_text("⚠️ L'IA n'a rien renvoyé. Essayez une autre photo.")
-        # --------------------------------------------------
+                # Appel Gemini
+                response = model.generate_content([prompt, image], safety_settings=safety_settings)
 
-        if os.path.exists(photo_path):
-            os.remove(photo_path)
+                # Affichage du résultat
+                if response.text:
+                    st.success("Analyse terminée !")
+                    st.markdown(response.text)
+                else:
+                    st.warning("L'IA n'a rien renvoyé. Essayez une autre photo.")
 
-    except Exception as e:
-        error_msg = f"❌ Erreur technique : {str(e)}"
-        # Si c'est un blocage de sécurité Google
-        if "safety" in str(e).lower() or "blocked" in str(e).lower():
-            error_msg = "❌ Erreur : L'image a été bloquée par le filtre de sécurité Google."
-        
-        # On essaie d'envoyer l'erreur proprement
-        try:
-            await status_msg.edit_text(error_msg)
-        except:
-            print(f"Erreur critique lors de l'envoi du message d'erreur : {e}")
-
-def main():
-    if not TOKEN or not GEMINI_KEY:
-        print("Erreur : Clés API manquantes !")
-        return
-
-    app = Application.builder().token(TOKEN).build()
-    app.add_handler(MessageHandler(filters.PHOTO, analyze_palette))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, 
-        lambda u, c: u.message.reply_text("Envoyez une photo de palette.")))
-
-    print("Agent CoPeDi prêt !")
-    app.run_polling()
-
-if __name__ == "__main__":
-    main()
+            except Exception as e:
+                st.error(f"Une erreur est survenue : {e}")
