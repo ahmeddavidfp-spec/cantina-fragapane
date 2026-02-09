@@ -8,7 +8,7 @@ st.set_page_config(page_title="Agent CoPeDi", page_icon="📦", layout="wide")
 
 # --- HEADER ---
 st.title("📦 Dashboard Analyse Palette")
-st.markdown("### 🔍 Agent Expert : Structure, Colisage & Dimensions")
+st.markdown("### 🔍 Agent Expert : Calcul Structurel & Colisage")
 
 # --- API KEY ---
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
@@ -25,7 +25,7 @@ try:
         if 'generateContent' in m.supported_generation_methods:
             valid_models.append(m.name)
     
-    # Priorité au modèle Flash 1.5 pour la vitesse, sinon le Pro
+    # On force le modèle le plus intelligent disponible (Pro ou Flash 1.5)
     model_name = None
     for m in valid_models:
         if "flash" in m and "1.5" in m:
@@ -35,9 +35,8 @@ try:
         model_name = valid_models[0]
         
     model = genai.GenerativeModel(model_name)
-    # Petit indicateur discret en bas de sidebar
     with st.sidebar:
-        st.caption(f"🤖 Moteur IA : {model_name}")
+        st.success(f"Cerveau connecté : {model_name}")
 
 except Exception as e:
     st.error(f"Erreur Google : {e}")
@@ -50,43 +49,46 @@ with col1:
     uploaded_file = st.file_uploader("📸 Importez la photo", type=["jpg", "jpeg", "png"])
     if uploaded_file:
         image = Image.open(uploaded_file)
-        # Optimisation image
         if image.width > 1024:
             ratio = 1024 / image.width
             image = image.resize((1024, int(image.height * ratio)))
         st.image(image, caption='Aperçu', use_container_width=True)
 
 with col2:
-    if uploaded_file and st.button("🚀 LANCER L'ANALYSE COMPLÈTE", type="primary", use_container_width=True):
-        with st.spinner('🕵️‍♂️ Lecture des étiquettes et calcul de la structure...'):
+    if uploaded_file and st.button("🚀 CALCULER LA STRUCTURE (Base x Hauteur)", type="primary", use_container_width=True):
+        with st.spinner('📐 Analyse géométrique en cours...'):
             try:
+                # --- PROMPT MATHÉMATIQUE STRICT ---
                 prompt = (
-                    "Tu es un expert logistique précis. Analyse cette palette."
-                    "1. LECTURE ÉTIQUETTE (CRUCIAL) : Zoom sur les étiquettes blanches. Cherche 'QTY', 'PCS', 'Item', ou un chiffre comme '6 per Carton'. C'est le nombre de pièces par carton."
-                    "2. STRUCTURE : Détermine le schéma de palettisation. Combien de cartons en façade (Largeur) ? Combien en profondeur ? Combien de couches ?"
-                    "3. CALCUL : (Largeur x Profondeur x Couches) + Cartons isolés sur le dessus."
+                    "Tu es un expert en mathématiques logistiques. Ne compte pas les boîtes une par une (c'est interdit)."
+                    "Utilise la méthode de MULTIPLICATION STRUCTURELLE :"
                     
-                    "Mise en forme OBLIGATOIRE en Markdown :"
-                    "- Utilise un TABLEAU pour les dimensions."
-                    "- Mets en gras les totaux."
-                    "- Sois concis et professionnel."
+                    "1. ANALYSE LA BASE (Le Sol) : Compte combien de cartons il y a sur la rangée de façade (Largeur) et sur la rangée de côté (Profondeur)."
+                    "   -> Exemple : 4 en façade x 5 en profondeur = 20 par couche."
                     
-                    "Format de réponse attendu :"
-                    "## 📊 RÉSULTATS D'ANALYSE\n"
+                    "2. ANALYSE LA HAUTEUR : Compte le nombre de couches COMPLÈTES empilées les unes sur les autres."
+                    "   -> Exemple : 4 couches."
+                    
+                    "3. LE RESTE : Ajoute les cartons isolés posés tout en haut."
+                    
+                    "4. LECTURE ÉTIQUETTE : Confirme le 'Qty per Carton' (ex: 6)."
+                    
+                    "5. CALCUL FINAL : (Largeur x Profondeur x Couches) + Reste = Total Boîtes."
+                    
+                    "Mise en forme Markdown stricte :"
+                    "## 📊 RÉSULTATS CALCULÉS\n"
                     "| Indicateur | Valeur |\n"
                     "| :--- | :--- |\n"
-                    "| **📦 Nombre de Boîtes** | **[Total]** |\n"
-                    "| **🔢 Pièces par Boîte** | [Qté lue sur étiquette] |\n"
-                    "| **🎯 TOTAL PIÈCES** | **[Total x Qté]** |\n"
+                    "| **📦 Total Boîtes** | **[Résultat du calcul]** |\n"
+                    "| **🔢 Pièces/Boîte** | [Lu sur étiquette] |\n"
+                    "| **🎯 TOTAL PIÈCES** | **[Total Boîtes x Pièces/Boîte]** |\n"
                     "| **⚖️ Poids Estimé** | [Poids Total] kg |\n\n"
                     
-                    "### 🏗️ Détail de la Structure\n"
-                    "- **Base** : [L] cartons (largeur) x [P] cartons (profondeur)\n"
-                    "- **Hauteur** : [H] couches complètes\n"
-                    "- **Vrac** : [N] cartons supplémentaires sur le dessus\n"
-                    "- **Dimensions** : 120 x 80 x [Hauteur estimée] cm\n\n"
-                    
-                    "> **Observation** : [Une phrase sur la stabilité ou l'étiquette lue]"
+                    "### 📐 Détail du Calcul\n"
+                    "- **Grille au sol** : [L] (façade) x [P] (profondeur) = **[Base] boîtes/couche**\n"
+                    "- **Hauteur** : x [H] couches complètes\n"
+                    "- **Vrac** : + [Reste] boîtes sur le toit\n"
+                    "- **Formule** : ([L] x [P] x [H]) + [Reste] = [Total]"
                 )
 
                 response = model.generate_content([prompt, image])
@@ -94,10 +96,10 @@ with col2:
                 if response.text:
                     st.markdown(response.text)
                 else:
-                    st.warning("L'IA n'a pas renvoyé de résultat. Réessayez.")
+                    st.warning("Erreur d'analyse.")
                     
             except Exception as e:
                 st.error(f"Erreur technique : {e}")
 
     elif not uploaded_file:
-        st.info("👈 Commencez par charger une photo à gauche.")
+        st.info("👈 Chargez une photo pour commencer.")
