@@ -3,10 +3,14 @@ import os
 import google.generativeai as genai
 from PIL import Image
 
-st.set_page_config(page_title="Agent CoPeDi", page_icon="📦")
-st.title("📦 Agent CoPeDi (Expert Logistique)")
+# --- CONFIGURATION PAGE ---
+st.set_page_config(page_title="Agent CoPeDi", page_icon="📦", layout="wide")
 
-# --- CLÉ API ---
+# --- HEADER ---
+st.title("📦 Dashboard Analyse Palette")
+st.markdown("### 🔍 Agent Expert : Structure, Colisage & Dimensions")
+
+# --- API KEY ---
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 if not GEMINI_KEY:
     st.error("🚨 Clé API manquante !")
@@ -21,7 +25,7 @@ try:
         if 'generateContent' in m.supported_generation_methods:
             valid_models.append(m.name)
     
-    # On cherche le meilleur modèle disponible
+    # Priorité au modèle Flash 1.5 pour la vitesse, sinon le Pro
     model_name = None
     for m in valid_models:
         if "flash" in m and "1.5" in m:
@@ -30,50 +34,70 @@ try:
     if not model_name and valid_models:
         model_name = valid_models[0]
         
-    st.caption(f"✅ Connecté au modèle : `{model_name}`")
     model = genai.GenerativeModel(model_name)
+    # Petit indicateur discret en bas de sidebar
+    with st.sidebar:
+        st.caption(f"🤖 Moteur IA : {model_name}")
 
 except Exception as e:
     st.error(f"Erreur Google : {e}")
     st.stop()
 
 # --- INTERFACE ---
-uploaded_file = st.file_uploader("📸 Chargez votre photo", type=["jpg", "jpeg", "png"])
+col1, col2 = st.columns([1, 2])
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    
-    # Optimisation
-    if image.width > 1024:
-        ratio = 1024 / image.width
-        image = image.resize((1024, int(image.height * ratio)))
-    
-    st.image(image, caption='Votre palette', use_container_width=True)
+with col1:
+    uploaded_file = st.file_uploader("📸 Importez la photo", type=["jpg", "jpeg", "png"])
+    if uploaded_file:
+        image = Image.open(uploaded_file)
+        # Optimisation image
+        if image.width > 1024:
+            ratio = 1024 / image.width
+            image = image.resize((1024, int(image.height * ratio)))
+        st.image(image, caption='Aperçu', use_container_width=True)
 
-    if st.button("🚀 Lancer l'analyse complète", type="primary"):
-        with st.spinner('🔍 Analyse : Structure, Pièces et Poids...'):
+with col2:
+    if uploaded_file and st.button("🚀 LANCER L'ANALYSE COMPLÈTE", type="primary", use_container_width=True):
+        with st.spinner('🕵️‍♂️ Lecture des étiquettes et calcul de la structure...'):
             try:
                 prompt = (
-                    "Agis comme un expert logistique. Analyse cette palette en détail."
-                    "1. STRUCTURE : Analyse le maillage (largeur x profondeur) et le nombre de couches."
-                    "2. COMPTAGE : Calcule le total (Base x Hauteur - Manquants)."
-                    "3. PIÈCES : Cherche sur les étiquettes la quantité par carton (ex: QTY, PCS, COUNTS). Multiplie par le nombre de boîtes pour avoir le total de pièces."
-                    "4. POIDS & DIMENSIONS : Estime les dimensions standards et le poids total."
+                    "Tu es un expert logistique précis. Analyse cette palette."
+                    "1. LECTURE ÉTIQUETTE (CRUCIAL) : Zoom sur les étiquettes blanches. Cherche 'QTY', 'PCS', 'Item', ou un chiffre comme '6 per Carton'. C'est le nombre de pièces par carton."
+                    "2. STRUCTURE : Détermine le schéma de palettisation. Combien de cartons en façade (Largeur) ? Combien en profondeur ? Combien de couches ?"
+                    "3. CALCUL : (Largeur x Profondeur x Couches) + Cartons isolés sur le dessus."
                     
-                    "Réponds strictement sous ce format structuré :"
-                    "📦 **ESTIMATION TOTALE** : [Nombre de boîtes] boîtes\n"
-                    "🔢 **NOMBRE DE PIÈCES** : [Total pièces] (Calcul: [Nb boîtes] x [Qté/boîte])\n"
-                    "🏗️ **STRUCTURE** : [Nb] boîtes par couche ([L] en largeur x [P] en profondeur) x [Nb] couches\n"
-                    "⚠️ **MANQUANTS** : [Nombre] boîtes (par rapport à une palette pleine)\n"
-                    "📏 **DIMENSIONS** : L [120] cm x l [80] cm x H [H] cm\n"
-                    "⚖️ **POIDS** : [Poids] kg (estimation)"
+                    "Mise en forme OBLIGATOIRE en Markdown :"
+                    "- Utilise un TABLEAU pour les dimensions."
+                    "- Mets en gras les totaux."
+                    "- Sois concis et professionnel."
+                    
+                    "Format de réponse attendu :"
+                    "## 📊 RÉSULTATS D'ANALYSE\n"
+                    "| Indicateur | Valeur |\n"
+                    "| :--- | :--- |\n"
+                    "| **📦 Nombre de Boîtes** | **[Total]** |\n"
+                    "| **🔢 Pièces par Boîte** | [Qté lue sur étiquette] |\n"
+                    "| **🎯 TOTAL PIÈCES** | **[Total x Qté]** |\n"
+                    "| **⚖️ Poids Estimé** | [Poids Total] kg |\n\n"
+                    
+                    "### 🏗️ Détail de la Structure\n"
+                    "- **Base** : [L] cartons (largeur) x [P] cartons (profondeur)\n"
+                    "- **Hauteur** : [H] couches complètes\n"
+                    "- **Vrac** : [N] cartons supplémentaires sur le dessus\n"
+                    "- **Dimensions** : 120 x 80 x [Hauteur estimée] cm\n\n"
+                    
+                    "> **Observation** : [Une phrase sur la stabilité ou l'étiquette lue]"
                 )
 
                 response = model.generate_content([prompt, image])
+                
                 if response.text:
-                    st.success("Analyse terminée !")
                     st.markdown(response.text)
                 else:
-                    st.warning("Réponse vide.")
+                    st.warning("L'IA n'a pas renvoyé de résultat. Réessayez.")
+                    
             except Exception as e:
-                st.error(f"Erreur : {e}")
+                st.error(f"Erreur technique : {e}")
+
+    elif not uploaded_file:
+        st.info("👈 Commencez par charger une photo à gauche.")
