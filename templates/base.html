@@ -11,6 +11,15 @@
   <meta name="author" content="La Cantina Fragapane">
   <link rel="canonical" href="https://web-production-e3877.up.railway.app{{ request.path }}">
 
+  {# ── hreflang ── #}
+  <link rel="alternate" hreflang="fr-BE" href="https://web-production-e3877.up.railway.app{{ request.path }}">
+  <link rel="alternate" hreflang="fr"    href="https://web-production-e3877.up.railway.app{{ request.path }}">
+  <link rel="alternate" hreflang="x-default" href="https://web-production-e3877.up.railway.app{{ request.path }}">
+
+  {# ── Favicon ── #}
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.svg') }}">
+
   {# ── Open Graph (Facebook / Instagram) ── #}
   <meta property="og:type"        content="restaurant">
   <meta property="og:site_name"   content="La Cantina Fragapane">
