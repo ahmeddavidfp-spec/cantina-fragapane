@@ -1,0 +1,87 @@
+{% extends "admin/base.html" %}
+{% block title %}Annonces{% endblock %}
+
+{% block content %}
+<div class="admin-topbar">
+  <div>
+    <div class="admin-page-title">Annonces</div>
+    <div class="admin-page-sub">Les annonces actives s'affichent en bandeau sur toutes les pages du site</div>
+  </div>
+</div>
+
+<!-- Add announcement -->
+<div class="admin-card">
+  <div class="admin-card-header">
+    <div class="admin-card-title">➕ Nouvelle annonce</div>
+  </div>
+  <div class="admin-card-body">
+    <form method="POST" action="{{ url_for('admin_add_announcement') }}"
+          style="display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap;">
+      <div class="admin-form-group" style="flex:1; min-width:280px; margin:0;">
+        <label>Message</label>
+        <input class="admin-input" type="text" name="message" required
+               placeholder="Ex: Fermé le 25 décembre. Joyeux Noël ! 🎄">
+      </div>
+      <button type="submit" class="admin-btn admin-btn-primary">Publier</button>
+    </form>
+    <p style="font-size:.8rem; color:var(--text-lt); margin-top:.75rem;">
+      💡 Utilisez les annonces pour : fermetures exceptionnelles, menus du jour, événements, promotions.
+    </p>
+  </div>
+</div>
+
+<!-- Announcements list -->
+<div class="admin-card">
+  <div class="admin-card-header">
+    <div class="admin-card-title">📋 Toutes les annonces</div>
+  </div>
+  {% if anns %}
+  <div style="overflow-x:auto;">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Message</th>
+          <th>Statut</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ann in anns %}
+        <tr>
+          <td style="max-width:400px;">{{ ann['message'] }}</td>
+          <td>
+            {% if ann['active'] %}
+            <span class="badge badge-green">✓ Affichée</span>
+            {% else %}
+            <span class="badge badge-gray">Masquée</span>
+            {% endif %}
+          </td>
+          <td style="color:var(--text-lt); font-size:.84rem; white-space:nowrap;">
+            {{ ann['created_at'][:16] if ann['created_at'] else '—' }}
+          </td>
+          <td>
+            <div class="admin-actions">
+              <form method="POST" action="{{ url_for('admin_toggle_announcement', ann_id=ann['id']) }}">
+                <button type="submit" class="admin-btn {% if ann['active'] %}admin-btn-outline{% else %}admin-btn-success{% endif %}">
+                  {% if ann['active'] %}👁️ Masquer{% else %}✓ Afficher{% endif %}
+                </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_delete_announcement', ann_id=ann['id']) }}"
+                    onsubmit="return confirm('Supprimer cette annonce ?')">
+                <button type="submit" class="admin-btn admin-btn-danger">🗑️</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="admin-card-body" style="text-align:center; color:var(--text-lt); font-style:italic; padding:2.5rem;">
+    Aucune annonce pour le moment. Créez-en une ci-dessus.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}À Propos – La Cantina Fragapane{% endblock %}
+{% block description %}Découvrez l'histoire de La Cantina Fragapane, fondée par Carlo et Brenda, un couple passionné de cuisine italienne authentique à Châtelet.{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="page-hero-content">
+    <span class="section-label">Notre histoire</span>
+    <h1 class="section-title">À Propos</h1>
+    <p class="section-sub" style="margin:0 auto;">Une aventure familiale née d'une passion pour la cuisine italienne authentique.</p>
+  </div>
+</section>
+
+<section class="about-page">
+  <div class="container">
+
+    <div class="about-page-grid">
+      <div class="about-visual">
+        <div class="about-frame" style="aspect-ratio:1/1;">
+          <div class="about-frame-inner">🇮🇹</div>
+        </div>
+      </div>
+      <div class="about-story">
+        <span class="section-label">Carlo & Brenda</span>
+        <h2>Une passion transmise avec amour</h2>
+        <p>{{ info.get('about_long','') }}</p>
+        <p>Installés à Châtelet, Carlo et Brenda ont voulu créer un lieu où la cuisine italienne est respectée dans ses traditions les plus authentiques. Ici, rien n'est industriel : les pâtes sont roulées chaque matin, les sauces mijotent à feu doux, et chaque assiette est préparée avec le soin d'un repas de famille.</p>
+        <p>Les <strong>arrosticinis</strong>, ces brochettes d'agneau traditionnelles des Abruzzes, sont devenus l'une de nos signatures — un hommage aux racines italiennes de la famille. Tout comme les <strong>raviolis aux truffes</strong>, préparés à la main chaque jour.</p>
+        <div style="margin-top:2rem; display:flex; gap:1rem; flex-wrap:wrap;">
+          <a href="{{ url_for('menu') }}" class="btn btn-primary">Voir notre menu</a>
+          <a href="{{ url_for('contact') }}" class="btn btn-outline">Nous contacter</a>
+        </div>
+      </div>
+    </div>
+
+    {# Values #}
+    <div style="text-align:center; margin-bottom:2.5rem;">
+      <span class="section-label">Ce qui nous définit</span>
+      <h2 class="section-title">Nos valeurs</h2>
+    </div>
+    <div class="about-values" style="grid-template-columns: repeat(4,1fr);">
+      <div class="value-card fade-up">
+        <div class="value-icon">🫱🏼‍🫲🏽</div>
+        <div class="value-title">Accueil chaleureux</div>
+        <div class="value-desc">Chaque client est reçu comme un ami. L'ambiance familiale est notre priorité.</div>
+      </div>
+      <div class="value-card fade-up fade-up-d1">
+        <div class="value-icon">🌿</div>
+        <div class="value-title">Produits frais</div>
+        <div class="value-desc">Nous sélectionnons nos ingrédients avec soin pour garantir fraîcheur et saveur.</div>
+      </div>
+      <div class="value-card fade-up fade-up-d2">
+        <div class="value-icon">👨‍🍳</div>
+        <div class="value-title">Fait maison</div>
+        <div class="value-desc">Pâtes fraîches, sauces mijotées, desserts maison — rien d'industriel chez nous.</div>
+      </div>
+      <div class="value-card fade-up fade-up-d3">
+        <div class="value-icon">🇮🇹</div>
+        <div class="value-title">Authenticité</div>
+        <div class="value-desc">Recettes transmises de génération en génération, respectant les traditions italiennes.</div>
+      </div>
+    </div>
+
+    {# CTA #}
+    <div style="background:var(--cream); border-radius:var(--radius-lg); padding:3rem; text-align:center; margin-top:4rem;">
+      <span class="section-label">Venez nous rendre visite</span>
+      <h2 class="section-title" style="margin-bottom:.75rem;">Réservez votre table</h2>
+      <p style="color:var(--text-lt); margin-bottom:1.75rem; max-width:480px; margin-left:auto; margin-right:auto;">
+        {{ info.get('reservation_note','') }}
+      </p>
+      <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+        <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-primary">📞 {{ info.get('phone','') }}</a>
+        <a href="mailto:{{ info.get('email','') }}" class="btn btn-outline">✉️ {{ info.get('email','') }}</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

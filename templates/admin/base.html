@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin{% endblock %} – La Cantina Fragapane</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="admin-body">
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-logo">
+      <div class="admin-logo-it">La Cantina</div>
+      <div class="admin-logo-name">Fragapane</div>
+      <div class="admin-logo-badge">Espace Administration</div>
+    </div>
+    <nav class="admin-nav">
+      <div class="admin-nav-label">Navigation</div>
+      <a href="{{ url_for('admin_dashboard') }}"     class="{% if request.endpoint == 'admin_dashboard'     %}active{% endif %}"><span class="admin-nav-icon">🏠</span> Tableau de bord</a>
+      <a href="{{ url_for('admin_menu') }}"          class="{% if request.endpoint == 'admin_menu'          %}active{% endif %}"><span class="admin-nav-icon">🍽️</span> Menu</a>
+      <a href="{{ url_for('admin_hours') }}"         class="{% if request.endpoint == 'admin_hours'         %}active{% endif %}"><span class="admin-nav-icon">🕐</span> Horaires</a>
+      <a href="{{ url_for('admin_info') }}"          class="{% if request.endpoint == 'admin_info'          %}active{% endif %}"><span class="admin-nav-icon">ℹ️</span> Informations</a>
+      <a href="{{ url_for('admin_announcements') }}" class="{% if request.endpoint == 'admin_announcements' %}active{% endif %}"><span class="admin-nav-icon">📢</span> Annonces</a>
+      <div class="admin-nav-label" style="margin-top:.5rem;">Site public</div>
+      <a href="{{ url_for('index') }}" target="_blank"><span class="admin-nav-icon">🌐</span> Voir le site</a>
+    </nav>
+    <div class="admin-logout">
+      <a href="{{ url_for('admin_logout') }}"><span class="admin-nav-icon">🚪</span> Déconnexion</a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="admin-main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+      <div class="admin-flash {{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+
+</div>
+</body>
+</html>

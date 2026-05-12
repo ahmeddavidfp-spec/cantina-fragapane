@@ -1,0 +1,113 @@
+{% extends "admin/base.html" %}
+{% block title %}Informations{% endblock %}
+
+{% block content %}
+<div class="admin-topbar">
+  <div>
+    <div class="admin-page-title">Informations du Restaurant</div>
+    <div class="admin-page-sub">Modifiez les coordonnées, descriptions et réseaux sociaux</div>
+  </div>
+</div>
+
+<form method="POST" action="{{ url_for('admin_edit_info') }}">
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+
+    <!-- Identité -->
+    <div class="admin-card">
+      <div class="admin-card-header"><div class="admin-card-title">🏷️ Identité</div></div>
+      <div class="admin-card-body">
+        <div class="admin-form-group">
+          <label>Nom du restaurant</label>
+          <input class="admin-input" type="text" name="name" value="{{ info_edit.get('name','') }}">
+        </div>
+        <div class="admin-form-group">
+          <label>Tagline (italique sous le nom)</label>
+          <input class="admin-input" type="text" name="tagline" value="{{ info_edit.get('tagline','') }}" placeholder="Cucina italiana autentica">
+        </div>
+        <div class="admin-form-group">
+          <label>Sous-titre (héro de la page d'accueil)</label>
+          <input class="admin-input" type="text" name="subtitle" value="{{ info_edit.get('subtitle','') }}">
+        </div>
+        <div class="admin-form-group">
+          <label>Gamme de prix</label>
+          <select class="admin-select" name="price_range">
+            {% for val in ['€','€€','€€€','€€€€'] %}
+            <option value="{{ val }}" {% if info_edit.get('price_range') == val %}selected{% endif %}>{{ val }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div class="admin-card">
+      <div class="admin-card-header"><div class="admin-card-title">📞 Contact</div></div>
+      <div class="admin-card-body">
+        <div class="admin-form-group">
+          <label>Adresse (rue)</label>
+          <input class="admin-input" type="text" name="address" value="{{ info_edit.get('address','') }}">
+        </div>
+        <div class="admin-form-group">
+          <label>Ville / Code postal</label>
+          <input class="admin-input" type="text" name="city" value="{{ info_edit.get('city','') }}">
+        </div>
+        <div class="admin-form-group">
+          <label>Téléphone</label>
+          <input class="admin-input" type="tel" name="phone" value="{{ info_edit.get('phone','') }}">
+        </div>
+        <div class="admin-form-group">
+          <label>Email</label>
+          <input class="admin-input" type="email" name="email" value="{{ info_edit.get('email','') }}">
+        </div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="admin-card">
+      <div class="admin-card-header"><div class="admin-card-title">📝 Descriptions</div></div>
+      <div class="admin-card-body">
+        <div class="admin-form-group">
+          <label>Description courte (page d'accueil)</label>
+          <textarea class="admin-textarea" name="about_short" rows="3">{{ info_edit.get('about_short','') }}</textarea>
+        </div>
+        <div class="admin-form-group">
+          <label>Description longue (page À propos)</label>
+          <textarea class="admin-textarea" name="about_long" rows="5">{{ info_edit.get('about_long','') }}</textarea>
+        </div>
+        <div class="admin-form-group">
+          <label>Note de réservation</label>
+          <textarea class="admin-textarea" name="reservation_note" rows="2">{{ info_edit.get('reservation_note','') }}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Réseaux & carte -->
+    <div class="admin-card">
+      <div class="admin-card-header"><div class="admin-card-title">🌐 Réseaux & Carte</div></div>
+      <div class="admin-card-body">
+        <div class="admin-form-group">
+          <label>URL Facebook</label>
+          <input class="admin-input" type="url" name="facebook" value="{{ info_edit.get('facebook','') }}" placeholder="https://facebook.com/...">
+        </div>
+        <div class="admin-form-group">
+          <label>URL Instagram</label>
+          <input class="admin-input" type="url" name="instagram" value="{{ info_edit.get('instagram','') }}" placeholder="https://instagram.com/...">
+        </div>
+        <div class="admin-form-group">
+          <label>Google Maps (code iframe embed)</label>
+          <textarea class="admin-textarea" name="google_maps_embed" rows="3"
+                    placeholder='&lt;iframe src="https://www.google.com/maps/embed?..." ...&gt;&lt;/iframe&gt;'>{{ info_edit.get('google_maps_embed','') }}</textarea>
+          <small style="color:var(--text-lt); font-size:.76rem;">
+            Sur Google Maps → Partager → Intégrer → Copier le code HTML
+          </small>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:1.5rem;">
+    <button type="submit" class="btn btn-primary">💾 Enregistrer toutes les informations</button>
+  </div>
+</form>
+{% endblock %}

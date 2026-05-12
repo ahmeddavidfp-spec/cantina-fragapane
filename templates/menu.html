@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Notre Menu – La Cantina Fragapane{% endblock %}
+{% block description %}Découvrez notre menu : pâtes fraîches maison, viandes grillées, antipasti et desserts. Restaurant italien à Châtelet.{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="page-hero-content">
+    <span class="section-label">La Cantina Fragapane</span>
+    <h1 class="section-title">Notre Menu</h1>
+    <p class="section-sub" style="margin:0 auto;">Tout est préparé maison avec des produits frais sélectionnés avec soin.</p>
+  </div>
+</section>
+
+<section class="menu-page">
+  <div class="container">
+
+    {# Category tabs #}
+    <div class="menu-nav-tabs">
+      <button class="menu-tab active" data-target="all">🍽️ Tout le menu</button>
+      {% for entry in menu_data %}
+      <button class="menu-tab" data-target="{{ entry.category['id'] }}">
+        {{ entry.category['icon'] }} {{ entry.category['name'] }}
+      </button>
+      {% endfor %}
+    </div>
+
+    {# Menu categories #}
+    {% for entry in menu_data %}
+    {% if entry.plats %}
+    <div class="menu-category" data-cat="{{ entry.category['id'] }}">
+      <div class="menu-category-header">
+        <span class="menu-category-icon">{{ entry.category['icon'] }}</span>
+        <h2 class="menu-category-title">{{ entry.category['name'] }}</h2>
+      </div>
+      <div class="menu-items-grid">
+        {% for item in entry.plats %}
+        <div class="menu-item">
+          <div class="menu-item-info">
+            <div class="menu-item-name">{{ item['name'] }}</div>
+            {% if item['description'] %}
+            <div class="menu-item-desc">{{ item['description'] }}</div>
+            {% endif %}
+            {% if item['allergens'] %}
+            <div class="menu-item-allergens">Allergènes : <span>{{ item['allergens'] }}</span></div>
+            {% endif %}
+          </div>
+          {% if item['price'] %}
+          <div class="menu-item-price">{{ "%.2f"|format(item['price']) }} €</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {# Allergens note #}
+    <div style="margin-top:3rem; padding:1.25rem 1.5rem; background:var(--cream); border-radius:var(--radius); border:1px solid var(--border); font-size:.84rem; color:var(--text-lt);">
+      <strong style="color:var(--text);">ℹ️ Allergènes</strong> — Si vous avez des allergies ou intolérances alimentaires, signalez-le à notre équipe avant de commander. Nous ferons notre possible pour adapter les plats à vos besoins.
+    </div>
+
+    <div style="text-align:center; margin-top:3rem;">
+      <p style="color:var(--text-lt); margin-bottom:1.25rem; font-size:.95rem;">Des questions sur le menu ? Contactez-nous.</p>
+      <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+        <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-primary">📞 Nous appeler</a>
+        <a href="{{ url_for('contact') }}" class="btn btn-outline">Voir le contact</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

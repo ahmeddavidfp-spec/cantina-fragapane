@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Contact – La Cantina Fragapane{% endblock %}
+{% block description %}Contactez La Cantina Fragapane : adresse, téléphone, horaires. Rue du Taillis Pré 86, 6200 Châtelet, Belgique.{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+  <div class="page-hero-content">
+    <span class="section-label">Nous trouver</span>
+    <h1 class="section-title">Contact & Horaires</h1>
+    <p class="section-sub" style="margin:0 auto;">Réservation recommandée, surtout le week-end.</p>
+  </div>
+</section>
+
+<section class="contact-page">
+  <div class="container">
+    <div class="contact-grid">
+
+      {# Left column – info & hours #}
+      <div>
+        <div class="contact-info-block">
+          <h3>Informations</h3>
+          <div class="contact-item">
+            <span class="contact-item-icon">📍</span>
+            <div>
+              {{ info.get('address','') }}<br>
+              {{ info.get('city','') }}
+            </div>
+          </div>
+          <div class="contact-item">
+            <span class="contact-item-icon">📞</span>
+            <a href="tel:{{ info.get('phone','').replace(' ','') }}">{{ info.get('phone','') }}</a>
+          </div>
+          <div class="contact-item">
+            <span class="contact-item-icon">✉️</span>
+            <a href="mailto:{{ info.get('email','') }}">{{ info.get('email','') }}</a>
+          </div>
+          {% if info.get('facebook') %}
+          <div class="contact-item">
+            <span class="contact-item-icon">📘</span>
+            <a href="{{ info['facebook'] }}" target="_blank" rel="noopener">Cantina Fragapane sur Facebook</a>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="contact-info-block">
+          <h3>Horaires d'ouverture</h3>
+          <div class="contact-hours-grid">
+            {% for h in hours %}
+            <div class="contact-hours-row" data-day="{{ h['day_name'] }}">
+              <span class="contact-hours-day">{{ h['day_name'] }}</span>
+              <span class="contact-hours-time">
+                {% if h['is_closed'] %}
+                  Fermé
+                {% else %}
+                  {% if h['lunch_open'] and h['lunch_close'] %}{{ h['lunch_open'] }}–{{ h['lunch_close'] }}{% endif %}
+                  {% if h['lunch_open'] and h['dinner_open'] %} &nbsp;|&nbsp; {% endif %}
+                  {% if h['dinner_open'] and h['dinner_close'] %}{{ h['dinner_open'] }}–{{ h['dinner_close'] }}{% endif %}
+                {% endif %}
+              </span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div style="margin-top:1.5rem; padding:1.25rem; background:var(--cream); border-radius:var(--radius); border:1px solid var(--border);">
+          <p style="font-size:.88rem; color:var(--text-lt); margin-bottom:1rem;">{{ info.get('reservation_note','') }}</p>
+          <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-primary" style="width:100%; justify-content:center;">📞 Appeler pour réserver</a>
+        </div>
+      </div>
+
+      {# Right column – map #}
+      <div>
+        <h3 style="font-family:var(--font-heading); font-size:1.1rem; margin-bottom:1rem; color:var(--dark);">Nous trouver</h3>
+        {% if info.get('google_maps_embed') %}
+        <div style="border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--border); aspect-ratio:4/3;">
+          {{ info['google_maps_embed']|safe }}
+        </div>
+        {% else %}
+        <div class="map-placeholder">
+          <div>
+            <div style="font-size:2.5rem; margin-bottom:.75rem;">📍</div>
+            <strong style="color:var(--text);">Rue du Taillis Pré 86</strong><br>
+            6200 Châtelet, Belgique<br><br>
+            <a href="https://www.google.com/maps/search/Cantina+Fragapane+Châtelet" target="_blank" rel="noopener" class="btn btn-outline" style="margin-top:.5rem;">Ouvrir dans Google Maps</a>
+          </div>
+        </div>
+        {% endif %}
+
+        {# Practical info #}
+        <div style="margin-top:1.5rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div style="background:var(--light); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; text-align:center;">
+            <div style="font-size:1.5rem; margin-bottom:.4rem;">🅿️</div>
+            <div style="font-size:.82rem; font-weight:700; color:var(--dark);">Parking</div>
+            <div style="font-size:.78rem; color:var(--text-lt);">Gratuit en rue</div>
+          </div>
+          <div style="background:var(--light); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; text-align:center;">
+            <div style="font-size:1.5rem; margin-bottom:.4rem;">♿</div>
+            <div style="font-size:.82rem; font-weight:700; color:var(--dark);">Accessibilité</div>
+            <div style="font-size:.78rem; color:var(--text-lt);">Accès fauteuil roulant</div>
+          </div>
+          <div style="background:var(--light); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; text-align:center;">
+            <div style="font-size:1.5rem; margin-bottom:.4rem;">💳</div>
+            <div style="font-size:.82rem; font-weight:700; color:var(--dark);">Paiement</div>
+            <div style="font-size:.78rem; color:var(--text-lt);">Carte acceptée</div>
+          </div>
+          <div style="background:var(--light); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; text-align:center;">
+            <div style="font-size:1.5rem; margin-bottom:.4rem;">🛍️</div>
+            <div style="font-size:.82rem; font-weight:700; color:var(--dark);">À emporter</div>
+            <div style="font-size:.78rem; color:var(--text-lt);">Disponible</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

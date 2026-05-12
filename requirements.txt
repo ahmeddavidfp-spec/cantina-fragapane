@@ -1,3 +1,2 @@
-google-generativeai
-pillow
-streamlit
+flask
+gunicorn

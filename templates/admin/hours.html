@@ -1,0 +1,99 @@
+{% extends "admin/base.html" %}
+{% block title %}Horaires{% endblock %}
+
+{% block content %}
+<div class="admin-topbar">
+  <div>
+    <div class="admin-page-title">Gestion des Horaires</div>
+    <div class="admin-page-sub">Modifiez les jours et heures d'ouverture affichés sur le site</div>
+  </div>
+</div>
+
+<div class="admin-card">
+  <div class="admin-card-header">
+    <div class="admin-card-title">🕐 Horaires d'ouverture</div>
+  </div>
+  <div class="admin-card-body">
+    <form method="POST" action="{{ url_for('admin_edit_hours') }}">
+      <div style="overflow-x:auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th style="width:120px;">Jour</th>
+              <th>Fermé</th>
+              <th>Midi — Ouverture</th>
+              <th>Midi — Fermeture</th>
+              <th>Soir — Ouverture</th>
+              <th>Soir — Fermeture</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for h in hours %}
+            <tr>
+              <td><strong>{{ h['day_name'] }}</strong></td>
+              <td>
+                <div class="admin-checkbox-group">
+                  <input type="checkbox" name="h_{{ h['id'] }}_is_closed"
+                         id="closed-{{ h['id'] }}"
+                         {% if h['is_closed'] %}checked{% endif %}
+                         onchange="toggleDay({{ h['id'] }}, this.checked)">
+                  <label for="closed-{{ h['id'] }}">Fermé</label>
+                </div>
+              </td>
+              {% for field in ['lunch_open','lunch_close','dinner_open','dinner_close'] %}
+              <td>
+                <input class="admin-input" type="time"
+                       name="h_{{ h['id'] }}_{{ field }}"
+                       id="{{ field }}-{{ h['id'] }}"
+                       value="{{ h[field] or '' }}"
+                       {% if h['is_closed'] %}disabled{% endif %}
+                       style="width:120px;">
+              </td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:1.5rem;">
+        <button type="submit" class="btn btn-primary">💾 Enregistrer les horaires</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="admin-card">
+  <div class="admin-card-header">
+    <div class="admin-card-title">👁️ Aperçu</div>
+  </div>
+  <div class="admin-card-body">
+    <div style="max-width:400px;">
+      {% for h in hours %}
+      <div style="display:flex; justify-content:space-between; padding:.6rem 0; border-bottom:1px solid #F3F4F6; font-size:.9rem;">
+        <span style="font-weight:700; color:{% if h['is_closed'] %}var(--text-lt){% else %}var(--dark){% endif %};">
+          {{ h['day_name'] }}
+        </span>
+        <span style="color:var(--text-lt);">
+          {% if h['is_closed'] %}
+            <em>Fermé</em>
+          {% else %}
+            {% if h['lunch_open'] %}{{ h['lunch_open'] }}–{{ h['lunch_close'] }}{% endif %}
+            {% if h['lunch_open'] and h['dinner_open'] %} · {% endif %}
+            {% if h['dinner_open'] %}{{ h['dinner_open'] }}–{{ h['dinner_close'] }}{% endif %}
+          {% endif %}
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleDay(id, isClosed) {
+  ['lunch_open','lunch_close','dinner_open','dinner_close'].forEach(f => {
+    const el = document.getElementById(f + '-' + id);
+    if (el) el.disabled = isClosed;
+  });
+}
+</script>
+{% endblock %}

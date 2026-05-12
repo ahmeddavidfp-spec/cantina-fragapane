@@ -1,0 +1,220 @@
+{% extends "admin/base.html" %}
+{% block title %}Menu{% endblock %}
+
+{% block content %}
+<div class="admin-topbar">
+  <div>
+    <div class="admin-page-title">Gestion du Menu</div>
+    <div class="admin-page-sub">Gérez vos catégories et vos plats</div>
+  </div>
+</div>
+
+<!-- Add category -->
+<div class="admin-card">
+  <div class="admin-card-header">
+    <div class="admin-card-title">➕ Ajouter une catégorie</div>
+  </div>
+  <div class="admin-card-body">
+    <form method="POST" action="{{ url_for('admin_add_category') }}" style="display:flex; gap:1rem; flex-wrap:wrap; align-items:flex-end;">
+      <div class="admin-form-group" style="flex:1; min-width:180px; margin:0;">
+        <label>Nom de la catégorie</label>
+        <input class="admin-input" type="text" name="name" placeholder="Ex: Pizzas" required>
+      </div>
+      <div class="admin-form-group" style="width:80px; margin:0;">
+        <label>Icône</label>
+        <input class="admin-input" type="text" name="icon" placeholder="🍕" value="🍽️">
+      </div>
+      <button type="submit" class="admin-btn admin-btn-primary">Ajouter</button>
+    </form>
+  </div>
+</div>
+
+<!-- Categories & items -->
+{% for cat in cats %}
+<div class="admin-card">
+  <div class="admin-card-header">
+    <div class="admin-card-title">{{ cat['icon'] }} {{ cat['name'] }}</div>
+    <div class="admin-actions">
+      <!-- Edit category modal trigger -->
+      <button class="admin-btn admin-btn-outline"
+              onclick="document.getElementById('edit-cat-{{ cat['id'] }}').style.display='block'">
+        ✏️ Modifier
+      </button>
+      <form method="POST" action="{{ url_for('admin_delete_category', cat_id=cat['id']) }}"
+            onsubmit="return confirm('Supprimer cette catégorie et tous ses plats ?')">
+        <button type="submit" class="admin-btn admin-btn-danger">🗑️ Supprimer</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Inline edit category form (hidden by default) -->
+  <div id="edit-cat-{{ cat['id'] }}" style="display:none; padding:1rem 1.5rem; background:#F9FAFB; border-bottom:1px solid #E5E7EB;">
+    <form method="POST" action="{{ url_for('admin_edit_category', cat_id=cat['id']) }}"
+          style="display:flex; gap:1rem; flex-wrap:wrap; align-items:flex-end;">
+      <div class="admin-form-group" style="flex:1; min-width:180px; margin:0;">
+        <label>Nom</label>
+        <input class="admin-input" type="text" name="name" value="{{ cat['name'] }}" required>
+      </div>
+      <div class="admin-form-group" style="width:80px; margin:0;">
+        <label>Icône</label>
+        <input class="admin-input" type="text" name="icon" value="{{ cat['icon'] }}">
+      </div>
+      <button type="submit" class="admin-btn admin-btn-success">💾 Enregistrer</button>
+      <button type="button" class="admin-btn admin-btn-outline"
+              onclick="document.getElementById('edit-cat-{{ cat['id'] }}').style.display='none'">Annuler</button>
+    </form>
+  </div>
+
+  <!-- Items table -->
+  <div style="overflow-x:auto;">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Plat</th>
+          <th>Description</th>
+          <th>Prix</th>
+          <th>Statut</th>
+          <th>À la une</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items_by_cat.get(cat['id'], []) %}
+        <tr>
+          <td><strong>{{ item['name'] }}</strong></td>
+          <td style="max-width:260px; color:var(--text-lt); font-size:.84rem;">{{ item['description']|truncate(80) }}</td>
+          <td>{% if item['price'] %}<strong>{{ "%.2f"|format(item['price']) }} €</strong>{% else %}—{% endif %}</td>
+          <td>
+            {% if item['available'] %}
+            <span class="badge badge-green">✓ Disponible</span>
+            {% else %}
+            <span class="badge badge-red">✗ Indisponible</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if item['featured'] %}
+            <span class="badge badge-gold">★ Oui</span>
+            {% else %}
+            <span class="badge badge-gray">Non</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="admin-actions">
+              <button class="admin-btn admin-btn-outline"
+                      onclick="document.getElementById('edit-item-{{ item['id'] }}').style.display='block'">
+                ✏️ Modifier
+              </button>
+              <form method="POST" action="{{ url_for('admin_delete_item', item_id=item['id']) }}"
+                    onsubmit="return confirm('Supprimer ce plat ?')">
+                <button type="submit" class="admin-btn admin-btn-danger">🗑️</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        <!-- Inline edit item row -->
+        <tr id="edit-item-{{ item['id'] }}" style="display:none; background:#F0F7FF;">
+          <td colspan="6" style="padding:1.25rem 1rem;">
+            <form method="POST" action="{{ url_for('admin_edit_item', item_id=item['id']) }}">
+              <div style="display:grid; grid-template-columns:1fr 2fr 100px; gap:1rem; margin-bottom:1rem;">
+                <div class="admin-form-group" style="margin:0;">
+                  <label>Nom</label>
+                  <input class="admin-input" type="text" name="name" value="{{ item['name'] }}" required>
+                </div>
+                <div class="admin-form-group" style="margin:0;">
+                  <label>Description</label>
+                  <input class="admin-input" type="text" name="description" value="{{ item['description'] or '' }}">
+                </div>
+                <div class="admin-form-group" style="margin:0;">
+                  <label>Prix (€)</label>
+                  <input class="admin-input" type="number" name="price" step="0.01" min="0"
+                         value="{{ item['price'] or '' }}" placeholder="0.00">
+                </div>
+              </div>
+              <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                <div class="admin-form-group" style="margin:0;">
+                  <label>Allergènes</label>
+                  <input class="admin-input" type="text" name="allergens" value="{{ item['allergens'] or '' }}"
+                         placeholder="Ex: Gluten, Lactose">
+                </div>
+                <div class="admin-form-group" style="margin:0;">
+                  <label style="display:block;">&nbsp;</label>
+                  <div class="admin-checkbox-group">
+                    <input type="checkbox" name="available" id="av-{{ item['id'] }}"
+                           {% if item['available'] %}checked{% endif %}>
+                    <label for="av-{{ item['id'] }}">Disponible</label>
+                  </div>
+                </div>
+                <div class="admin-form-group" style="margin:0;">
+                  <label style="display:block;">&nbsp;</label>
+                  <div class="admin-checkbox-group">
+                    <input type="checkbox" name="featured" id="ft-{{ item['id'] }}"
+                           {% if item['featured'] %}checked{% endif %}>
+                    <label for="ft-{{ item['id'] }}">À la une</label>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex; gap:.75rem;">
+                <button type="submit" class="admin-btn admin-btn-success">💾 Enregistrer</button>
+                <button type="button" class="admin-btn admin-btn-outline"
+                        onclick="document.getElementById('edit-item-{{ item['id'] }}').style.display='none'">Annuler</button>
+              </div>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" style="color:var(--text-lt); font-style:italic; text-align:center; padding:1.5rem;">
+          Aucun plat dans cette catégorie.
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Add item form -->
+  <div style="padding:1.25rem 1.5rem; border-top:2px dashed #E5E7EB;">
+    <div style="font-size:.78rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--text-lt); margin-bottom:1rem;">
+      ➕ Ajouter un plat dans « {{ cat['name'] }} »
+    </div>
+    <form method="POST" action="{{ url_for('admin_add_item') }}">
+      <input type="hidden" name="category_id" value="{{ cat['id'] }}">
+      <div style="display:grid; grid-template-columns:1fr 2fr 100px; gap:1rem; margin-bottom:1rem;">
+        <div class="admin-form-group" style="margin:0;">
+          <label>Nom *</label>
+          <input class="admin-input" type="text" name="name" placeholder="Nom du plat" required>
+        </div>
+        <div class="admin-form-group" style="margin:0;">
+          <label>Description</label>
+          <input class="admin-input" type="text" name="description" placeholder="Description courte">
+        </div>
+        <div class="admin-form-group" style="margin:0;">
+          <label>Prix (€)</label>
+          <input class="admin-input" type="number" name="price" step="0.01" min="0" placeholder="0.00">
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:1rem; align-items:flex-end;">
+        <div class="admin-form-group" style="margin:0;">
+          <label>Allergènes</label>
+          <input class="admin-input" type="text" name="allergens" placeholder="Gluten, Lactose…">
+        </div>
+        <div class="admin-form-group" style="margin:0;">
+          <label style="display:block;">&nbsp;</label>
+          <div class="admin-checkbox-group">
+            <input type="checkbox" name="available" id="new-av-{{ cat['id'] }}" checked>
+            <label for="new-av-{{ cat['id'] }}">Disponible</label>
+          </div>
+        </div>
+        <div class="admin-form-group" style="margin:0;">
+          <label style="display:block;">&nbsp;</label>
+          <div class="admin-checkbox-group">
+            <input type="checkbox" name="featured" id="new-ft-{{ cat['id'] }}">
+            <label for="new-ft-{{ cat['id'] }}">À la une</label>
+          </div>
+        </div>
+        <button type="submit" class="admin-btn admin-btn-primary">Ajouter</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}

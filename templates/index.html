@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}La Cantina Fragapane – Restaurant Italien à Châtelet{% endblock %}
+
+{% block content %}
+
+{# ── Hero ── #}
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-pattern"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Depuis Châtelet, Belgique</div>
+    <h1 class="hero-title">La Cantina<br><em>Fragapane</em></h1>
+    <p class="hero-tagline">{{ info.get('tagline', 'Cucina italiana autentica') }}</p>
+    <p class="hero-subtitle">{{ info.get('subtitle', '') }}</p>
+    <div class="hero-cta">
+      <a href="{{ url_for('menu') }}" class="btn btn-gold">Découvrir le menu</a>
+      <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-light">📞 Réserver une table</a>
+    </div>
+    <div class="hero-badges">
+      <div class="hero-badge">
+        <div class="hero-badge-num">4.5★</div>
+        <div class="hero-badge-lbl">Google Reviews</div>
+      </div>
+      <div class="hero-badge">
+        <div class="hero-badge-num">27</div>
+        <div class="hero-badge-lbl">Ans de passion</div>
+      </div>
+      <div class="hero-badge">
+        <div class="hero-badge-num">100%</div>
+        <div class="hero-badge-lbl">Fait maison</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Défiler</span>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+  </div>
+</section>
+
+{# ── About ── #}
+<section class="about-section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-visual">
+        <div class="about-frame">
+          <div class="about-frame-inner">CF</div>
+        </div>
+        <div class="about-accent">
+          <div class="about-accent-num">★4.6</div>
+          <div class="about-accent-lbl">+187 avis clients</div>
+        </div>
+      </div>
+      <div class="about-content">
+        <span class="section-label">Notre histoire</span>
+        <h2 class="section-title">Un coin d'Italie au cœur de Châtelet</h2>
+        <p class="about-text">{{ info.get('about_short','') }}</p>
+        <p class="about-text">Tout est fait maison avec amour : pâtes fraîches du jour, sauces mijotées lentement, desserts gourmands préparés chaque matin.</p>
+        <div class="about-features">
+          <div class="about-feature">
+            <div class="about-feature-icon">🍝</div>
+            <div>
+              <div class="about-feature-text">Pâtes fraîches</div>
+              <div class="about-feature-sub">Préparées chaque jour</div>
+            </div>
+          </div>
+          <div class="about-feature">
+            <div class="about-feature-icon">🥩</div>
+            <div>
+              <div class="about-feature-text">Viandes sélectionnées</div>
+              <div class="about-feature-sub">Bœuf Angus & agneau</div>
+            </div>
+          </div>
+          <div class="about-feature">
+            <div class="about-feature-icon">🫒</div>
+            <div>
+              <div class="about-feature-text">Produits frais</div>
+              <div class="about-feature-sub">Ingrédients de qualité</div>
+            </div>
+          </div>
+          <div class="about-feature">
+            <div class="about-feature-icon">❤️</div>
+            <div>
+              <div class="about-feature-text">Recettes authentiques</div>
+              <div class="about-feature-sub">Traditions italiennes</div>
+            </div>
+          </div>
+        </div>
+        <a href="{{ url_for('a_propos') }}" class="btn btn-primary">Notre histoire</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ── Featured dishes ── #}
+{% if featured %}
+<section class="featured-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Nos spécialités</span>
+      <h2 class="section-title">Les incontournables</h2>
+      <p class="section-sub">Pâtes fraîches, viandes grillées, douceurs maison — un voyage culinaire au cœur de l'Italie.</p>
+    </div>
+    <div class="dishes-grid">
+      {% set emoji_map = {'Antipasti':'🫒','Pasta Fresca':'🍝','Carni & Grigliata':'🥩','Dolci':'🍮'} %}
+      {% for dish in featured %}
+      <div class="dish-card fade-up fade-up-d{{ loop.index % 3 + 1 }}">
+        <div class="dish-card-thumb">
+          {{ emoji_map.get(dish['cat_name'], '🍽️') }}
+          <span class="dish-card-cat">{{ dish['cat_name'] }}</span>
+        </div>
+        <div class="dish-card-body">
+          <div class="dish-card-name">{{ dish['name'] }}</div>
+          <div class="dish-card-desc">{{ dish['description'] }}</div>
+          {% if dish['price'] %}
+          <div class="dish-card-price">{{ "%.2f"|format(dish['price']) }} €</div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="text-align:center; margin-top:2.5rem;">
+      <a href="{{ url_for('menu') }}" class="btn btn-primary">Voir le menu complet</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ── Hours ── #}
+<section class="hours-section" id="horaires">
+  <div class="container">
+    <div class="hours-inner">
+      <div class="hours-intro">
+        <span class="section-label">Quand nous rendre visite</span>
+        <h2 class="section-title">Nos horaires</h2>
+        <p class="section-sub">{{ info.get('reservation_note','') }}</p>
+        <div class="hours-reserve" style="margin-top:2rem;">
+          <p>Réservation par téléphone ou email, vivement recommandée le week-end.</p>
+          <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
+            <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-gold">📞 {{ info.get('phone','') }}</a>
+            <a href="mailto:{{ info.get('email','') }}" class="btn btn-outline" style="color:var(--cream); border-color:rgba(255,255,255,.3);">✉️ Email</a>
+          </div>
+        </div>
+      </div>
+      <div>
+        <table class="hours-table">
+          {% for h in hours %}
+          <tr class="hours-row" data-day="{{ h['day_name'] }}">
+            <td class="hours-day">{{ h['day_name'] }}</td>
+            <td class="hours-times">
+              {% if h['is_closed'] %}
+                <span class="hours-closed">Fermé</span>
+              {% else %}
+                {% if h['lunch_open'] and h['lunch_close'] %}
+                  {{ h['lunch_open'] }} – {{ h['lunch_close'] }}<br>
+                {% endif %}
+                {% if h['dinner_open'] and h['dinner_close'] %}
+                  {{ h['dinner_open'] }} – {{ h['dinner_close'] }}
+                {% endif %}
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ── Reviews ── #}
+<section class="reviews-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Ce que disent nos clients</span>
+      <h2 class="section-title">Ils nous font confiance</h2>
+      <p class="section-sub">Plus de 187 avis positifs sur Google, Facebook et TripAdvisor.</p>
+    </div>
+    <div class="reviews-grid">
+      {% for r in reviews %}
+      <div class="review-card fade-up fade-up-d{{ loop.index }}">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">{{ r.text }}</p>
+        <div class="review-author">— {{ r.author }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ── CTA ── #}
+<section class="cta-strip">
+  <div class="container">
+    <div class="cta-strip-content">
+      <span class="section-label">Envie d'une bonne table ?</span>
+      <h2 class="section-title">Réservez votre soirée italienne</h2>
+      <p class="section-sub text-center">Une adresse chaleureuse, des produits frais, une cuisine généreuse.<br>Carlo & Brenda vous attendent.</p>
+      <div class="cta-group">
+        <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-light">📞 Appeler maintenant</a>
+        <a href="{{ url_for('contact') }}" class="btn btn-outline" style="color:var(--cream); border-color:rgba(255,255,255,.4);">Voir le contact</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

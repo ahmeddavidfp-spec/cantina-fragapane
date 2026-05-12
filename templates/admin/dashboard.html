@@ -1,0 +1,68 @@
+{% extends "admin/base.html" %}
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<div class="admin-topbar">
+  <div>
+    <div class="admin-page-title">Tableau de bord</div>
+    <div class="admin-page-sub">Bienvenue dans l'espace admin de La Cantina Fragapane</div>
+  </div>
+  <a href="{{ url_for('index') }}" target="_blank" class="btn btn-outline" style="font-size:.82rem;">🌐 Voir le site</a>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-num">{{ stats.categories }}</div>
+    <div class="stat-lbl">Catégories</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">{{ stats.plats }}</div>
+    <div class="stat-lbl">Plats actifs</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">{{ stats.annonces }}</div>
+    <div class="stat-lbl">Annonces actives</div>
+  </div>
+</div>
+
+<!-- Quick links -->
+<div style="display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem;">
+  <a href="{{ url_for('admin_menu') }}" class="admin-card" style="text-decoration:none; transition:.2s; display:block;">
+    <div class="admin-card-body" style="display:flex; align-items:center; gap:1.25rem;">
+      <div style="font-size:2.5rem;">🍽️</div>
+      <div>
+        <div style="font-family:var(--font-heading); font-size:1.05rem; font-weight:700; color:var(--dark);">Gérer le menu</div>
+        <div style="font-size:.84rem; color:var(--text-lt);">Ajouter, modifier ou supprimer des plats et catégories</div>
+      </div>
+    </div>
+  </a>
+  <a href="{{ url_for('admin_hours') }}" class="admin-card" style="text-decoration:none; transition:.2s; display:block;">
+    <div class="admin-card-body" style="display:flex; align-items:center; gap:1.25rem;">
+      <div style="font-size:2.5rem;">🕐</div>
+      <div>
+        <div style="font-family:var(--font-heading); font-size:1.05rem; font-weight:700; color:var(--dark);">Gérer les horaires</div>
+        <div style="font-size:.84rem; color:var(--text-lt);">Modifier les jours et heures d'ouverture</div>
+      </div>
+    </div>
+  </a>
+  <a href="{{ url_for('admin_announcements') }}" class="admin-card" style="text-decoration:none; transition:.2s; display:block;">
+    <div class="admin-card-body" style="display:flex; align-items:center; gap:1.25rem;">
+      <div style="font-size:2.5rem;">📢</div>
+      <div>
+        <div style="font-family:var(--font-heading); font-size:1.05rem; font-weight:700; color:var(--dark);">Annonces</div>
+        <div style="font-size:.84rem; color:var(--text-lt);">Publier des messages : fermetures, événements, promos</div>
+      </div>
+    </div>
+  </a>
+  <a href="{{ url_for('admin_info') }}" class="admin-card" style="text-decoration:none; transition:.2s; display:block;">
+    <div class="admin-card-body" style="display:flex; align-items:center; gap:1.25rem;">
+      <div style="font-size:2.5rem;">ℹ️</div>
+      <div>
+        <div style="font-family:var(--font-heading); font-size:1.05rem; font-weight:700; color:var(--dark);">Informations</div>
+        <div style="font-size:.84rem; color:var(--text-lt);">Adresse, téléphone, description, réseaux sociaux</div>
+      </div>
+    </div>
+  </a>
+</div>
+{% endblock %}
