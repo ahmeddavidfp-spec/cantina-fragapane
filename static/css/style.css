@@ -1085,7 +1085,8 @@ input, textarea, select { font-family: inherit; }
   gap: 4rem;
   align-items: start;
 }
-.contact-info-block { margin-bottom: 2rem; }
+.contact-grid > * { min-width: 0; }
+.contact-info-block { margin-bottom: 2rem; overflow: hidden; }
 .contact-info-block h3 {
   font-family: var(--font-heading);
   font-size: 1.1rem;
@@ -1117,13 +1118,15 @@ input, textarea, select { font-family: inherit; }
 .contact-hours-row {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
+  gap: .5rem;
   font-size: .88rem;
   padding: .4rem 0;
   border-bottom: 1px solid var(--border);
 }
 .contact-hours-row:last-child { border-bottom: none; }
-.contact-hours-day { font-weight: 700; color: var(--text); }
-.contact-hours-time { color: var(--text-lt); }
+.contact-hours-day { font-weight: 700; color: var(--text); white-space: nowrap; flex-shrink: 0; }
+.contact-hours-time { color: var(--text-lt); text-align: right; }
 .contact-hours-row.today .contact-hours-day,
 .contact-hours-row.today .contact-hours-time { color: var(--wine); font-weight: 700; }
 .map-placeholder {
