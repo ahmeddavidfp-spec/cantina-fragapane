@@ -1596,3 +1596,401 @@ input, textarea, select { font-family: inherit; }
   .hero-badges { gap: 1.5rem; }
   .hours-inner { grid-template-columns: 1fr; }
 }
+
+/* ── Nav – lien livraison mis en avant ──────────────────────────────────────── */
+.nav-link-delivery {
+  color: var(--gold) !important;
+  font-weight: 700;
+}
+.nav-link-delivery:hover,
+.nav-link-delivery.active {
+  color: var(--gold-lt) !important;
+}
+
+/* ── Delivery strip (homepage) ──────────────────────────────────────────────── */
+.delivery-strip {
+  background: linear-gradient(135deg, var(--olive) 0%, #1a5030 100%);
+  color: var(--cream);
+  padding: 1.25rem 0;
+}
+.delivery-strip-inner {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.delivery-strip-flag {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+.delivery-strip-text {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+.delivery-strip-text strong {
+  font-size: 1.05rem;
+  letter-spacing: .01em;
+}
+.delivery-strip-text span {
+  font-size: .85rem;
+  opacity: .85;
+}
+.delivery-strip-actions {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+/* ── Delivery hero ──────────────────────────────────────────────────────────── */
+.delivery-hero {
+  position: relative;
+  min-height: 55vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  padding: 6rem 1.5rem 4rem;
+}
+.delivery-hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(160deg, rgba(42,112,64,.92) 0%, rgba(12,24,12,.88) 50%, rgba(200,37,58,.80) 100%),
+    url('/static/images/cantina-fragapane-spaghetti-fruits-de-mer-tomates-chatelet.jpeg') center/cover no-repeat;
+  z-index: 0;
+}
+.delivery-hero-content {
+  position: relative;
+  z-index: 1;
+  color: var(--cream);
+  max-width: 760px;
+}
+.delivery-flag {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  animation: flagWave .8s ease;
+}
+@keyframes flagWave {
+  0%   { transform: scale(.5) rotate(-10deg); opacity: 0; }
+  100% { transform: scale(1)  rotate(0deg);   opacity: 1; }
+}
+.delivery-hero-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.15;
+  margin-bottom: 1.25rem;
+  color: var(--white);
+}
+.delivery-hero-title em {
+  color: var(--gold);
+  font-style: italic;
+}
+.delivery-hero-sub {
+  font-size: 1.1rem;
+  opacity: .9;
+  margin-bottom: 2.5rem;
+  line-height: 1.7;
+}
+.delivery-hero-cta {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn-lg {
+  padding: .9rem 2rem;
+  font-size: 1rem;
+}
+
+/* ── Delivery zone ──────────────────────────────────────────────────────────── */
+.delivery-zone-section {
+  padding: 5rem 0;
+  background: var(--white);
+}
+.delivery-zone-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+.delivery-zone-map {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+.delivery-map-visual {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.delivery-map-circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px dashed;
+}
+.delivery-map-circle.outer {
+  width: 260px; height: 260px;
+  border-color: rgba(42,112,64,.25);
+  background: rgba(42,112,64,.04);
+}
+.delivery-map-circle.inner {
+  width: 140px; height: 140px;
+  border-color: rgba(42,112,64,.45);
+  background: rgba(42,112,64,.08);
+}
+.delivery-map-pin {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+.delivery-map-pin-dot {
+  width: 18px; height: 18px;
+  background: var(--wine);
+  border-radius: 50%;
+  margin: 0 auto .5rem;
+  box-shadow: 0 0 0 5px rgba(200,37,58,.2);
+}
+.delivery-map-pin-label {
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--text);
+  line-height: 1.3;
+}
+.delivery-map-radius {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: var(--olive);
+  color: var(--white);
+  font-size: .7rem;
+  font-weight: 700;
+  padding: .2rem .5rem;
+  border-radius: 20px;
+}
+.delivery-zone-cities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  justify-content: center;
+}
+.delivery-zone-city {
+  background: var(--light);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: .3rem .8rem;
+  font-size: .82rem;
+  color: var(--text);
+}
+.delivery-zone-text {
+  color: var(--text-lt);
+  margin-bottom: 2rem;
+  line-height: 1.8;
+  font-size: 1.02rem;
+}
+.delivery-info-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.delivery-info-card {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  background: var(--light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.1rem;
+}
+.delivery-info-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+.delivery-info-title {
+  font-weight: 700;
+  font-size: .9rem;
+  color: var(--text);
+}
+.delivery-info-sub {
+  font-size: .78rem;
+  color: var(--text-lt);
+  margin-top: .15rem;
+}
+
+/* ── Delivery menu ──────────────────────────────────────────────────────────── */
+.delivery-menu-section {
+  padding: 5rem 0;
+  background: var(--light);
+}
+.delivery-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+.delivery-menu-cat {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 1.5rem;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.delivery-menu-cat:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px var(--shadow);
+}
+.delivery-menu-cat-icon {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+}
+.delivery-menu-cat-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  color: var(--text);
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+.delivery-menu-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+}
+.delivery-menu-list li {
+  font-size: .88rem;
+  color: var(--text-lt);
+  padding-left: 1rem;
+  position: relative;
+}
+.delivery-menu-list li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+/* ── How to order steps ─────────────────────────────────────────────────────── */
+.delivery-how-section {
+  padding: 5rem 0;
+  background: var(--white);
+}
+.delivery-steps {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.delivery-step {
+  flex: 1;
+  min-width: 160px;
+  max-width: 200px;
+  text-align: center;
+  padding: 2rem 1.25rem;
+  background: var(--light);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  position: relative;
+}
+.delivery-step-num {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px; height: 28px;
+  background: var(--olive);
+  color: var(--white);
+  border-radius: 50%;
+  font-size: .8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.delivery-step-icon {
+  font-size: 2rem;
+  margin-bottom: .75rem;
+}
+.delivery-step-title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  margin-bottom: .5rem;
+  color: var(--text);
+}
+.delivery-step-text {
+  font-size: .82rem;
+  color: var(--text-lt);
+  line-height: 1.5;
+}
+.delivery-step-arrow {
+  font-size: 1.5rem;
+  color: var(--gold);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Delivery CTA final ─────────────────────────────────────────────────────── */
+.delivery-cta-section {
+  padding: 5rem 0;
+  background: linear-gradient(135deg, var(--dark) 0%, #1a3020 60%, #3a0a12 100%);
+}
+.delivery-cta-inner {
+  text-align: center;
+  color: var(--cream);
+  max-width: 640px;
+  margin: 0 auto;
+}
+.delivery-cta-flag {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+.delivery-cta-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  color: var(--white);
+}
+.delivery-cta-title em {
+  color: var(--gold);
+  font-style: italic;
+}
+.delivery-cta-sub {
+  font-size: 1.1rem;
+  opacity: .85;
+  margin-bottom: 2.5rem;
+}
+.delivery-cta-btns {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── Responsive livraison ───────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .delivery-zone-grid { grid-template-columns: 1fr; }
+  .delivery-zone-map { order: -1; }
+  .delivery-menu-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .delivery-strip-inner { flex-direction: column; text-align: center; }
+  .delivery-strip-actions { justify-content: center; }
+  .delivery-menu-grid { grid-template-columns: 1fr; }
+  .delivery-steps { flex-direction: column; align-items: stretch; }
+  .delivery-step-arrow { transform: rotate(90deg); text-align: center; }
+  .delivery-info-cards { grid-template-columns: 1fr; }
+  .delivery-step { max-width: 100%; }
+}

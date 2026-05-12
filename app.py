@@ -324,6 +324,11 @@ def contact():
     return render_template('contact.html', hours=hours)
 
 
+@app.route('/livraison')
+def livraison():
+    return render_template('livraison.html')
+
+
 # ── Admin – auth ──────────────────────────────────────────────────────────────
 
 @app.route('/admin/login', methods=['GET', 'POST'])

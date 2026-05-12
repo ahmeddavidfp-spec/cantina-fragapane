@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Livraison & À emporter – La Cantina Fragapane Châtelineau{% endblock %}
+{% block description %}Commandez en livraison ou à emporter ! La Cantina Fragapane livre à domicile à Châtelineau et dans un rayon de 10 km. Pâtes fraîches, viandes, desserts maison via Takeaway.{% endblock %}
+
+{% block content %}
+
+{# ── Hero livraison ── #}
+<section class="delivery-hero">
+  <div class="delivery-hero-bg"></div>
+  <div class="delivery-hero-content">
+    <div class="delivery-flag">🇮🇹</div>
+    <div class="section-label">Nouveau service</div>
+    <h1 class="delivery-hero-title">Cantina Fragapane<br><em>— ça arrive chez vous !</em></h1>
+    <p class="delivery-hero-sub">Profitez de toute la saveur de l'Italie sans quitter votre canapé.<br>Livraison à domicile & à emporter — Châtelineau et alentours.</p>
+    <div class="delivery-hero-cta">
+      <a href="https://www.takeaway.com" target="_blank" rel="noopener" class="btn btn-gold btn-lg">
+        🛵 Commander sur Takeaway
+      </a>
+      <a href="tel:+32491227207" class="btn btn-light btn-lg">📞 0491/22/72/07</a>
+    </div>
+  </div>
+</section>
+
+{# ── Zone & infos clés ── #}
+<section class="delivery-zone-section">
+  <div class="container">
+    <div class="delivery-zone-grid">
+
+      <div class="delivery-zone-map">
+        <div class="delivery-map-visual">
+          <div class="delivery-map-circle outer"></div>
+          <div class="delivery-map-circle inner"></div>
+          <div class="delivery-map-pin">
+            <div class="delivery-map-pin-dot"></div>
+            <div class="delivery-map-pin-label">Cantina<br>Fragapane</div>
+          </div>
+          <div class="delivery-map-radius">10 km</div>
+        </div>
+        <div class="delivery-zone-cities">
+          <div class="delivery-zone-city">📍 Châtelineau</div>
+          <div class="delivery-zone-city">📍 Châtelet</div>
+          <div class="delivery-zone-city">📍 Charleroi</div>
+          <div class="delivery-zone-city">📍 Gerpinnes</div>
+          <div class="delivery-zone-city">📍 Aiseau-Presles</div>
+          <div class="delivery-zone-city">📍 Et alentours…</div>
+        </div>
+      </div>
+
+      <div class="delivery-zone-content">
+        <span class="section-label">Zone de livraison</span>
+        <h2 class="section-title">Jusqu'à 10 km autour de chez nous</h2>
+        <p class="delivery-zone-text">
+          Nous livrons dans un rayon de <strong>10 km</strong> autour de notre restaurant à Châtelineau.
+          Châtelet, Charleroi, Gerpinnes, Aiseau-Presles… vos pâtes fraîches arrivent directement chez vous, chaudes et parfumées.
+        </p>
+        <div class="delivery-info-cards">
+          <div class="delivery-info-card">
+            <div class="delivery-info-icon">🛵</div>
+            <div>
+              <div class="delivery-info-title">Livraison à domicile</div>
+              <div class="delivery-info-sub">Via Takeaway — rapide & facile</div>
+            </div>
+          </div>
+          <div class="delivery-info-card">
+            <div class="delivery-info-icon">🥡</div>
+            <div>
+              <div class="delivery-info-title">À emporter</div>
+              <div class="delivery-info-sub">Commandez par tél, venez chercher</div>
+            </div>
+          </div>
+          <div class="delivery-info-card">
+            <div class="delivery-info-icon">📞</div>
+            <div>
+              <div class="delivery-info-title">0491/22/72/07</div>
+              <div class="delivery-info-sub">Commande directe par téléphone</div>
+            </div>
+          </div>
+          <div class="delivery-info-card">
+            <div class="delivery-info-icon">🕐</div>
+            <div>
+              <div class="delivery-info-title">Mêmes horaires</div>
+              <div class="delivery-info-sub">Disponible aux heures d'ouverture</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{# ── Menu livraison ── #}
+<section class="delivery-menu-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Ce qu'on vous livre</span>
+      <h2 class="section-title">Le meilleur de la Cantina, chez vous</h2>
+      <p class="section-sub">Toute la carte — pâtes fraîches, viandes, entrées gourmandes, desserts — préparée avec le même amour que si vous étiez attablés ici.</p>
+    </div>
+
+    <div class="delivery-menu-grid">
+
+      <div class="delivery-menu-cat">
+        <div class="delivery-menu-cat-icon">🍝</div>
+        <h3 class="delivery-menu-cat-title">Pâtes fraîches & sauces maison</h3>
+        <ul class="delivery-menu-list">
+          <li>Aglio e olio</li>
+          <li>Bolognese</li>
+          <li>Napoli</li>
+          <li>Pesto de pistache 😍</li>
+          <li>Ravioles à la truffe</li>
+        </ul>
+      </div>
+
+      <div class="delivery-menu-cat">
+        <div class="delivery-menu-cat-icon">🥩</div>
+        <h3 class="delivery-menu-cat-title">Viandes marinées</h3>
+        <ul class="delivery-menu-list">
+          <li>Agneau mariné</li>
+          <li>Bœuf mariné</li>
+          <li>Poulet mariné</li>
+          <li>Black Angus</li>
+          <li>Arrosticini traditionnels grillés 🔥</li>
+        </ul>
+      </div>
+
+      <div class="delivery-menu-cat">
+        <div class="delivery-menu-cat-icon">🦑</div>
+        <h3 class="delivery-menu-cat-title">Entrées gourmandes</h3>
+        <ul class="delivery-menu-list">
+          <li>Croquettes de parmesan</li>
+          <li>Croquettes de crevettes</li>
+          <li>Scampis à l'ail</li>
+          <li>Scampis diavolo</li>
+          <li>Friture de calamars</li>
+          <li>Mix italien 🇮🇹✨</li>
+        </ul>
+      </div>
+
+      <div class="delivery-menu-cat">
+        <div class="delivery-menu-cat-icon">🍮</div>
+        <h3 class="delivery-menu-cat-title">Desserts maison</h3>
+        <ul class="delivery-menu-list">
+          <li>Tiramisu maison</li>
+          <li>Mousse au chocolat</li>
+          <li>Panna cotta</li>
+          <li>Et nos spécialités du jour…</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{# ── Comment commander ── #}
+<section class="delivery-how-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">C'est simple</span>
+      <h2 class="section-title">Comment commander ?</h2>
+    </div>
+    <div class="delivery-steps">
+      <div class="delivery-step">
+        <div class="delivery-step-num">1</div>
+        <div class="delivery-step-icon">📲</div>
+        <h3 class="delivery-step-title">Choisissez</h3>
+        <p class="delivery-step-text">Via Takeaway ou par téléphone au <strong>0491/22/72/07</strong></p>
+      </div>
+      <div class="delivery-step-arrow">→</div>
+      <div class="delivery-step">
+        <div class="delivery-step-num">2</div>
+        <div class="delivery-step-icon">👨‍🍳</div>
+        <h3 class="delivery-step-title">On prépare</h3>
+        <p class="delivery-step-text">Vos plats sont cuisinés frais, avec le même soin qu'au restaurant</p>
+      </div>
+      <div class="delivery-step-arrow">→</div>
+      <div class="delivery-step">
+        <div class="delivery-step-num">3</div>
+        <div class="delivery-step-icon">🚗</div>
+        <h3 class="delivery-step-title">On livre</h3>
+        <p class="delivery-step-text">Votre commande arrive chaude et parfumée directement chez vous</p>
+      </div>
+      <div class="delivery-step-arrow">→</div>
+      <div class="delivery-step">
+        <div class="delivery-step-num">4</div>
+        <div class="delivery-step-icon">😋</div>
+        <h3 class="delivery-step-title">Vous savourez</h3>
+        <p class="delivery-step-text">L'Italie s'invite à votre table — buon appetito !</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ── CTA final ── #}
+<section class="delivery-cta-section">
+  <div class="container">
+    <div class="delivery-cta-inner">
+      <div class="delivery-cta-flag">🇮🇹</div>
+      <h2 class="delivery-cta-title">Cantina Fragapane<br>L'Italie à Châtelineau, <em>chez vous.</em></h2>
+      <p class="delivery-cta-sub">On prépare, on livre, vous savourez ❤️</p>
+      <div class="delivery-cta-btns">
+        <a href="https://www.takeaway.com" target="_blank" rel="noopener" class="btn btn-gold btn-lg">
+          🛵 Commander sur Takeaway
+        </a>
+        <a href="tel:+32491227207" class="btn btn-light btn-lg">📞 0491/22/72/07</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

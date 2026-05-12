@@ -38,6 +38,23 @@
   </div>
 </section>
 
+{# ── Livraison bandeau ── #}
+<section class="delivery-strip">
+  <div class="container">
+    <div class="delivery-strip-inner">
+      <div class="delivery-strip-flag">🇮🇹</div>
+      <div class="delivery-strip-text">
+        <strong>Nouveau ! Livraison à domicile & à emporter</strong>
+        <span>Châtelineau et 10 km alentours · Via Takeaway ou par téléphone</span>
+      </div>
+      <div class="delivery-strip-actions">
+        <a href="{{ url_for('livraison') }}" class="btn btn-gold">En savoir plus</a>
+        <a href="tel:+32491227207" class="btn btn-light">📞 0491/22/72/07</a>
+      </div>
+    </div>
+  </div>
+</section>
+
 {# ── Événements ── #}
 {% if evenements %}
 <section class="events-section">
