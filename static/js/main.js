@@ -50,6 +50,20 @@ document.querySelectorAll('.contact-hours-row[data-day]').forEach(el => {
   if (el.dataset.day === todayName) el.classList.add('today');
 });
 
+// Cookie banner
+function acceptCookies() {
+  localStorage.setItem('cookies_ok', '1');
+  document.getElementById('cookieBanner').style.display = 'none';
+}
+window.addEventListener('DOMContentLoaded', () => {
+  if (!localStorage.getItem('cookies_ok')) {
+    setTimeout(() => {
+      const b = document.getElementById('cookieBanner');
+      if (b) b.style.display = 'block';
+    }, 1200);
+  }
+});
+
 // Fade-up on scroll
 const fadeEls = document.querySelectorAll('.fade-up');
 if ('IntersectionObserver' in window && fadeEls.length) {

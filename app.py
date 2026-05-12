@@ -329,6 +329,23 @@ def livraison():
     return render_template('livraison.html')
 
 
+@app.route('/mentions-legales')
+def mentions_legales():
+    return render_template('legal/mentions_legales.html')
+
+@app.route('/confidentialite')
+def confidentialite():
+    return render_template('legal/confidentialite.html')
+
+@app.route('/cgv')
+def cgv():
+    return render_template('legal/cgv.html')
+
+@app.route('/cookies')
+def cookies_page():
+    return render_template('legal/cookies.html')
+
+
 @app.route('/sitemap.xml')
 def sitemap():
     from flask import Response

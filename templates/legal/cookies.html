@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Politique de cookies – La Cantina Fragapane{% endblock %}
+{% block description %}Politique de cookies du site La Cantina Fragapane. Ce site n'utilise aucun cookie publicitaire ou de tracking.{% endblock %}
+
+{% block content %}
+<section class="page-hero" style="min-height:220px; padding:6rem 1rem 3rem;">
+  <div class="page-hero-content">
+    <span class="section-label">Transparence</span>
+    <h1 class="section-title">Politique de cookies</h1>
+  </div>
+</section>
+
+<section class="legal-page">
+  <div class="container">
+    <div class="legal-content">
+
+      <div class="legal-block legal-block-highlight">
+        <p>🍪 <strong>En bref :</strong> ce site n'utilise <strong>aucun cookie publicitaire, de tracking ou d'analyse</strong>. Nous ne vous suivons pas, nous ne vous profilons pas.</p>
+      </div>
+
+      <div class="legal-block">
+        <h2>Qu'est-ce qu'un cookie ?</h2>
+        <p>Un cookie est un petit fichier texte déposé sur votre appareil lors de la visite d'un site web. Certains cookies sont indispensables au fonctionnement du site, d'autres servent à vous suivre à des fins publicitaires. Nous n'utilisons que les premiers.</p>
+      </div>
+
+      <div class="legal-block">
+        <h2>Cookies utilisés sur ce site</h2>
+        <div class="cookies-table">
+          <div class="cookies-row cookies-row-head">
+            <span>Nom</span><span>Type</span><span>Durée</span><span>Finalité</span>
+          </div>
+          <div class="cookies-row">
+            <span><code>session</code></span>
+            <span>Fonctionnel</span>
+            <span>Session</span>
+            <span>Connexion à l'espace admin uniquement. Supprimé à la fermeture du navigateur.</span>
+          </div>
+          <div class="cookies-row">
+            <span><code>cookies_ok</code></span>
+            <span>Préférence (localStorage)</span>
+            <span>Persistant</span>
+            <span>Mémorise votre accord à la bannière cookies. Stocké localement, pas transmis.</span>
+          </div>
+        </div>
+        <p style="margin-top:1rem; font-size:.88rem; color:var(--text-lt);">
+          <strong>Aucun cookie Google Analytics, Facebook Pixel, ou outil de tracking tiers n'est installé sur ce site.</strong>
+        </p>
+      </div>
+
+      <div class="legal-block">
+        <h2>Comment gérer ou supprimer les cookies ?</h2>
+        <p>Vous pouvez à tout moment gérer ou supprimer les cookies depuis les paramètres de votre navigateur :</p>
+        <ul>
+          <li><strong>Chrome</strong> : Paramètres → Confidentialité → Cookies</li>
+          <li><strong>Firefox</strong> : Paramètres → Vie privée → Cookies</li>
+          <li><strong>Safari</strong> : Préférences → Confidentialité → Gérer les données</li>
+          <li><strong>Edge</strong> : Paramètres → Confidentialité → Cookies</li>
+        </ul>
+        <p>La suppression des cookies de session vous déconnectera de l'espace admin si vous y êtes connecté.</p>
+      </div>
+
+      <div class="legal-block">
+        <h2>Base légale</h2>
+        <p>L'utilisation de cookies de session strictement nécessaires est basée sur notre <strong>intérêt légitime</strong> à sécuriser l'accès à l'administration du site (article 6.1.f du RGPD). Ces cookies ne nécessitent pas votre consentement préalable car ils sont indispensables au fonctionnement du site.</p>
+      </div>
+
+      <div class="legal-block">
+        <h2>Contact</h2>
+        <p>Pour toute question sur notre politique de cookies :<br>
+        ✉️ <a href="mailto:brenda4859@outlook.be">brenda4859@outlook.be</a><br>
+        📞 <a href="tel:+32491227207">+32 491 22 72 07</a></p>
+      </div>
+
+      <div style="text-align:center; margin-top:2rem;">
+        <button class="btn btn-gold" onclick="localStorage.removeItem('cookies_ok'); window.location.reload();">
+          Réinitialiser mes préférences cookies
+        </button>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

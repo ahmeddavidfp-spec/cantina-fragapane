@@ -172,12 +172,32 @@
           <p><a href="mailto:{{ info.get('email','') }}">{{ info.get('email','') }}</a></p>
         </div>
       </div>
+      <div class="footer-legal">
+        <a href="{{ url_for('mentions_legales') }}">Mentions légales</a>
+        <a href="{{ url_for('confidentialite') }}">Confidentialité & RGPD</a>
+        <a href="{{ url_for('cgv') }}">CGV</a>
+        <a href="{{ url_for('cookies_page') }}">Cookies</a>
+      </div>
       <div class="footer-bottom">
         <p>&copy; {{ now.year }} La Cantina Fragapane. Tous droits réservés.</p>
-        <a href="{{ url_for('admin_login') }}" class="footer-admin-link">Espace Admin</a>
+        <a href="{{ url_for('admin_login') }}" class="footer-admin-link">⚙️ Admin</a>
       </div>
     </div>
   </footer>
+
+  {# ── Bannière cookies ── #}
+  <div class="cookie-banner" id="cookieBanner" style="display:none;">
+    <div class="cookie-banner-inner">
+      <div class="cookie-banner-text">
+        🍪 Ce site utilise uniquement des cookies fonctionnels (session admin). Aucun cookie publicitaire ni tracking.
+        <a href="{{ url_for('cookies_page') }}">En savoir plus</a>
+      </div>
+      <div class="cookie-banner-btns">
+        <button class="btn btn-gold" onclick="acceptCookies()">Accepter</button>
+        <button class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.4);" onclick="acceptCookies()">Fermer</button>
+      </div>
+    </div>
+  </div>
 
   {# ── Bouton WhatsApp flottant ── #}
   <a href="https://wa.me/32491227207?text=Bonjour%20La%20Cantina%20Fragapane%2C%20je%20souhaite%20r%C3%A9server%20une%20table."

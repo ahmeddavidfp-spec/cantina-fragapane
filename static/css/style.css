@@ -1563,6 +1563,140 @@ input, textarea, select { font-family: inherit; }
 .fade-up-d2 { animation-delay: .2s; }
 .fade-up-d3 { animation-delay: .3s; }
 
+/* ── Footer légal ───────────────────────────────────────────────────────────── */
+.footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1.5rem;
+  justify-content: center;
+  padding: 1rem 0;
+  border-top: 1px solid rgba(255,255,255,.08);
+  margin-top: 1.5rem;
+}
+.footer-legal a {
+  font-size: .78rem;
+  color: rgba(255,255,255,.4);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  transition: color var(--transition);
+}
+.footer-legal a:hover { color: var(--gold); }
+
+/* ── Cookie banner ──────────────────────────────────────────────────────────── */
+.cookie-banner {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 2000;
+  background: rgba(12,24,12,.97);
+  border-top: 2px solid var(--gold);
+  padding: 1rem 1.5rem;
+  backdrop-filter: blur(6px);
+}
+.cookie-banner-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.cookie-banner-text {
+  flex: 1;
+  font-size: .88rem;
+  color: rgba(245,237,214,.85);
+  line-height: 1.6;
+  min-width: 200px;
+}
+.cookie-banner-text a { color: var(--gold); text-decoration: underline; }
+.cookie-banner-btns { display: flex; gap: .75rem; flex-shrink: 0; flex-wrap: wrap; }
+@media (max-width: 640px) {
+  .cookie-banner-inner { flex-direction: column; align-items: stretch; }
+  .cookie-banner-btns  { justify-content: center; }
+  .cookie-banner-btns .btn { flex: 1; justify-content: center; }
+}
+
+/* ── Pages légales ──────────────────────────────────────────────────────────── */
+.legal-page { padding: 3.5rem 0 5rem; }
+.legal-content {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.legal-block {
+  margin-bottom: 2.5rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.legal-block:last-child { border-bottom: none; }
+.legal-block h2 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  color: var(--dark);
+  margin-bottom: 1rem;
+  padding-left: .75rem;
+  border-left: 3px solid var(--gold);
+}
+.legal-block p { color: var(--text-lt); line-height: 1.85; margin-bottom: .75rem; }
+.legal-block ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  color: var(--text-lt);
+  line-height: 1.8;
+  margin-bottom: .75rem;
+}
+.legal-block ul li { margin-bottom: .3rem; }
+.legal-block a { color: var(--wine); text-decoration: underline; }
+.legal-block-highlight {
+  background: var(--cream);
+  border: 1px solid var(--cream-dk);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  border-left: 4px solid var(--gold);
+  border-bottom: none;
+  margin-bottom: 2rem;
+}
+.legal-block-highlight p { margin: 0; color: var(--text); font-size: 1rem; }
+
+/* Table cookies */
+.cookies-table {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  font-size: .85rem;
+}
+.cookies-row {
+  display: grid;
+  grid-template-columns: 1.2fr .8fr .8fr 2fr;
+  gap: 0;
+}
+.cookies-row-head {
+  background: var(--dark);
+  color: var(--gold);
+  font-weight: 700;
+  font-size: .75rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.cookies-row > span {
+  padding: .75rem 1rem;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-lt);
+}
+.cookies-row-head > span { color: var(--gold); border-color: rgba(255,255,255,.1); }
+.cookies-row > span:last-child { border-right: none; }
+code {
+  background: var(--light);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: .1rem .4rem;
+  font-size: .82rem;
+  color: var(--wine);
+}
+@media (max-width: 640px) {
+  .cookies-row { grid-template-columns: 1fr 1fr; }
+  .cookies-row > span:nth-child(3) { display: none; }
+}
+
 /* ── Bouton WhatsApp flottant ───────────────────────────────────────────────── */
 .whatsapp-btn {
   position: fixed;
