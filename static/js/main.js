@@ -64,6 +64,14 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Back to top button
+const backToTop = document.getElementById('backToTop');
+if (backToTop) {
+  window.addEventListener('scroll', () => {
+    backToTop.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+}
+
 // Fade-up on scroll
 const fadeEls = document.querySelectorAll('.fade-up');
 if ('IntersectionObserver' in window && fadeEls.length) {

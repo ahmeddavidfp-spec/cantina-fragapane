@@ -470,6 +470,57 @@ def livraison():
     return render_template('livraison.html')
 
 
+@app.route('/galerie')
+def galerie():
+    photos = [
+        {'file': 'cantina-fragapane-salle-restaurant-neon-chatelet.jpeg',
+         'alt': 'Salle du restaurant La Cantina Fragapane – néon et ambiance italienne', 'cat': 'Salle'},
+        {'file': 'cantina-fragapane-salle-tables-neon-soir-chatelet.jpeg',
+         'alt': 'Tables dressées le soir – La Cantina Fragapane Châtelet', 'cat': 'Salle'},
+        {'file': 'cantina-fragapane-salle-interieur-cheminee-chatelet.jpeg',
+         'alt': 'Intérieur chaleureux avec cheminée – La Cantina Fragapane', 'cat': 'Salle'},
+        {'file': 'cantina-fragapane-devanture-vitrine-logo-chatelet.jpeg',
+         'alt': 'Devanture et vitrine La Cantina Fragapane – Châtelet', 'cat': 'Restaurant'},
+        {'file': 'cantina-fragapane-equipe-famille-carlo-brenda-chatelet.jpeg',
+         'alt': 'Carlo, Brenda et leur fils – La Cantina Fragapane', 'cat': 'Équipe'},
+        {'file': 'cantina-fragapane-prix-meilleur-restaurant-italien-chatelet-restaurant-guru-2025.jpeg',
+         'alt': 'Prix meilleur restaurant italien 2025 – Restaurant Guru', 'cat': 'Restaurant'},
+        {'file': 'cantina-fragapane-grande-planche-apero-antipasti-chatelet.jpeg',
+         'alt': 'Grande planche apéro antipasti – La Cantina Fragapane', 'cat': 'Plats'},
+        {'file': 'cantina-fragapane-planche-antipasti-signature-logo-chatelet.jpeg',
+         'alt': 'Planche antipasti signature – La Cantina Fragapane Châtelet', 'cat': 'Plats'},
+        {'file': 'cantina-fragapane-croquettes-fromage-salade-chatelet.jpeg',
+         'alt': 'Croquettes au fromage et salade fraîche – La Cantina Fragapane', 'cat': 'Plats'},
+        {'file': 'cantina-fragapane-casarecce-pesto-ricotta-pro-chatelet.jpeg',
+         'alt': 'Casarecce pesto ricotta – Pâtes fraîches maison La Cantina Fragapane', 'cat': 'Pâtes'},
+        {'file': 'cantina-fragapane-tagliatelles-bolognaise-sauce-tomate-chatelet.jpeg',
+         'alt': 'Tagliatelles bolognaise maison – La Cantina Fragapane', 'cat': 'Pâtes'},
+        {'file': 'cantina-fragapane-tagliolini-safran-petits-pois-pancetta-chatelet.jpeg',
+         'alt': 'Tagliolini safran petits pois pancetta – La Cantina Fragapane', 'cat': 'Pâtes'},
+        {'file': 'cantina-fragapane-spaghetti-fruits-de-mer-tomates-chatelet.jpeg',
+         'alt': 'Spaghetti aux fruits de mer – La Cantina Fragapane Châtelet', 'cat': 'Pâtes'},
+        {'file': 'cantina-fragapane-escalope-milanaise-spaghetti-tomates-chatelet.jpeg',
+         'alt': 'Escalope milanaise et spaghetti tomates – La Cantina Fragapane', 'cat': 'Viandes'},
+        {'file': 'cantina-fragapane-plateau-desserts-verrines-chatelet.jpeg',
+         'alt': 'Plateau de desserts et verrines – La Cantina Fragapane', 'cat': 'Desserts'},
+        {'file': 'cantina-fragapane-logo-trattoria-italienne-chatelet.jpeg',
+         'alt': 'Logo La Cantina Fragapane – Trattoria italienne Châtelet', 'cat': 'Restaurant'},
+        {'file': 'cantina-fragapane-evenement-fete-des-meres-mai-2025.jpeg',
+         'alt': 'Fête des mères mai 2025 – Événement La Cantina Fragapane', 'cat': 'Événements'},
+    ]
+    return render_template('galerie.html', photos=photos)
+
+
+@app.route('/faq')
+def faq():
+    return render_template('faq.html')
+
+
+@app.route('/evenements-prives')
+def evenements_prives():
+    return render_template('evenements_prives.html')
+
+
 @app.route('/mentions-legales')
 def mentions_legales():
     return render_template('legal/mentions_legales.html')

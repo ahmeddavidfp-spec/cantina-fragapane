@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}FAQ – Questions fréquentes – La Cantina Fragapane{% endblock %}
+{% block description %}Toutes les réponses à vos questions sur La Cantina Fragapane : réservation, parking, allergènes, livraison, végétarien, anniversaires. Restaurant italien à Châtelet.{% endblock %}
+
+{% block content %}
+<section class="page-hero" style="min-height:220px; padding:6rem 1rem 3rem;">
+  <div class="page-hero-content">
+    <span class="section-label">Vos questions</span>
+    <h1 class="section-title">FAQ</h1>
+    <p class="section-sub" style="margin:0 auto;">Tout ce que vous voulez savoir avant de venir.</p>
+  </div>
+</section>
+
+<section class="faq-page">
+  <div class="container">
+    <div class="faq-list">
+
+      <details class="faq-item" open>
+        <summary class="faq-question">Faut-il réserver une table ?</summary>
+        <div class="faq-answer">
+          <p>La réservation est <strong>vivement recommandée</strong>, surtout le week-end et lors des événements. Notre salle est chaleureuse mais intimiste — mieux vaut ne pas prendre de risque ! Appelez-nous au <a href="tel:+32491227207">+32 491 22 72 07</a> ou envoyez un message via WhatsApp.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">Organisez-vous des événements privés (anniversaires, communions…) ?</summary>
+        <div class="faq-answer">
+          <p>Oui ! Nous adorons accueillir des événements en famille ou entre amis. Anniversaires, communions, repas d'entreprise, dîners de groupe — nous pouvons adapter le menu et la salle selon vos besoins. <a href="{{ url_for('evenements_prives') }}">Découvrez notre offre traiteur & événements privés.</a></p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">Y a-t-il un parking à proximité ?</summary>
+        <div class="faq-answer">
+          <p>Oui, le stationnement est <strong>gratuit en rue</strong> devant et autour du restaurant. La Cantina Fragapane se trouve Rue du Taillis Pré 86, 6200 Châtelet — facilement accessible en voiture.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">Proposez-vous des options végétariennes ?</summary>
+        <div class="faq-answer">
+          <p>Plusieurs plats de notre carte conviennent aux végétariens : burrata, carpaccio végétal, pâtes fraîches aux légumes, raviolis ricotta-épinards, tiramisu… N'hésitez pas à nous le signaler lors de votre réservation ou à l'arrivée — nous ferons notre possible pour vous accommoder.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">Livrez-vous à domicile ?</summary>
+        <div class="faq-answer">
+          <p>Oui ! Nous livrons dans un rayon de <strong>10 km</strong> autour du restaurant (Châtelet, Châtelineau et communes environnantes). Vous pouvez commander via <strong>Takeaway.com</strong>, par téléphone au <a href="tel:+32491227207">+32 491 22 72 07</a> ou par WhatsApp. <a href="{{ url_for('livraison') }}">En savoir plus sur notre service livraison.</a></p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">Quels allergènes sont présents dans vos plats ?</summary>
+        <div class="faq-answer">
+          <p>Notre cuisine est préparée dans un environnement où sont présents : <strong>gluten, œufs, lait, fruits à coque, céleri, moutarde, sésame, soja</strong>. Les allergènes sont indiqués sur notre menu pour chaque plat. En cas d'allergie grave, merci de nous le signaler impérativement lors de la commande — nous prendrons toutes les précautions nécessaires.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">Acceptez-vous les cartes bancaires ?</summary>
+        <div class="faq-answer">
+          <p>Oui, nous acceptons les <strong>paiements par carte bancaire</strong> (Visa, Mastercard, Bancontact) ainsi que les espèces.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">Le restaurant est-il accessible aux personnes à mobilité réduite ?</summary>
+        <div class="faq-answer">
+          <p>Oui, La Cantina Fragapane est accessible aux <strong>fauteuils roulants</strong>. N'hésitez pas à nous appeler à l'avance pour que nous puissions vous réserver une place adaptée.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">Proposez-vous un menu du midi ?</summary>
+        <div class="faq-answer">
+          <p>Nous sommes ouverts le midi le <strong>samedi et le dimanche</strong> (12h–14h). En semaine, nous ouvrons uniquement le soir. Consultez nos <a href="{{ url_for('contact') }}">horaires complets ici.</a></p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">Avez-vous une carte des vins ?</summary>
+        <div class="faq-answer">
+          <p>Oui, nous proposons une sélection de vins italiens soigneusement choisis pour accompagner nos plats. Demandez la carte des vins lors de votre visite.</p>
+        </div>
+      </details>
+
+    </div>
+
+    <div class="faq-cta">
+      <p>Vous ne trouvez pas votre réponse ?</p>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
+        <a href="{{ url_for('contact') }}" class="btn btn-gold">Nous contacter</a>
+        <a href="tel:+32491227207" class="btn btn-outline">📞 +32 491 22 72 07</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

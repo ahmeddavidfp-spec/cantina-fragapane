@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %}Événements Privés & Traiteur – La Cantina Fragapane{% endblock %}
+{% block description %}Anniversaires, communions, repas d'entreprise à Châtelet. La Cantina Fragapane organise vos événements privés avec une cuisine italienne authentique et un accueil chaleureux.{% endblock %}
+
+{% block content %}
+
+<section class="page-hero evp-hero">
+  <div class="page-hero-content">
+    <span class="section-label">Moments inoubliables</span>
+    <h1 class="section-title">Événements Privés</h1>
+    <p class="section-sub" style="margin:0 auto; max-width:520px;">
+      Anniversaires, communions, dîners d'entreprise — faites de votre événement un souvenir à l'italienne.
+    </p>
+  </div>
+</section>
+
+{# Occasions #}
+<section class="evp-section">
+  <div class="container">
+    <div class="evp-occasions">
+
+      <div class="evp-card">
+        <div class="evp-card-icon">🎂</div>
+        <h3>Anniversaires</h3>
+        <p>Célébrez en grande famille ou entre amis dans notre salle chaleureuse. Menu personnalisé, gâteau sur demande, ambiance festive garantie.</p>
+      </div>
+
+      <div class="evp-card">
+        <div class="evp-card-icon">✝️</div>
+        <h3>Communions & Confirmations</h3>
+        <p>Un repas de famille mémorable pour ces grandes célébrations. Menus adaptés aux enfants et aux adultes, salle réservée sur demande.</p>
+      </div>
+
+      <div class="evp-card">
+        <div class="evp-card-icon">💼</div>
+        <h3>Repas d'Entreprise</h3>
+        <p>Team building, repas de fin d'année, déjeuner client — offrez à vos collaborateurs une escapade italienne. Factures sur demande.</p>
+      </div>
+
+      <div class="evp-card">
+        <div class="evp-card-icon">💍</div>
+        <h3>Fiançailles & Repas de Mariage</h3>
+        <p>Pour vos moments les plus intimes, un cadre chaleureux et une cuisine faite avec amour. Nous créons l'ambiance que vous imaginez.</p>
+      </div>
+
+      <div class="evp-card">
+        <div class="evp-card-icon">🎉</div>
+        <h3>Fêtes & Réunions de Famille</h3>
+        <p>Retrouvailles, Noël en famille, réunion de la bande — La Cantina Fragapane devient votre salle à manger géante.</p>
+      </div>
+
+      <div class="evp-card">
+        <div class="evp-card-icon">🍝</div>
+        <h3>Traiteur à Domicile</h3>
+        <p>Vous préférez recevoir chez vous ? Nous préparons un repas complet que vous n'aurez plus qu'à servir. Contactez-nous pour un devis.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{# What we offer #}
+<section class="evp-offers">
+  <div class="container">
+    <div class="evp-offers-inner">
+      <div class="evp-offers-text">
+        <span class="section-label">Ce qu'on prépare pour vous</span>
+        <h2 class="section-title">Un événement, une cuisine sur mesure</h2>
+        <ul class="evp-list">
+          <li>
+            <span class="evp-list-icon">✓</span>
+            <div><strong>Menu personnalisé</strong> — nous adaptons les plats à vos goûts et contraintes alimentaires</div>
+          </li>
+          <li>
+            <span class="evp-list-icon">✓</span>
+            <div><strong>Salle privatisable</strong> — réservez tout ou partie du restaurant pour votre groupe</div>
+          </li>
+          <li>
+            <span class="evp-list-icon">✓</span>
+            <div><strong>Formules buffet ou service à table</strong> — selon vos préférences</div>
+          </li>
+          <li>
+            <span class="evp-list-icon">✓</span>
+            <div><strong>Pâtes fraîches maison</strong> préparées le jour même, plats cuisinés avec amour</div>
+          </li>
+          <li>
+            <span class="evp-list-icon">✓</span>
+            <div><strong>Sélection de vins italiens</strong> pour accompagner votre repas</div>
+          </li>
+          <li>
+            <span class="evp-list-icon">✓</span>
+            <div><strong>Devis gratuit et sans engagement</strong> — contactez-nous pour en discuter</div>
+          </li>
+        </ul>
+      </div>
+      <div class="evp-offers-img">
+        <img src="/static/images/cantina-fragapane-salle-interieur-cheminee-chatelet.jpeg"
+             alt="Salle La Cantina Fragapane pour événements privés"
+             loading="lazy">
+        <div class="evp-offers-badge">
+          <div>🏆</div>
+          <div>Meilleur restaurant<br>italien Châtelet 2025</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# CTA #}
+<section class="evp-cta-section">
+  <div class="container">
+    <div class="evp-cta">
+      <h2>Parlons de votre événement</h2>
+      <p>Dites-nous la date, le nombre de personnes et le type d'événement — nous vous préparons une proposition sur mesure.</p>
+      <div class="evp-cta-btns">
+        <a href="{{ url_for('contact') }}" class="btn btn-gold">Envoyer un message</a>
+        <a href="tel:+32491227207" class="btn btn-light">📞 +32 491 22 72 07</a>
+        <a href="https://wa.me/32491227207" target="_blank" rel="noopener" class="btn btn-light">💬 WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

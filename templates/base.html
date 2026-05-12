@@ -120,11 +120,12 @@
           <span></span><span></span><span></span>
         </button>
         <ul class="nav-menu nav-menu-desktop">
-          <li><a href="{{ url_for('index') }}"     class="nav-link {% if request.endpoint == 'index'    %}active{% endif %}">Accueil</a></li>
-          <li><a href="{{ url_for('menu') }}"      class="nav-link {% if request.endpoint == 'menu'     %}active{% endif %}">Notre Menu</a></li>
-          <li><a href="{{ url_for('livraison') }}" class="nav-link nav-link-delivery {% if request.endpoint == 'livraison' %}active{% endif %}">🛵 Livraison</a></li>
-          <li><a href="{{ url_for('a_propos') }}"  class="nav-link {% if request.endpoint == 'a_propos' %}active{% endif %}">À Propos</a></li>
-          <li><a href="{{ url_for('contact') }}"   class="nav-link {% if request.endpoint == 'contact'  %}active{% endif %}">Contact</a></li>
+          <li><a href="{{ url_for('index') }}"            class="nav-link {% if request.endpoint == 'index'            %}active{% endif %}">Accueil</a></li>
+          <li><a href="{{ url_for('menu') }}"             class="nav-link {% if request.endpoint == 'menu'             %}active{% endif %}">Menu</a></li>
+          <li><a href="{{ url_for('galerie') }}"          class="nav-link {% if request.endpoint == 'galerie'          %}active{% endif %}">Galerie</a></li>
+          <li><a href="{{ url_for('evenements_prives') }}" class="nav-link {% if request.endpoint == 'evenements_prives' %}active{% endif %}">Événements</a></li>
+          <li><a href="{{ url_for('livraison') }}"        class="nav-link nav-link-delivery {% if request.endpoint == 'livraison' %}active{% endif %}">🛵 Livraison</a></li>
+          <li><a href="{{ url_for('contact') }}"          class="nav-link {% if request.endpoint == 'contact'          %}active{% endif %}">Contact</a></li>
           <li><a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-outline">📞 Réserver</a></li>
         </ul>
       </nav>
@@ -133,11 +134,14 @@
 
   {# Menu mobile — en dehors du header pour éviter le bug iOS backdrop-filter + position:fixed #}
   <ul class="nav-menu nav-menu-mobile" id="navMenu">
-    <li><a href="{{ url_for('index') }}"     class="nav-link {% if request.endpoint == 'index'    %}active{% endif %}">Accueil</a></li>
-    <li><a href="{{ url_for('menu') }}"      class="nav-link {% if request.endpoint == 'menu'     %}active{% endif %}">Notre Menu</a></li>
-    <li><a href="{{ url_for('livraison') }}" class="nav-link nav-link-delivery {% if request.endpoint == 'livraison' %}active{% endif %}">🛵 Livraison</a></li>
-    <li><a href="{{ url_for('a_propos') }}"  class="nav-link {% if request.endpoint == 'a_propos' %}active{% endif %}">À Propos</a></li>
-    <li><a href="{{ url_for('contact') }}"   class="nav-link {% if request.endpoint == 'contact'  %}active{% endif %}">Contact</a></li>
+    <li><a href="{{ url_for('index') }}"            class="nav-link {% if request.endpoint == 'index'            %}active{% endif %}">Accueil</a></li>
+    <li><a href="{{ url_for('menu') }}"             class="nav-link {% if request.endpoint == 'menu'             %}active{% endif %}">Notre Menu</a></li>
+    <li><a href="{{ url_for('galerie') }}"          class="nav-link {% if request.endpoint == 'galerie'          %}active{% endif %}">Galerie</a></li>
+    <li><a href="{{ url_for('evenements_prives') }}" class="nav-link {% if request.endpoint == 'evenements_prives' %}active{% endif %}">Événements privés</a></li>
+    <li><a href="{{ url_for('livraison') }}"        class="nav-link nav-link-delivery {% if request.endpoint == 'livraison' %}active{% endif %}">🛵 Livraison</a></li>
+    <li><a href="{{ url_for('a_propos') }}"         class="nav-link {% if request.endpoint == 'a_propos'         %}active{% endif %}">À Propos</a></li>
+    <li><a href="{{ url_for('faq') }}"              class="nav-link {% if request.endpoint == 'faq'              %}active{% endif %}">FAQ</a></li>
+    <li><a href="{{ url_for('contact') }}"          class="nav-link {% if request.endpoint == 'contact'          %}active{% endif %}">Contact</a></li>
     <li><a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-outline btn-gold">📞 Réserver</a></li>
   </ul>
 
@@ -169,8 +173,11 @@
           <ul>
             <li><a href="{{ url_for('index') }}">Accueil</a></li>
             <li><a href="{{ url_for('menu') }}">Notre Menu</a></li>
+            <li><a href="{{ url_for('galerie') }}">Galerie</a></li>
+            <li><a href="{{ url_for('evenements_prives') }}">Événements privés</a></li>
             <li><a href="{{ url_for('livraison') }}">🛵 Livraison & À emporter</a></li>
             <li><a href="{{ url_for('a_propos') }}">À Propos</a></li>
+            <li><a href="{{ url_for('faq') }}">FAQ</a></li>
             <li><a href="{{ url_for('contact') }}">Contact</a></li>
           </ul>
         </div>
@@ -216,6 +223,11 @@
     </svg>
     <span class="whatsapp-btn-label">WhatsApp</span>
   </a>
+
+  {# ── Bouton retour en haut ── #}
+  <button class="back-to-top" id="backToTop" aria-label="Retour en haut" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+  </button>
 
   <script src="{{ url_for('static', filename='js/main.js') }}?v={{ now.strftime('%Y%m%d%H%M%S') }}"></script>
   {% block extra_js %}{% endblock %}

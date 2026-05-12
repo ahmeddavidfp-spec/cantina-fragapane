@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Galerie – La Cantina Fragapane{% endblock %}
+{% block description %}Découvrez La Cantina Fragapane en images : salle, plats, pâtes fraîches, antipasti, équipe. Restaurant italien à Châtelet, Belgique.{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="page-hero-content">
+    <span class="section-label">En images</span>
+    <h1 class="section-title">Notre Galerie</h1>
+    <p class="section-sub" style="margin:0 auto;">L'Italie dans chaque assiette, chaque table, chaque sourire.</p>
+  </div>
+</section>
+
+<section class="gallery-page">
+  <div class="container">
+
+    <div class="gallery-filters">
+      <button class="gallery-filter active" data-filter="all">Tout voir</button>
+      <button class="gallery-filter" data-filter="Salle">Salle</button>
+      <button class="gallery-filter" data-filter="Plats">Antipasti</button>
+      <button class="gallery-filter" data-filter="Pâtes">Pâtes</button>
+      <button class="gallery-filter" data-filter="Viandes">Viandes</button>
+      <button class="gallery-filter" data-filter="Desserts">Desserts</button>
+      <button class="gallery-filter" data-filter="Équipe">Équipe</button>
+    </div>
+
+    <div class="gallery-grid" id="galleryGrid">
+      {% for photo in photos %}
+      <div class="gallery-item" data-cat="{{ photo.cat }}">
+        <button class="gallery-item-btn" onclick="openLightbox('{{ photo.file }}','{{ photo.alt }}')">
+          <img
+            src="/static/images/{{ photo.file }}"
+            alt="{{ photo.alt }}"
+            loading="lazy">
+          <div class="gallery-item-overlay">
+            <span class="gallery-item-cat">{{ photo.cat }}</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M11 8v6M8 11h6"/>
+            </svg>
+          </div>
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{# Lightbox #}
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <div class="lightbox-inner" onclick="event.stopPropagation()">
+    <img id="lightboxImg" src="" alt="">
+    <p id="lightboxCaption" class="lightbox-caption"></p>
+  </div>
+</div>
+
+{% block extra_js %}
+<script>
+function openLightbox(file, alt) {
+  document.getElementById('lightboxImg').src = '/static/images/' + file;
+  document.getElementById('lightboxImg').alt = alt;
+  document.getElementById('lightboxCaption').textContent = alt;
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+// Filters
+document.querySelectorAll('.gallery-filter').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.gallery-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.gallery-item').forEach(item => {
+      item.style.display = (filter === 'all' || item.dataset.cat === filter) ? '' : 'none';
+    });
+  });
+});
+</script>
+{% endblock %}
+{% endblock %}
