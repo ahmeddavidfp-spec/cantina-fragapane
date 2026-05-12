@@ -285,7 +285,7 @@ def _seed(db):
         ('address',           'Rue du Taillis Pré 86'),
         ('city',              '6200 Châtelet, Belgique'),
         ('phone',             '+32 491 22 72 07'),
-        ('email',             'brenda4859@outlook.be'),
+        ('email',             'info@cantinafragapane.be'),
         ('facebook',          'https://www.facebook.com/p/Cantina-Fragapane-100087290589959/'),
         ('instagram',         ''),
         ('about_short',       "Un petit coin d'Italie au cœur de Châtelet, fondé par Carlo et Brenda "
