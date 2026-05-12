@@ -28,7 +28,13 @@ app.secret_key = os.environ.get('SECRET_KEY', 'cantina-fragapane-secret-2024')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'fragapane2024')
-DATABASE_URL    = os.environ.get('DATABASE_URL', '')
+DATABASE_URL    = os.environ.get('DATABASE_URL')
+
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL n'est pas définie. "
+        "Ajoute la variable dans Railway : DATABASE_URL = ${{Postgres.DATABASE_URL}}"
+    )
 
 
 # ── Database ──────────────────────────────────────────────────────────────────
