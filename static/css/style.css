@@ -1563,6 +1563,43 @@ input, textarea, select { font-family: inherit; }
 .fade-up-d2 { animation-delay: .2s; }
 .fade-up-d3 { animation-delay: .3s; }
 
+/* ── Bouton WhatsApp flottant ───────────────────────────────────────────────── */
+.whatsapp-btn {
+  position: fixed;
+  bottom: 1.75rem;
+  right: 1.75rem;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  background: #25D366;
+  color: #fff;
+  border-radius: 50px;
+  padding: .75rem 1.25rem .75rem 1rem;
+  box-shadow: 0 4px 20px rgba(37,211,102,.4);
+  font-family: var(--font-body);
+  font-size: .88rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-decoration: none;
+  transition: transform .2s ease, box-shadow .2s ease;
+  animation: waPulse 2.5s ease-in-out infinite;
+}
+.whatsapp-btn:hover {
+  transform: scale(1.06) translateY(-2px);
+  box-shadow: 0 8px 28px rgba(37,211,102,.55);
+  animation: none;
+}
+.whatsapp-btn-label { white-space: nowrap; }
+@keyframes waPulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(37,211,102,.4); }
+  50%       { box-shadow: 0 4px 32px rgba(37,211,102,.7); }
+}
+@media (max-width: 640px) {
+  .whatsapp-btn { bottom: 1.25rem; right: 1.25rem; padding: .7rem; border-radius: 50%; }
+  .whatsapp-btn-label { display: none; }
+}
+
 /* ── Galerie 3 colonnes (classe CSS pour éviter inline styles) ──────────────── */
 .gallery-grid-3 {
   display: grid;
