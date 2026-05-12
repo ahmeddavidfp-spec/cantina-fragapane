@@ -9,12 +9,12 @@
   <meta name="description" content="{% block description %}Restaurant italien authentique à Châtelet. Pâtes fraîches maison, viandes grillées, arrosticinis. Fondé par Carlo & Brenda. Livraison à domicile disponible.{% endblock %}">
   <meta name="robots" content="index, follow">
   <meta name="author" content="La Cantina Fragapane">
-  <link rel="canonical" href="https://web-production-e3877.up.railway.app{{ request.path }}">
+  <link rel="canonical" href="{{ site_url }}{{ request.path }}">
 
   {# ── hreflang ── #}
-  <link rel="alternate" hreflang="fr-BE" href="https://web-production-e3877.up.railway.app{{ request.path }}">
-  <link rel="alternate" hreflang="fr"    href="https://web-production-e3877.up.railway.app{{ request.path }}">
-  <link rel="alternate" hreflang="x-default" href="https://web-production-e3877.up.railway.app{{ request.path }}">
+  <link rel="alternate" hreflang="fr-BE" href="{{ site_url }}{{ request.path }}">
+  <link rel="alternate" hreflang="fr"    href="{{ site_url }}{{ request.path }}">
+  <link rel="alternate" hreflang="x-default" href="{{ site_url }}{{ request.path }}">
 
   {# ── Favicon & PWA ── #}
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
@@ -31,15 +31,15 @@
   <meta property="og:site_name"   content="La Cantina Fragapane">
   <meta property="og:title"       content="{% block og_title %}La Cantina Fragapane – Restaurant Italien Châtelet{% endblock %}">
   <meta property="og:description" content="{% block og_desc %}Cuisine italienne authentique à Châtelet. Pâtes fraîches, arrosticinis, livraison à domicile. Fondé par Carlo & Brenda.{% endblock %}">
-  <meta property="og:image"       content="https://web-production-e3877.up.railway.app/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg">
-  <meta property="og:url"         content="https://web-production-e3877.up.railway.app{{ request.path }}">
+  <meta property="og:image"       content="{{ site_url }}/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg">
+  <meta property="og:url"         content="{{ site_url }}{{ request.path }}">
   <meta property="og:locale"      content="fr_BE">
 
   {# ── Twitter Card ── #}
   <meta name="twitter:card"        content="summary_large_image">
   <meta name="twitter:title"       content="La Cantina Fragapane – Restaurant Italien Châtelet">
   <meta name="twitter:description" content="Cuisine italienne authentique à Châtelet. Pâtes fraîches, arrosticinis, livraison à domicile.">
-  <meta name="twitter:image"       content="https://web-production-e3877.up.railway.app/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg">
+  <meta name="twitter:image"       content="{{ site_url }}/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg">
 
   {# ── JSON-LD Structured Data (Google Rich Results) ── #}
   <script type="application/ld+json">
@@ -48,7 +48,7 @@
     "@type": "Restaurant",
     "name": "{{ info.get('name','La Cantina Fragapane') }}",
     "description": "{{ info.get('about_short','Restaurant italien authentique à Châtelet, fondé par Carlo et Brenda. Pâtes fraîches maison, viandes grillées, arrosticinis, livraison à domicile.') }}",
-    "url": "https://web-production-e3877.up.railway.app",
+    "url": "{{ site_url }}",
     "telephone": "{{ info.get('phone','').replace(' ','') }}",
     "email": "{{ info.get('email','') }}",
     "address": {
@@ -78,7 +78,7 @@
       {% endif %}{% endfor %}
       {{ specs|join(',\n      ') }}
     ],
-    "image": "https://web-production-e3877.up.railway.app/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg"
+    "image": "{{ site_url }}/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg"
     {% if info.get('facebook') %}
     ,"sameAs": ["{{ info.get('facebook') }}"{% if info.get('instagram') %},"{{ info.get('instagram') }}"{% endif %}]
     {% endif %}

@@ -31,6 +31,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'cantina-fragapane-secret-2024')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'fragapane2024')
+SITE_URL = os.environ.get('SITE_URL', 'https://www.cantinafragapane.be')
 
 # Connexion PostgreSQL — on préfère les variables individuelles (plus fiables sur Railway)
 import urllib.parse as _urlparse
@@ -403,7 +404,7 @@ def inject_globals():
         'SELECT * FROM evenements WHERE active=1 ORDER BY epingle DESC, date_event DESC LIMIT 6')
     open_status = get_open_status()
     return dict(info=info, announcements=announcements, evenements=evenements,
-                open_status=open_status, now=datetime.now())
+                open_status=open_status, now=datetime.now(), site_url=SITE_URL)
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -960,6 +961,53 @@ def admin_delete_sub(sub_id):
     execute('DELETE FROM newsletter_subscribers WHERE id=%s', (sub_id,))
     flash('Abonné supprimé.', 'success')
     return redirect(url_for('admin_newsletter'))
+
+
+# ── SEO ──────────────────────────────────────────────────────────────────────
+
+@app.route('/robots.txt')
+def robots_txt():
+    content = f"""User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /admin
+
+Sitemap: {SITE_URL}/sitemap.xml
+"""
+    return app.response_class(content, mimetype='text/plain')
+
+
+@app.route('/sitemap.xml')
+def sitemap_xml():
+    from flask import make_response
+    pages = [
+        ('/',                   '1.0',  'daily'),
+        ('/menu',               '0.9',  'weekly'),
+        ('/galerie',            '0.8',  'monthly'),
+        ('/evenements-prives',  '0.8',  'monthly'),
+        ('/reservation',        '0.8',  'monthly'),
+        ('/livraison',          '0.8',  'monthly'),
+        ('/a-propos',           '0.7',  'monthly'),
+        ('/faq',                '0.7',  'monthly'),
+        ('/contact',            '0.7',  'monthly'),
+    ]
+    today = datetime.now().strftime('%Y-%m-%d')
+    urls = '\n'.join(
+        f"""  <url>
+    <loc>{SITE_URL}{path}</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>{freq}</changefreq>
+    <priority>{priority}</priority>
+  </url>"""
+        for path, priority, freq in pages
+    )
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{urls}
+</urlset>"""
+    resp = make_response(xml)
+    resp.headers['Content-Type'] = 'application/xml'
+    return resp
 
 
 # ── Error handlers ───────────────────────────────────────────────────────────
