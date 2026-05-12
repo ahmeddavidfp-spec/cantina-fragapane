@@ -1610,17 +1610,38 @@ html, body { overflow-x: hidden; }
   .nav-menu {
     display: none;
     position: fixed;
-    top: 70px; left: 0; right: 0; bottom: 0;
-    background: rgba(12,24,12,.97);
+    inset: 0;
+    background: #0C180C;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1.75rem;
-    z-index: 999;
+    gap: 2rem;
+    z-index: 1100;
     padding: 2rem;
   }
   .nav-menu.open { display: flex; }
-  .nav-link { font-size: 1.15rem; }
+  .nav-link {
+    font-size: 1.3rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(245,237,214,.85) !important;
+    font-weight: 700;
+    padding: .5rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    width: 100%;
+    text-align: center;
+  }
+  .nav-link.active,
+  .nav-link:hover { color: var(--gold) !important; }
+  .nav-link-delivery { color: var(--gold) !important; }
+  .nav-menu .btn {
+    margin-top: .5rem;
+    width: 100%;
+    justify-content: center;
+    font-size: 1rem;
+  }
+  /* Fermer le menu quand on clique le burger à nouveau */
+  .nav-toggle { z-index: 1101; position: relative; }
 
   /* Grilles 1 colonne */
   .dishes-grid, .reviews-grid       { grid-template-columns: 1fr; }
