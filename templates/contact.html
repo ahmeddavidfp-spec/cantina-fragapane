@@ -78,6 +78,12 @@
           <p style="font-size:.88rem; color:var(--text-lt); margin-bottom:1rem;">{{ info.get('reservation_note','') }}</p>
           <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-primary" style="width:100%; justify-content:center;">📞 Appeler pour réserver</a>
         </div>
+
+        {% if info.get('tripadvisor_embed') %}
+        <div style="margin-top:1.5rem;">
+          {{ info['tripadvisor_embed']|safe }}
+        </div>
+        {% endif %}
       </div>
 
       {# Right column – map #}
