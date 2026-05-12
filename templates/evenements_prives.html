@@ -114,8 +114,8 @@
       <p>Dites-nous la date, le nombre de personnes et le type d'événement — nous vous préparons une proposition sur mesure.</p>
       <div class="evp-cta-btns">
         <a href="{{ url_for('contact') }}" class="btn btn-gold">Envoyer un message</a>
-        <a href="tel:+32491227207" class="btn btn-light">📞 +32 491 22 72 07</a>
-        <a href="https://wa.me/32491227207" target="_blank" rel="noopener" class="btn btn-light">💬 WhatsApp</a>
+        <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-light">📞 {{ info.get('phone','') }}</a>
+        <a href="https://wa.me/{{ info.get('phone','').replace(' ','').replace('+','').replace('-','') }}" target="_blank" rel="noopener" class="btn btn-light">💬 WhatsApp</a>
       </div>
     </div>
   </div>

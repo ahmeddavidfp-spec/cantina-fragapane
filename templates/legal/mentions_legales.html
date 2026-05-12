@@ -18,10 +18,10 @@
         <h2>1. Éditeur du site</h2>
         <p><strong>La Cantina Fragapane</strong><br>
         Établissement de restauration indépendant<br>
-        Rue du Taillis Pré 86<br>
-        6200 Châtelet, Belgique<br>
-        Téléphone : <a href="tel:+32491227207">+32 491 22 72 07</a><br>
-        E-mail : <a href="mailto:brenda4859@outlook.be">brenda4859@outlook.be</a></p>
+        {{ info.get('address','') }}<br>
+        {{ info.get('city','') }}, Belgique<br>
+        Téléphone : <a href="tel:{{ info.get('phone','').replace(' ','') }}">{{ info.get('phone','') }}</a><br>
+        E-mail : <a href="mailto:{{ info.get('email','') }}">{{ info.get('email','') }}</a></p>
         <p>Responsables de publication : Carlo et Brenda Fragapane</p>
       </div>
 
@@ -50,8 +50,8 @@
       <div class="legal-block">
         <h2>6. Contact</h2>
         <p>Pour toute question relative au site ou pour exercer vos droits, contactez-nous :<br>
-        📞 <a href="tel:+32491227207">+32 491 22 72 07</a><br>
-        ✉️ <a href="mailto:brenda4859@outlook.be">brenda4859@outlook.be</a></p>
+        📞 <a href="tel:{{ info.get('phone','').replace(' ','') }}">{{ info.get('phone','') }}</a><br>
+        ✉️ <a href="mailto:{{ info.get('email','') }}">{{ info.get('email','') }}</a></p>
       </div>
 
     </div>

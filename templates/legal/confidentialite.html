@@ -17,8 +17,8 @@
       <div class="legal-block">
         <h2>1. Responsable du traitement</h2>
         <p><strong>La Cantina Fragapane</strong><br>
-        Rue du Taillis Pré 86, 6200 Châtelet, Belgique<br>
-        Contact : <a href="mailto:brenda4859@outlook.be">brenda4859@outlook.be</a> — <a href="tel:+32491227207">+32 491 22 72 07</a></p>
+        {{ info.get('address','') }}, {{ info.get('city','') }}, Belgique<br>
+        Contact : <a href="mailto:{{ info.get('email','') }}">{{ info.get('email','') }}</a> — <a href="tel:{{ info.get('phone','').replace(' ','') }}">{{ info.get('phone','') }}</a></p>
       </div>
 
       <div class="legal-block">
@@ -57,7 +57,7 @@
           <li><strong>Droit d'opposition</strong> : vous opposer à un traitement</li>
           <li><strong>Droit de portabilité</strong> : recevoir vos données dans un format structuré</li>
         </ul>
-        <p>Pour exercer ces droits : <a href="mailto:brenda4859@outlook.be">brenda4859@outlook.be</a></p>
+        <p>Pour exercer ces droits : <a href="mailto:{{ info.get('email','') }}">{{ info.get('email','') }}</a></p>
         <p>En cas de litige, vous pouvez contacter l'<strong>Autorité de Protection des Données (APD)</strong> belge :<br>
         Rue de la Presse 35, 1000 Bruxelles — <a href="https://www.autoriteprotectiondonnees.be" target="_blank" rel="noopener">autoriteprotectiondonnees.be</a></p>
       </div>

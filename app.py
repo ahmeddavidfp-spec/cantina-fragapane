@@ -516,7 +516,8 @@ def reservation():
         else:
             flash('Veuillez remplir tous les champs obligatoires.', 'error')
         return redirect(url_for('reservation'))
-    return render_template('reservation.html')
+    hours = query('SELECT * FROM opening_hours ORDER BY day_order')
+    return render_template('reservation.html', hours=hours)
 
 
 @app.route('/newsletter/subscribe', methods=['POST'])

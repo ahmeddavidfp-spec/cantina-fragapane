@@ -90,19 +90,27 @@
         <div class="resa-info-block">
           <h3>📞 Préférez appeler ?</h3>
           <p>Notre équipe est disponible pendant les heures d'ouverture.</p>
-          <a href="tel:+32491227207" class="btn btn-primary" style="margin-top:1rem;">+32 491 22 72 07</a>
+          <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-primary" style="margin-top:1rem;">{{ info.get('phone','') }}</a>
         </div>
         <div class="resa-info-block">
           <h3>💬 Via WhatsApp</h3>
           <p>Envoyez-nous un message, on répond vite !</p>
-          <a href="https://wa.me/32491227207" target="_blank" rel="noopener" class="btn btn-outline" style="margin-top:1rem;">Écrire sur WhatsApp</a>
+          <a href="https://wa.me/{{ info.get('phone','').replace(' ','').replace('+','').replace('-','') }}" target="_blank" rel="noopener" class="btn btn-outline" style="margin-top:1rem;">Écrire sur WhatsApp</a>
         </div>
         <div class="resa-info-block">
           <h3>🕐 Horaires</h3>
           <ul style="list-style:none; font-size:.9rem; color:var(--text-lt); line-height:2;">
-            <li>Lun, Jeu, Ven : soir 18h30–22h</li>
-            <li>Sam, Dim : midi 12h–14h + soir 18h30–22h</li>
-            <li>Mar, Mer : fermé</li>
+            {% for h in hours %}
+            <li>
+              <strong>{{ h['day_name'] }}</strong> :
+              {% if h['is_closed'] %}Fermé
+              {% else %}
+                {% if h['lunch_open'] and h['lunch_close'] %}{{ h['lunch_open'] }}–{{ h['lunch_close'] }}{% endif %}
+                {% if h['lunch_open'] and h['dinner_open'] %} + {% endif %}
+                {% if h['dinner_open'] and h['dinner_close'] %}{{ h['dinner_open'] }}–{{ h['dinner_close'] }}{% endif %}
+              {% endif %}
+            </li>
+            {% endfor %}
           </ul>
         </div>
         <div class="resa-info-block" style="background:var(--cream);">

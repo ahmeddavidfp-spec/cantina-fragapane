@@ -67,8 +67,8 @@
       <div class="legal-block">
         <h2>Contact</h2>
         <p>Pour toute question sur notre politique de cookies :<br>
-        ✉️ <a href="mailto:brenda4859@outlook.be">brenda4859@outlook.be</a><br>
-        📞 <a href="tel:+32491227207">+32 491 22 72 07</a></p>
+        ✉️ <a href="mailto:{{ info.get('email','') }}">{{ info.get('email','') }}</a><br>
+        📞 <a href="tel:{{ info.get('phone','').replace(' ','') }}">{{ info.get('phone','') }}</a></p>
       </div>
 
       <div style="text-align:center; margin-top:2rem;">

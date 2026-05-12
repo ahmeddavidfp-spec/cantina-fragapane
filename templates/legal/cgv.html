@@ -21,9 +21,9 @@
       <div class="legal-block">
         <h2>1. Vendeur</h2>
         <p><strong>La Cantina Fragapane</strong><br>
-        Rue du Taillis Pré 86, 6200 Châtelet, Belgique<br>
-        Téléphone : <a href="tel:+32491227207">+32 491 22 72 07</a><br>
-        E-mail : <a href="mailto:brenda4859@outlook.be">brenda4859@outlook.be</a></p>
+        {{ info.get('address','') }}, {{ info.get('city','') }}, Belgique<br>
+        Téléphone : <a href="tel:{{ info.get('phone','').replace(' ','') }}">{{ info.get('phone','') }}</a><br>
+        E-mail : <a href="mailto:{{ info.get('email','') }}">{{ info.get('email','') }}</a></p>
       </div>
 
       <div class="legal-block">
@@ -35,9 +35,9 @@
         <h2>3. Commande</h2>
         <p>Les commandes peuvent être passées :</p>
         <ul>
-          <li>Par <strong>téléphone</strong> : <a href="tel:+32491227207">+32 491 22 72 07</a></li>
+          <li>Par <strong>téléphone</strong> : <a href="tel:{{ info.get('phone','').replace(' ','') }}">{{ info.get('phone','') }}</a></li>
           <li>Via la plateforme <strong>Takeaway.com</strong></li>
-          <li>Via <strong>WhatsApp</strong> : <a href="https://wa.me/32491227207" target="_blank" rel="noopener">+32 491 22 72 07</a></li>
+          <li>Via <strong>WhatsApp</strong> : <a href="https://wa.me/{{ info.get('phone','').replace(' ','').replace('+','').replace('-','') }}" target="_blank" rel="noopener">{{ info.get('phone','') }}</a></li>
         </ul>
         <p>Toute commande est considérée comme ferme et définitive dès confirmation par le restaurant. Le restaurant se réserve le droit de refuser une commande en cas d'indisponibilité des produits ou de zone hors rayon de livraison.</p>
       </div>
@@ -65,7 +65,7 @@
       <div class="legal-block">
         <h2>7. Droit de rétractation</h2>
         <p>Conformément à l'article VI.53 du Code de droit économique belge, le droit de rétractation <strong>ne s'applique pas</strong> aux denrées alimentaires périssables préparées à la commande. Toute commande confirmée est donc définitive.</p>
-        <p>En cas de problème avec votre commande (produit manquant, erreur), contactez-nous immédiatement au <a href="tel:+32491227207">+32 491 22 72 07</a>.</p>
+        <p>En cas de problème avec votre commande (produit manquant, erreur), contactez-nous immédiatement au <a href="tel:{{ info.get('phone','').replace(' ','') }}">{{ info.get('phone','') }}</a>.</p>
       </div>
 
       <div class="legal-block">
