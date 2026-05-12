@@ -82,24 +82,11 @@
         {% if info.get('tripadvisor_embed') %}
         <div style="margin-top:1.5rem;">
           {% if info['tripadvisor_embed'].startswith('http') %}
-            {# URL simple → badge cliquable #}
-            <a href="{{ info['tripadvisor_embed'] }}" target="_blank" rel="noopener"
-               style="display:flex; align-items:center; gap:.75rem; padding:1rem 1.25rem;
-                      background:#fff; border:1.5px solid #00aa6c; border-radius:var(--radius);
-                      text-decoration:none; color:var(--dark); font-weight:700; font-size:.9rem;">
-              <svg width="28" height="28" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="30" cy="30" r="30" fill="#00aa6c"/>
-                <circle cx="22" cy="30" r="7" fill="white"/>
-                <circle cx="38" cy="30" r="7" fill="white"/>
-                <circle cx="22" cy="30" r="3" fill="#00aa6c"/>
-                <circle cx="38" cy="30" r="3" fill="#00aa6c"/>
-                <path d="M14 24 Q22 16 30 24 Q38 16 46 24" stroke="white" stroke-width="2.5" fill="none"/>
-              </svg>
-              <div>
-                <div style="color:#00aa6c; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;">Nos avis</div>
-                Voir sur TripAdvisor
-              </div>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00aa6c" stroke-width="2" style="margin-left:auto;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <a href="{{ info['tripadvisor_embed'] }}" target="_blank" rel="noopener" class="ta-badge">
+              <img src="https://www.tripadvisor.com/img/cdsi/img2/branding/tripadvisorlogo-14054-2.png"
+                   alt="TripAdvisor" style="height:22px; display:block;">
+              <span class="ta-badge-text">Voir nos avis voyageurs</span>
+              <span class="ta-badge-arrow">→</span>
             </a>
           {% else %}
             {# Code widget HTML → affiché directement #}
