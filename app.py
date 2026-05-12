@@ -965,6 +965,13 @@ def admin_delete_sub(sub_id):
 
 # ── SEO ──────────────────────────────────────────────────────────────────────
 
+@app.route('/google58e74cd6796edb1c.html')
+def google_verify():
+    return app.response_class(
+        'google-site-verification: google58e74cd6796edb1c.html',
+        mimetype='text/html')
+
+
 @app.route('/robots.txt')
 def robots_txt():
     content = f"""User-agent: *
