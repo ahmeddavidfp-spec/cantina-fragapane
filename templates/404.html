@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Page introuvable – La Cantina Fragapane{% endblock %}
+{% block description %}Cette page n'existe pas. Retrouvez notre menu, nos horaires et nos contacts sur La Cantina Fragapane.{% endblock %}
+
+{% block content %}
+<section class="page-404">
+  <div class="page-404-inner">
+    <div class="page-404-flag">🇮🇹</div>
+    <h1 class="page-404-code">404</h1>
+    <h2 class="page-404-title">Pagina non trovata</h2>
+    <p class="page-404-sub">Cette page n'existe pas ou a été déplacée. Pas de panique, notre cuisine est toujours là !</p>
+    <div class="page-404-actions">
+      <a href="{{ url_for('index') }}" class="btn btn-gold">Retour à l'accueil</a>
+      <a href="{{ url_for('menu') }}" class="btn btn-outline">Voir le menu</a>
+      <a href="tel:+32491227207" class="btn btn-outline">📞 Nous appeler</a>
+    </div>
+    <div class="page-404-links">
+      <a href="{{ url_for('contact') }}">Contact</a>
+      <a href="{{ url_for('livraison') }}">Livraison</a>
+      <a href="{{ url_for('a_propos') }}">À propos</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

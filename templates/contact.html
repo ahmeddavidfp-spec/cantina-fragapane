@@ -15,6 +15,16 @@
 
 <section class="contact-page">
   <div class="container">
+
+    {# Flash messages #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+        <div class="flash flash-{{ cat }}" style="margin-bottom:1.5rem;">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <div class="contact-grid">
 
       {# Left column – info & hours #}
@@ -48,7 +58,7 @@
           <h3>Horaires d'ouverture</h3>
           <div class="contact-hours-grid">
             {% for h in hours %}
-            <div class="contact-hours-row" data-day="{{ h['day_name'] }}">
+            <div class="contact-hours-row">
               <span class="contact-hours-day">{{ h['day_name'] }}</span>
               <span class="contact-hours-time">
                 {% if h['is_closed'] %}
@@ -73,30 +83,22 @@
       {# Right column – map #}
       <div>
         <h3 style="font-family:var(--font-heading); font-size:1.1rem; margin-bottom:1rem; color:var(--dark);">Nous trouver</h3>
-        {% if info.get('google_maps_embed') %}
-        <div style="border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--border); aspect-ratio:4/3;">
-          {{ info['google_maps_embed']|safe }}
-        </div>
-        {% else %}
-        <div style="border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--border); aspect-ratio:4/3; position:relative;">
-          <img src="/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg"
-               alt="Intérieur La Cantina Fragapane Châtelet"
-               style="width:100%; height:100%; object-fit:cover; display:block;">
-          <div style="position:absolute; inset:0; background:rgba(12,24,12,.55); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; text-align:center; color:#fff;">
-            <div style="font-size:2.5rem;">📍</div>
-            <div>
-              <strong style="font-family:var(--font-heading); font-size:1.1rem; display:block; margin-bottom:.25rem;">Rue du Taillis Pré 86</strong>
-              6200 Châtelet, Belgique
-            </div>
-            <a href="https://www.google.com/maps/search/Cantina+Fragapane+Chatelet+Belgique" target="_blank" rel="noopener"
-               class="btn btn-gold" style="font-size:.8rem; padding:.5rem 1.2rem;">
-              📌 Ouvrir dans Google Maps
-            </a>
-          </div>
-        </div>
-        {% endif %}
 
-        {# Practical info #}
+        <div style="border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--border); aspect-ratio:4/3;">
+          {% if info.get('google_maps_embed') %}
+            {{ info['google_maps_embed']|safe }}
+          {% else %}
+            <iframe
+              src="https://maps.google.com/maps?q=Rue+du+Taillis+Pr%C3%A9+86%2C+6200+Ch%C3%A2telet%2C+Belgique&output=embed&hl=fr&z=15"
+              width="100%" height="100%"
+              style="border:0; display:block; min-height:320px;"
+              allowfullscreen="" loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="La Cantina Fragapane – Rue du Taillis Pré 86, Châtelet">
+            </iframe>
+          {% endif %}
+        </div>
+
         <div style="margin-top:1.5rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
           <div style="background:var(--light); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; text-align:center;">
             <div style="font-size:1.5rem; margin-bottom:.4rem;">🅿️</div>
@@ -122,6 +124,43 @@
       </div>
 
     </div>
+
+    {# Contact form – full width below grid #}
+    <div class="contact-form-section">
+      <div class="contact-form-header">
+        <span class="section-label">Nous écrire</span>
+        <h2 class="section-title" style="font-size:1.6rem;">Envoyer un message</h2>
+        <p style="color:var(--text-lt); font-size:.92rem; margin-top:.5rem;">
+          Réservation, question sur le menu, événement privé — on vous répond dans la journée.
+        </p>
+      </div>
+      <form class="contact-form" method="POST" action="{{ url_for('contact') }}">
+        <div class="contact-form-row">
+          <div class="contact-form-group">
+            <label for="cf-name">Nom *</label>
+            <input type="text" id="cf-name" name="name" required placeholder="Votre nom">
+          </div>
+          <div class="contact-form-group">
+            <label for="cf-email">Email</label>
+            <input type="email" id="cf-email" name="email" placeholder="votre@email.com">
+          </div>
+        </div>
+        <div class="contact-form-group">
+          <label for="cf-phone">Téléphone</label>
+          <input type="tel" id="cf-phone" name="phone" placeholder="+32 4xx xx xx xx">
+        </div>
+        <div class="contact-form-group">
+          <label for="cf-message">Message *</label>
+          <textarea id="cf-message" name="message" required rows="5"
+                    placeholder="Votre message, question ou demande de réservation…"></textarea>
+        </div>
+        <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+          <button type="submit" class="btn btn-gold">Envoyer le message</button>
+          <span style="font-size:.82rem; color:var(--text-lt);">ou appelez-nous directement au <a href="tel:+32491227207" style="color:var(--gold);">+32 491 22 72 07</a></span>
+        </div>
+      </form>
+    </div>
+
   </div>
 </section>
 

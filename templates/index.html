@@ -17,6 +17,12 @@
       <a href="{{ url_for('menu') }}" class="btn btn-gold">Découvrir le menu</a>
       <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-light">📞 Réserver une table</a>
     </div>
+    <div class="hero-status-wrap">
+      <span class="hero-status hero-status--{{ open_status.color }}">
+        <span class="hero-status-dot"></span>
+        {{ open_status.label }}
+      </span>
+    </div>
     <div class="hero-badges">
       <div class="hero-badge">
         <div class="hero-badge-num">4.5★</div>

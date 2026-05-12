@@ -1,8 +1,11 @@
 import os
 import uuid
+import smtplib
 import psycopg2
 import psycopg2.extras
 from datetime import datetime
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from functools import wraps
 from werkzeug.utils import secure_filename
 from flask import (Flask, render_template, request, redirect,
@@ -304,6 +307,70 @@ def login_required(f):
     return decorated
 
 
+# ── Open/closed status ────────────────────────────────────────────────────────
+
+def get_open_status():
+    try:
+        from zoneinfo import ZoneInfo
+        now = datetime.now(ZoneInfo('Europe/Brussels'))
+    except Exception:
+        now = datetime.utcnow()
+
+    day_order = now.weekday() + 1  # 1=Lundi … 7=Dimanche
+    h = query('SELECT * FROM hours WHERE day_order=%s', (day_order,), one=True)
+
+    if not h or h['is_closed']:
+        return {'open': False, 'label': "Fermé aujourd'hui", 'color': 'closed'}
+
+    t = now.strftime('%H:%M')
+
+    if h['lunch_open'] and h['lunch_close']:
+        if h['lunch_open'] <= t < h['lunch_close']:
+            return {'open': True, 'label': f"Ouvert · jusqu'à {h['lunch_close']}", 'color': 'open'}
+
+    if h['dinner_open'] and h['dinner_close']:
+        if h['dinner_open'] <= t < h['dinner_close']:
+            return {'open': True, 'label': f"Ouvert · jusqu'à {h['dinner_close']}", 'color': 'open'}
+
+    if h['lunch_close'] and h['dinner_open'] and h['lunch_close'] <= t < h['dinner_open']:
+        return {'open': False, 'label': f"Fermé · rouvre à {h['dinner_open']}", 'color': 'soon'}
+
+    if h['lunch_open'] and t < h['lunch_open']:
+        return {'open': False, 'label': f"Ouvre à {h['lunch_open']}", 'color': 'soon'}
+
+    if not h['lunch_open'] and h['dinner_open'] and t < h['dinner_open']:
+        return {'open': False, 'label': f"Ouvre à {h['dinner_open']}", 'color': 'soon'}
+
+    return {'open': False, 'label': 'Fermé pour ce soir', 'color': 'closed'}
+
+
+# ── Email contact ─────────────────────────────────────────────────────────────
+
+def send_contact_email(name, sender_email, phone, message):
+    server   = os.environ.get('MAIL_SERVER', 'smtp.office365.com')
+    port     = int(os.environ.get('MAIL_PORT', '587'))
+    username = os.environ.get('MAIL_USERNAME', '')
+    password = os.environ.get('MAIL_PASSWORD', '')
+    to_addr  = os.environ.get('MAIL_TO', username)
+
+    if not username or not password:
+        return False
+
+    msg = MIMEMultipart()
+    msg['From']    = username
+    msg['To']      = to_addr
+    msg['Subject'] = f'[Cantina Fragapane] Message de {name}'
+    body = (f"Nom : {name}\nEmail : {sender_email}\nTéléphone : {phone}\n\n"
+            f"Message :\n{message}")
+    msg.attach(MIMEText(body, 'plain', 'utf-8'))
+
+    with smtplib.SMTP(server, port) as srv:
+        srv.starttls()
+        srv.login(username, password)
+        srv.send_message(msg)
+    return True
+
+
 # ── Context processors ────────────────────────────────────────────────────────
 
 @app.context_processor
@@ -314,7 +381,9 @@ def inject_globals():
         'SELECT * FROM announcements WHERE active=1 ORDER BY created_at DESC')
     evenements = query(
         'SELECT * FROM evenements WHERE active=1 ORDER BY epingle DESC, date_event DESC LIMIT 6')
-    return dict(info=info, announcements=announcements, evenements=evenements, now=datetime.now())
+    open_status = get_open_status()
+    return dict(info=info, announcements=announcements, evenements=evenements,
+                open_status=open_status, now=datetime.now())
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -373,9 +442,26 @@ def a_propos():
     return render_template('a_propos.html')
 
 
-@app.route('/contact')
+@app.route('/contact', methods=['GET', 'POST'])
 def contact():
     hours = get_hours()
+    if request.method == 'POST':
+        name    = request.form.get('name', '').strip()
+        email   = request.form.get('email', '').strip()
+        phone   = request.form.get('phone', '').strip()
+        message = request.form.get('message', '').strip()
+        if name and message:
+            try:
+                sent = send_contact_email(name, email, phone, message)
+                if sent:
+                    flash('Votre message a bien été envoyé ! Nous vous répondrons bientôt.', 'success')
+                else:
+                    flash('Message reçu ! Pour une réponse rapide, appelez-nous directement.', 'success')
+            except Exception:
+                flash('Erreur d\'envoi. Appelez-nous au +32 491 22 72 07.', 'error')
+        else:
+            flash('Veuillez remplir votre nom et votre message.', 'error')
+        return redirect(url_for('contact'))
     return render_template('contact.html', hours=hours)
 
 
@@ -714,6 +800,13 @@ def admin_delete_announcement(ann_id):
     execute('DELETE FROM announcements WHERE id=%s', (ann_id,))
     flash('Annonce supprimée.', 'success')
     return redirect(url_for('admin_announcements'))
+
+
+# ── Error handlers ───────────────────────────────────────────────────────────
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 
 # ── Startup ───────────────────────────────────────────────────────────────────
