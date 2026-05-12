@@ -29,30 +29,37 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'fragapane2024')
 
-# Railway injecte soit DATABASE_URL directement, soit les variables PG* individuelles
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if not DATABASE_URL:
+# Connexion PostgreSQL — on préfère les variables individuelles (plus fiables sur Railway)
+import urllib.parse as _urlparse
+
+def _build_database_url():
     pghost = os.environ.get('PGHOST', '')
     pgport = os.environ.get('PGPORT', '5432')
     pguser = os.environ.get('PGUSER', '')
     pgpass = os.environ.get('PGPASSWORD', '')
     pgdb   = os.environ.get('PGDATABASE') or os.environ.get('POSTGRES_DB', '')
     if pghost and pguser:
-        import urllib.parse
-        DATABASE_URL = (
-            f"postgresql://{urllib.parse.quote(pguser)}:"
-            f"{urllib.parse.quote(pgpass)}@{pghost}:{pgport}/{pgdb}"
+        return (
+            f"postgresql://{_urlparse.quote(pguser, safe='')}:"
+            f"{_urlparse.quote(pgpass, safe='')}@{pghost}:{pgport}/{pgdb}"
         )
-    else:
-        raise RuntimeError(
-            "Aucune variable de connexion PostgreSQL trouvée. "
-            "Dans Railway → service web → Variables, ajoute :\n"
-            "PGHOST=${{Postgres.PGHOST}}\n"
-            "PGPORT=${{Postgres.PGPORT}}\n"
-            "PGUSER=${{Postgres.PGUSER}}\n"
-            "PGPASSWORD=${{Postgres.PGPASSWORD}}\n"
-            "PGDATABASE=${{Postgres.PGDATABASE}}"
-        )
+    # Fallback : DATABASE_URL brute (peut contenir "DATABASE_URL=..." — on nettoie)
+    raw = os.environ.get('DATABASE_URL', '')
+    if '=' in raw and not raw.startswith(('postgres://', 'postgresql://')):
+        raw = raw.split('=', 1)[1]
+    if raw:
+        return raw
+    raise RuntimeError(
+        "Aucune variable PostgreSQL trouvée. "
+        "Dans Railway → service web → Variables → Raw Editor, ajoute :\n"
+        "PGHOST=${{Postgres.PGHOST}}\n"
+        "PGPORT=${{Postgres.PGPORT}}\n"
+        "PGUSER=${{Postgres.PGUSER}}\n"
+        "PGPASSWORD=${{Postgres.PGPASSWORD}}\n"
+        "PGDATABASE=${{Postgres.PGDATABASE}}"
+    )
+
+DATABASE_URL = _build_database_url()
 
 
 # ── Database ──────────────────────────────────────────────────────────────────
