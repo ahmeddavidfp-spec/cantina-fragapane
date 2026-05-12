@@ -16,9 +16,15 @@
   <link rel="alternate" hreflang="fr"    href="https://web-production-e3877.up.railway.app{{ request.path }}">
   <link rel="alternate" hreflang="x-default" href="https://web-production-e3877.up.railway.app{{ request.path }}">
 
-  {# ── Favicon ── #}
+  {# ── Favicon & PWA ── #}
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.svg') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <meta name="theme-color" content="#C9984A">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Cantina">
 
   {# ── Open Graph (Facebook / Instagram) ── #}
   <meta property="og:type"        content="restaurant">
@@ -126,7 +132,7 @@
           <li><a href="{{ url_for('evenements_prives') }}" class="nav-link {% if request.endpoint == 'evenements_prives' %}active{% endif %}">Événements</a></li>
           <li><a href="{{ url_for('livraison') }}"        class="nav-link nav-link-delivery {% if request.endpoint == 'livraison' %}active{% endif %}">🛵 Livraison</a></li>
           <li><a href="{{ url_for('contact') }}"          class="nav-link {% if request.endpoint == 'contact'          %}active{% endif %}">Contact</a></li>
-          <li><a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-outline">📞 Réserver</a></li>
+          <li><a href="{{ url_for('reservation') }}" class="btn btn-outline {% if request.endpoint == 'reservation' %}active{% endif %}">📅 Réserver</a></li>
         </ul>
       </nav>
     </div>
@@ -186,6 +192,14 @@
           <p>{{ info.get('address','') }}<br>{{ info.get('city','') }}</p>
           <p><a href="tel:{{ info.get('phone','').replace(' ','') }}">{{ info.get('phone','') }}</a></p>
           <p><a href="mailto:{{ info.get('email','') }}">{{ info.get('email','') }}</a></p>
+        </div>
+        <div class="footer-newsletter">
+          <h4>Newsletter</h4>
+          <p>Offres, événements, nouveautés — rien que pour vous.</p>
+          <form class="footer-newsletter-form" method="POST" action="{{ url_for('newsletter_subscribe') }}">
+            <input type="email" name="email" placeholder="votre@email.com" required>
+            <button type="submit">S'inscrire</button>
+          </form>
         </div>
       </div>
       <div class="footer-legal">

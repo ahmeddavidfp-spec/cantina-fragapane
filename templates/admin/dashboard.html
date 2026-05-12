@@ -24,6 +24,14 @@
     <div class="stat-num">{{ stats.annonces }}</div>
     <div class="stat-lbl">Annonces actives</div>
   </div>
+  <a href="{{ url_for('admin_reservations') }}" class="stat-card stat-card-link {% if stats.reservations > 0 %}stat-card-alert{% endif %}" style="text-decoration:none;">
+    <div class="stat-num">{{ stats.reservations }}</div>
+    <div class="stat-lbl">Réservations en attente</div>
+  </a>
+  <a href="{{ url_for('admin_newsletter') }}" class="stat-card stat-card-link" style="text-decoration:none;">
+    <div class="stat-num">{{ stats.newsletter }}</div>
+    <div class="stat-lbl">Abonnés newsletter</div>
+  </a>
 </div>
 
 <!-- Quick links -->

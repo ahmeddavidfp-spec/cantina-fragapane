@@ -161,6 +161,26 @@ def init_db():
             created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS reservations (
+            id         SERIAL PRIMARY KEY,
+            name       TEXT NOT NULL,
+            phone      TEXT NOT NULL,
+            date       TEXT NOT NULL,
+            time       TEXT NOT NULL,
+            guests     INTEGER NOT NULL,
+            notes      TEXT,
+            status     TEXT DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+            id         SERIAL PRIMARY KEY,
+            email      TEXT UNIQUE NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
     db.commit()
 
     cur.execute('SELECT COUNT(*) AS c FROM menu_categories')
@@ -470,6 +490,49 @@ def livraison():
     return render_template('livraison.html')
 
 
+@app.route('/reservation', methods=['GET', 'POST'])
+def reservation():
+    if request.method == 'POST':
+        name   = request.form.get('name', '').strip()
+        phone  = request.form.get('phone', '').strip()
+        date   = request.form.get('date', '').strip()
+        time   = request.form.get('time', '').strip()
+        guests = request.form.get('guests', '').strip()
+        notes  = request.form.get('notes', '').strip()
+        if name and phone and date and time and guests:
+            execute(
+                'INSERT INTO reservations (name,phone,date,time,guests,notes) VALUES (%s,%s,%s,%s,%s,%s)',
+                (name, phone, date, time, int(guests), notes or None))
+            try:
+                body = (f"Nouvelle demande de réservation :\n\n"
+                        f"Nom : {name}\nTéléphone : {phone}\n"
+                        f"Date : {date} à {time}\nPersonnes : {guests}\n"
+                        f"Notes : {notes or '—'}")
+                send_contact_email(name, '', phone,
+                                   f"[RÉSERVATION] {date} {time} – {guests} pers.\n\n{body}")
+            except Exception:
+                pass
+            flash('Demande reçue ! Nous vous confirmons par téléphone dans les 2h.', 'success')
+        else:
+            flash('Veuillez remplir tous les champs obligatoires.', 'error')
+        return redirect(url_for('reservation'))
+    return render_template('reservation.html')
+
+
+@app.route('/newsletter/subscribe', methods=['POST'])
+def newsletter_subscribe():
+    email = request.form.get('email', '').strip().lower()
+    if email and '@' in email:
+        try:
+            execute('INSERT INTO newsletter_subscribers (email) VALUES (%s) ON CONFLICT DO NOTHING', (email,))
+            flash('Inscription réussie ! Merci de votre fidélité.', 'success')
+        except Exception:
+            flash('Une erreur est survenue.', 'error')
+    else:
+        flash('Adresse email invalide.', 'error')
+    return redirect(request.referrer or url_for('index'))
+
+
 @app.route('/galerie')
 def galerie():
     photos = [
@@ -598,9 +661,11 @@ def admin_logout():
 @login_required
 def admin_dashboard():
     stats = {
-        'categories': query('SELECT COUNT(*) AS c FROM menu_categories', one=True)['c'],
-        'plats':      query('SELECT COUNT(*) AS c FROM menu_items WHERE available=1', one=True)['c'],
-        'annonces':   query('SELECT COUNT(*) AS c FROM announcements WHERE active=1', one=True)['c'],
+        'categories':  query('SELECT COUNT(*) AS c FROM menu_categories', one=True)['c'],
+        'plats':       query('SELECT COUNT(*) AS c FROM menu_items WHERE available=1', one=True)['c'],
+        'annonces':    query('SELECT COUNT(*) AS c FROM announcements WHERE active=1', one=True)['c'],
+        'reservations':query('SELECT COUNT(*) AS c FROM reservations WHERE status=%s', ('pending',), one=True)['c'],
+        'newsletter':  query('SELECT COUNT(*) AS c FROM newsletter_subscribers', one=True)['c'],
     }
     return render_template('admin/dashboard.html', stats=stats)
 
@@ -745,7 +810,7 @@ def admin_info():
 def admin_edit_info():
     allowed = ['name','tagline','subtitle','address','city','phone','email',
                'facebook','instagram','about_short','about_long',
-               'reservation_note','price_range','google_maps_embed']
+               'reservation_note','price_range','google_maps_embed','tripadvisor_embed']
     for key in allowed:
         val = request.form.get(key, '').strip()
         execute(
@@ -851,6 +916,49 @@ def admin_delete_announcement(ann_id):
     execute('DELETE FROM announcements WHERE id=%s', (ann_id,))
     flash('Annonce supprimée.', 'success')
     return redirect(url_for('admin_announcements'))
+
+
+# ── Admin – reservations ─────────────────────────────────────────────────────
+
+@app.route('/admin/reservations')
+@login_required
+def admin_reservations():
+    resas = query('SELECT * FROM reservations ORDER BY date DESC, time DESC')
+    return render_template('admin/reservations.html', resas=resas)
+
+
+@app.route('/admin/reservations/<int:resa_id>/status', methods=['POST'])
+@login_required
+def admin_resa_status(resa_id):
+    status = request.form.get('status', 'pending')
+    if status in ('pending', 'confirmed', 'cancelled'):
+        execute('UPDATE reservations SET status=%s WHERE id=%s', (status, resa_id))
+    return redirect(url_for('admin_reservations'))
+
+
+@app.route('/admin/reservations/<int:resa_id>/supprimer', methods=['POST'])
+@login_required
+def admin_delete_resa(resa_id):
+    execute('DELETE FROM reservations WHERE id=%s', (resa_id,))
+    flash('Réservation supprimée.', 'success')
+    return redirect(url_for('admin_reservations'))
+
+
+# ── Admin – newsletter ────────────────────────────────────────────────────────
+
+@app.route('/admin/newsletter')
+@login_required
+def admin_newsletter():
+    subs = query('SELECT * FROM newsletter_subscribers ORDER BY created_at DESC')
+    return render_template('admin/newsletter.html', subs=subs)
+
+
+@app.route('/admin/newsletter/<int:sub_id>/supprimer', methods=['POST'])
+@login_required
+def admin_delete_sub(sub_id):
+    execute('DELETE FROM newsletter_subscribers WHERE id=%s', (sub_id,))
+    flash('Abonné supprimé.', 'success')
+    return redirect(url_for('admin_newsletter'))
 
 
 # ── Error handlers ───────────────────────────────────────────────────────────

@@ -1,0 +1,59 @@
+{% extends "admin/base.html" %}
+{% block title %}Newsletter – Admin{% endblock %}
+{% block content %}
+<div class="admin-header">
+  <h1>Newsletter</h1>
+  <span class="admin-count">{{ subs|length }} abonné{% if subs|length != 1 %}s{% endif %}</span>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}{% for cat, msg in messages %}
+  <div class="flash flash-{{ cat }}">{{ msg }}</div>
+  {% endfor %}{% endif %}
+{% endwith %}
+
+{% if subs %}
+<div style="margin-bottom:1rem;">
+  <a href="#" onclick="copyEmails()" class="btn btn-outline" style="font-size:.82rem;">📋 Copier tous les emails</a>
+  <span id="copyDone" style="display:none; color:green; font-size:.82rem; margin-left:.5rem;">✓ Copié !</span>
+</div>
+<textarea id="emailList" style="display:none;">{{ subs|map(attribute='email')|join(', ') }}</textarea>
+{% endif %}
+
+{% if not subs %}
+<div class="admin-empty">Aucun abonné pour l'instant.</div>
+{% else %}
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>Email</th><th>Date d'inscription</th><th></th></tr></thead>
+    <tbody>
+      {% for s in subs %}
+      <tr>
+        <td>{{ s['email'] }}</td>
+        <td style="font-size:.82rem; color:var(--text-lt);">{{ s['created_at'].strftime('%d/%m/%Y') if s['created_at'] else '—' }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('admin_delete_sub', sub_id=s['id']) }}"
+                onsubmit="return confirm('Désabonner cet email ?')">
+            <button class="btn-admin-del">✕</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<script>
+function copyEmails() {
+  const t = document.getElementById('emailList');
+  t.style.display = 'block';
+  t.select();
+  document.execCommand('copy');
+  t.style.display = 'none';
+  const d = document.getElementById('copyDone');
+  d.style.display = 'inline';
+  setTimeout(() => d.style.display = 'none', 2000);
+}
+</script>
+{% endblock %}

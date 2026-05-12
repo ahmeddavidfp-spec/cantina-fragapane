@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}
+{% block title %}Réservations – Admin{% endblock %}
+{% block content %}
+<div class="admin-header">
+  <h1>Réservations</h1>
+  <span class="admin-count">{{ resas|length }} au total</span>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}{% for cat, msg in messages %}
+  <div class="flash flash-{{ cat }}">{{ msg }}</div>
+  {% endfor %}{% endif %}
+{% endwith %}
+
+{% if not resas %}
+<div class="admin-empty">Aucune réservation pour l'instant.</div>
+{% else %}
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Date</th><th>Heure</th><th>Nom</th><th>Tél.</th><th>Pers.</th><th>Notes</th><th>Statut</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in resas %}
+      <tr class="resa-row resa-{{ r['status'] }}">
+        <td>{{ r['date'] }}</td>
+        <td>{{ r['time'] }}</td>
+        <td><strong>{{ r['name'] }}</strong></td>
+        <td><a href="tel:{{ r['phone'] }}">{{ r['phone'] }}</a></td>
+        <td>{{ r['guests'] }}</td>
+        <td style="font-size:.82rem; color:var(--text-lt);">{{ r['notes'] or '—' }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('admin_resa_status', resa_id=r['id']) }}" style="display:inline;">
+            <select name="status" onchange="this.form.submit()" class="resa-status-select resa-status-{{ r['status'] }}">
+              <option value="pending"   {% if r['status']=='pending'   %}selected{% endif %}>En attente</option>
+              <option value="confirmed" {% if r['status']=='confirmed' %}selected{% endif %}>Confirmée</option>
+              <option value="cancelled" {% if r['status']=='cancelled' %}selected{% endif %}>Annulée</option>
+            </select>
+          </form>
+        </td>
+        <td>
+          <form method="POST" action="{{ url_for('admin_delete_resa', resa_id=r['id']) }}"
+                onsubmit="return confirm('Supprimer cette réservation ?')">
+            <button class="btn-admin-del">✕</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

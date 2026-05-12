@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Réserver une table – La Cantina Fragapane{% endblock %}
+{% block description %}Réservez votre table en ligne à La Cantina Fragapane, restaurant italien à Châtelet. Réservation recommandée le week-end.{% endblock %}
+
+{% block content %}
+<section class="page-hero" style="min-height:220px; padding:6rem 1rem 3rem;">
+  <div class="page-hero-content">
+    <span class="section-label">À table !</span>
+    <h1 class="section-title">Réserver une table</h1>
+    <p class="section-sub" style="margin:0 auto;">Nous confirmons votre réservation par téléphone dans les 2h.</p>
+  </div>
+</section>
+
+<section class="resa-page">
+  <div class="container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+        <div class="flash flash-{{ cat }}" style="margin-bottom:1.5rem; max-width:640px; margin-left:auto; margin-right:auto;">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="resa-grid">
+
+      <div class="resa-form-wrap">
+        <form class="resa-form" method="POST" action="{{ url_for('reservation') }}">
+          <div class="resa-form-row">
+            <div class="contact-form-group">
+              <label for="r-name">Nom complet *</label>
+              <input type="text" id="r-name" name="name" required placeholder="Votre nom">
+            </div>
+            <div class="contact-form-group">
+              <label for="r-phone">Téléphone *</label>
+              <input type="tel" id="r-phone" name="phone" required placeholder="+32 4xx xx xx xx">
+            </div>
+          </div>
+          <div class="resa-form-row">
+            <div class="contact-form-group">
+              <label for="r-date">Date souhaitée *</label>
+              <input type="date" id="r-date" name="date" required>
+            </div>
+            <div class="contact-form-group">
+              <label for="r-time">Heure *</label>
+              <select id="r-time" name="time" required>
+                <option value="">Choisir une heure</option>
+                <optgroup label="Midi (samedi & dimanche)">
+                  <option>12:00</option>
+                  <option>12:30</option>
+                  <option>13:00</option>
+                  <option>13:30</option>
+                </optgroup>
+                <optgroup label="Soir (lundi, jeudi–dimanche)">
+                  <option>18:30</option>
+                  <option>19:00</option>
+                  <option>19:30</option>
+                  <option>20:00</option>
+                  <option>20:30</option>
+                  <option>21:00</option>
+                  <option>21:30</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+          <div class="contact-form-group">
+            <label for="r-guests">Nombre de personnes *</label>
+            <select id="r-guests" name="guests" required>
+              <option value="">Combien serez-vous ?</option>
+              {% for n in range(1, 21) %}
+              <option value="{{ n }}">{{ n }} personne{% if n > 1 %}s{% endif %}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="contact-form-group">
+            <label for="r-notes">Demandes particulières</label>
+            <textarea id="r-notes" name="notes" rows="3"
+                      placeholder="Allergie, anniversaire, chaise haute, table en terrasse…"></textarea>
+          </div>
+          <button type="submit" class="btn btn-gold" style="width:100%; justify-content:center; padding:1rem;">
+            Envoyer ma demande de réservation
+          </button>
+          <p style="font-size:.78rem; color:var(--text-lt); text-align:center; margin-top:.75rem;">
+            Nous vous confirmons par téléphone dans les 2h. Pas de paiement en ligne.
+          </p>
+        </form>
+      </div>
+
+      <div class="resa-info">
+        <div class="resa-info-block">
+          <h3>📞 Préférez appeler ?</h3>
+          <p>Notre équipe est disponible pendant les heures d'ouverture.</p>
+          <a href="tel:+32491227207" class="btn btn-primary" style="margin-top:1rem;">+32 491 22 72 07</a>
+        </div>
+        <div class="resa-info-block">
+          <h3>💬 Via WhatsApp</h3>
+          <p>Envoyez-nous un message, on répond vite !</p>
+          <a href="https://wa.me/32491227207" target="_blank" rel="noopener" class="btn btn-outline" style="margin-top:1rem;">Écrire sur WhatsApp</a>
+        </div>
+        <div class="resa-info-block">
+          <h3>🕐 Horaires</h3>
+          <ul style="list-style:none; font-size:.9rem; color:var(--text-lt); line-height:2;">
+            <li>Lun, Jeu, Ven : soir 18h30–22h</li>
+            <li>Sam, Dim : midi 12h–14h + soir 18h30–22h</li>
+            <li>Mar, Mer : fermé</li>
+          </ul>
+        </div>
+        <div class="resa-info-block" style="background:var(--cream);">
+          <p style="font-size:.88rem; color:var(--text-lt);">
+            🎂 <strong>Événement privé ?</strong> Anniversaire, communion, repas d'entreprise —
+            <a href="{{ url_for('evenements_prives') }}" style="color:var(--gold);">découvrez notre offre événements.</a>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% block extra_js %}
+<script>
+  // Set minimum date to today
+  document.getElementById('r-date').min = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}
+{% endblock %}

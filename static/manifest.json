@@ -1,0 +1,46 @@
+{
+  "name": "La Cantina Fragapane",
+  "short_name": "Cantina",
+  "description": "Restaurant italien authentique à Châtelet. Pâtes fraîches maison, arrosticinis, livraison à domicile.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0C180C",
+  "theme_color": "#C9984A",
+  "lang": "fr-BE",
+  "categories": ["food", "restaurant"],
+  "icons": [
+    {
+      "src": "/static/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Notre Menu",
+      "short_name": "Menu",
+      "url": "/menu",
+      "description": "Consulter notre carte"
+    },
+    {
+      "name": "Réserver une table",
+      "short_name": "Réserver",
+      "url": "/reservation",
+      "description": "Réserver en ligne"
+    },
+    {
+      "name": "Livraison",
+      "short_name": "Livraison",
+      "url": "/livraison",
+      "description": "Commander en livraison"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg",
+      "type": "image/jpeg",
+      "label": "Salle La Cantina Fragapane"
+    }
+  ]
+}
