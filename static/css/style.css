@@ -631,6 +631,115 @@ input, textarea, select { font-family: inherit; }
   line-height: 1.6;
 }
 
+/* ── Award section ─────────────────────────────────────────────────────────── */
+.award-section {
+  padding: 6rem 0;
+  background: linear-gradient(135deg, #0C180C 0%, #1A3020 50%, #0C180C 100%);
+  position: relative;
+  overflow: hidden;
+}
+.award-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    45deg, rgba(201,152,74,.06) 0, rgba(201,152,74,.06) 1px,
+    transparent 0, transparent 50%);
+  background-size: 28px 28px;
+}
+.award-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 5rem;
+  align-items: center;
+}
+.award-visual {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.award-img {
+  width: 100%;
+  max-width: 300px;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0,0,0,.5), 0 0 0 4px var(--gold), 0 0 0 8px rgba(201,152,74,.2);
+  display: block;
+}
+.award-ribbon {
+  margin-top: 1.25rem;
+  background: var(--gold);
+  color: var(--dark);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  padding: .45rem 1.2rem;
+  border-radius: 2rem;
+}
+.award-content { color: rgba(254,250,240,.9); }
+.award-content .section-label { color: var(--gold); }
+.award-title {
+  color: var(--white);
+  margin-bottom: 1.25rem;
+}
+.award-lead {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: rgba(254,250,240,.9);
+  margin-bottom: 1rem;
+}
+.award-text {
+  font-size: .97rem;
+  line-height: 1.8;
+  color: rgba(254,250,240,.75);
+  margin-bottom: .75rem;
+}
+.award-thanks {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-style: italic;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+.award-stars {
+  color: var(--gold);
+  font-size: 1.3rem;
+  letter-spacing: .1em;
+  margin-bottom: 2rem;
+}
+.award-badge-row {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+.award-badge {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(201,152,74,.3);
+  border-radius: var(--radius-lg);
+  padding: .9rem 1.1rem;
+  flex: 1;
+  min-width: 130px;
+}
+.award-badge-icon { font-size: 1.6rem; flex-shrink: 0; }
+.award-badge-title {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.1;
+}
+.award-badge-sub {
+  font-size: .72rem;
+  color: rgba(254,250,240,.55);
+  line-height: 1.4;
+  margin-top: .2rem;
+}
+
 /* ── Reviews section ───────────────────────────────────────────────────────── */
 .reviews-section {
   padding: 6rem 0;
@@ -1360,6 +1469,9 @@ input, textarea, select { font-family: inherit; }
 
 /* ── Responsive ────────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
+  .award-grid { grid-template-columns: 1fr; gap: 2.5rem; text-align: center; }
+  .award-badge-row { justify-content: center; }
+  .award-img { max-width: 220px; }
   .about-grid, .about-page-grid,
   .hours-inner, .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
   .dishes-grid, .reviews-grid  { grid-template-columns: 1fr 1fr; }
