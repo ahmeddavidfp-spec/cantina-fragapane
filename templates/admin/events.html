@@ -1,0 +1,181 @@
+{% extends "admin/base.html" %}
+{% block title %}Événements{% endblock %}
+
+{% block content %}
+<div class="admin-topbar">
+  <div>
+    <div class="admin-page-title">Événements</div>
+    <div class="admin-page-sub">Gérez les événements affichés sur le site (fêtes, menus spéciaux, fermetures…)</div>
+  </div>
+</div>
+
+<!-- Ajouter un événement -->
+<div class="admin-card">
+  <div class="admin-card-header">
+    <div class="admin-card-title">➕ Nouvel événement</div>
+  </div>
+  <div class="admin-card-body">
+    <form method="POST" action="{{ url_for('admin_add_event') }}" enctype="multipart/form-data">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div class="admin-form-group">
+          <label>Titre *</label>
+          <input class="admin-input" type="text" name="titre" required
+                 placeholder="⚠️ Dimanche 10 mai – Fête des mères ⚠️">
+        </div>
+        <div class="admin-form-group">
+          <label>Date de l'événement</label>
+          <input class="admin-input" type="date" name="date_event">
+        </div>
+      </div>
+      <div class="admin-form-group">
+        <label>Description</label>
+        <textarea class="admin-textarea" name="description" rows="3"
+                  placeholder="Informations complémentaires sur l'événement…"></textarea>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div class="admin-form-group">
+          <label>📷 Photo (upload)</label>
+          <input class="admin-input" type="file" name="image" accept="image/*">
+        </div>
+        <div class="admin-form-group">
+          <label>Ou nom d'une image existante</label>
+          <input class="admin-input" type="text" name="image_existing"
+                 placeholder="cantina-fragapane-evenement-…jpeg">
+        </div>
+      </div>
+      <div style="display:flex; gap:2rem; margin-bottom:1.25rem; flex-wrap:wrap;">
+        <div class="admin-checkbox-group">
+          <input type="checkbox" name="active" id="add-active" checked>
+          <label for="add-active">Visible sur le site</label>
+        </div>
+        <div class="admin-checkbox-group">
+          <input type="checkbox" name="epingle" id="add-epingle" checked>
+          <label for="add-epingle">⭐ Épinglé (mis en avant)</label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Publier l'événement</button>
+    </form>
+  </div>
+</div>
+
+<!-- Liste des événements -->
+<div class="admin-card">
+  <div class="admin-card-header">
+    <div class="admin-card-title">📋 Tous les événements</div>
+  </div>
+  {% if evts %}
+  <div style="overflow-x:auto;">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Photo</th>
+          <th>Titre</th>
+          <th>Date</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for evt in evts %}
+        <tr>
+          <td>
+            {% if evt['image'] %}
+            <img src="/static/images/{{ evt['image'] }}" alt="{{ evt['titre'] }}"
+                 style="width:70px; height:55px; object-fit:cover; border-radius:4px;">
+            {% else %}
+            <div style="width:70px; height:55px; background:#F3F4F6; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#9CA3AF;">📷</div>
+            {% endif %}
+          </td>
+          <td>
+            <strong>{{ evt['titre'] }}</strong>
+            {% if evt['epingle'] %}<span class="badge badge-gold" style="margin-left:.5rem;">⭐ Épinglé</span>{% endif %}
+            {% if evt['description'] %}
+            <div style="font-size:.8rem; color:var(--text-lt); margin-top:.25rem; max-width:300px;">{{ evt['description']|truncate(80) }}</div>
+            {% endif %}
+          </td>
+          <td style="white-space:nowrap; color:var(--text-lt);">
+            {{ evt['date_event'] or '—' }}
+          </td>
+          <td>
+            {% if evt['active'] %}
+            <span class="badge badge-green">✓ Visible</span>
+            {% else %}
+            <span class="badge badge-gray">Masqué</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="admin-actions">
+              <button class="admin-btn admin-btn-outline"
+                      onclick="document.getElementById('edit-evt-{{ evt['id'] }}').style.display='block'">
+                ✏️ Modifier
+              </button>
+              <form method="POST" action="{{ url_for('admin_toggle_event', evt_id=evt['id']) }}">
+                <button type="submit" class="admin-btn {% if evt['active'] %}admin-btn-outline{% else %}admin-btn-success{% endif %}">
+                  {% if evt['active'] %}👁️ Masquer{% else %}✓ Afficher{% endif %}
+                </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_delete_event', evt_id=evt['id']) }}"
+                    onsubmit="return confirm('Supprimer cet événement ?')">
+                <button type="submit" class="admin-btn admin-btn-danger">🗑️</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        <!-- Formulaire de modification inline -->
+        <tr id="edit-evt-{{ evt['id'] }}" style="display:none; background:#F0F7FF;">
+          <td colspan="5" style="padding:1.5rem 1rem;">
+            <form method="POST" action="{{ url_for('admin_edit_event', evt_id=evt['id']) }}"
+                  enctype="multipart/form-data">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                <div class="admin-form-group" style="margin:0;">
+                  <label>Titre</label>
+                  <input class="admin-input" type="text" name="titre" value="{{ evt['titre'] }}" required>
+                </div>
+                <div class="admin-form-group" style="margin:0;">
+                  <label>Date</label>
+                  <input class="admin-input" type="date" name="date_event" value="{{ evt['date_event'] or '' }}">
+                </div>
+              </div>
+              <div class="admin-form-group" style="margin-bottom:1rem;">
+                <label>Description</label>
+                <textarea class="admin-textarea" name="description" rows="2">{{ evt['description'] or '' }}</textarea>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                <div class="admin-form-group" style="margin:0;">
+                  <label>Nouvelle photo (upload)</label>
+                  <input class="admin-input" type="file" name="image" accept="image/*">
+                </div>
+                <div class="admin-form-group" style="margin:0;">
+                  <label>Garder photo actuelle (nom fichier)</label>
+                  <input class="admin-input" type="text" name="image_existing" value="{{ evt['image'] or '' }}">
+                </div>
+              </div>
+              <div style="display:flex; gap:2rem; margin-bottom:1rem; flex-wrap:wrap;">
+                <div class="admin-checkbox-group">
+                  <input type="checkbox" name="active" id="ea-{{ evt['id'] }}" {% if evt['active'] %}checked{% endif %}>
+                  <label for="ea-{{ evt['id'] }}">Visible</label>
+                </div>
+                <div class="admin-checkbox-group">
+                  <input type="checkbox" name="epingle" id="ee-{{ evt['id'] }}" {% if evt['epingle'] %}checked{% endif %}>
+                  <label for="ee-{{ evt['id'] }}">⭐ Épinglé</label>
+                </div>
+              </div>
+              <div style="display:flex; gap:.75rem;">
+                <button type="submit" class="admin-btn admin-btn-success">💾 Enregistrer</button>
+                <button type="button" class="admin-btn admin-btn-outline"
+                        onclick="document.getElementById('edit-evt-{{ evt['id'] }}').style.display='none'">Annuler</button>
+              </div>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="admin-card-body" style="text-align:center; color:var(--text-lt); font-style:italic; padding:2.5rem;">
+    Aucun événement. Créez-en un ci-dessus.
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

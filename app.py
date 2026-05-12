@@ -1,12 +1,30 @@
 import os
 import sqlite3
+import uuid
 from datetime import datetime
 from functools import wraps
+from werkzeug.utils import secure_filename
 from flask import (Flask, render_template, request, redirect,
                    url_for, session, flash, g)
 
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'images')
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def save_upload(file_field):
+    f = request.files.get(file_field)
+    if f and f.filename and allowed_file(f.filename):
+        ext = f.filename.rsplit('.', 1)[1].lower()
+        filename = f'cantina-fragapane-evenement-{uuid.uuid4().hex[:8]}.{ext}'
+        f.save(os.path.join(UPLOAD_FOLDER, filename))
+        return filename
+    return None
+
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'cantina-fragapane-secret-2024')
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'fragapane2024')
 DATABASE = os.path.join(os.path.dirname(__file__), 'cantina.db')
@@ -82,6 +100,16 @@ def init_db():
             message    TEXT NOT NULL,
             active     INTEGER DEFAULT 1,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        CREATE TABLE IF NOT EXISTS evenements (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            titre       TEXT NOT NULL,
+            description TEXT,
+            date_event  TEXT,
+            image       TEXT,
+            active      INTEGER DEFAULT 1,
+            epingle     INTEGER DEFAULT 0,
+            created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     ''')
 
@@ -201,6 +229,14 @@ def _seed(db):
     for key, val in info_data:
         db.execute('INSERT OR REPLACE INTO info (key,value) VALUES (?,?)', (key, val))
 
+    db.execute('''INSERT INTO evenements (titre, description, date_event, image, active, epingle)
+                  VALUES (?,?,?,?,1,1)''', (
+        '⚠️ Dimanche 10 mai – Fête des mères ⚠️',
+        'Nous aurons le menu qui sera disponible mais nous aurons également la carte à disposition pour ceux qui ne veulent pas le menu.',
+        '2025-05-10',
+        'cantina-fragapane-evenement-fete-des-meres-mai-2025.jpeg',
+    ))
+
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 
@@ -221,7 +257,9 @@ def inject_globals():
             for r in query('SELECT key, value FROM info')}
     announcements = query(
         'SELECT * FROM announcements WHERE active=1 ORDER BY created_at DESC')
-    return dict(info=info, announcements=announcements, now=datetime.now())
+    evenements = query(
+        'SELECT * FROM evenements WHERE active=1 ORDER BY epingle DESC, date_event DESC LIMIT 6')
+    return dict(info=info, announcements=announcements, evenements=evenements, now=datetime.now())
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -469,6 +507,67 @@ def admin_edit_info():
     return redirect(url_for('admin_info'))
 
 
+# ── Admin – events ───────────────────────────────────────────────────────────
+
+@app.route('/admin/evenements')
+@login_required
+def admin_events():
+    evts = query('SELECT * FROM evenements ORDER BY epingle DESC, date_event DESC, created_at DESC')
+    return render_template('admin/events.html', evts=evts)
+
+
+@app.route('/admin/evenements/ajouter', methods=['POST'])
+@login_required
+def admin_add_event():
+    f = request.form
+    image = save_upload('image')
+    if not image:
+        image = f.get('image_existing', '').strip() or None
+    execute('''INSERT INTO evenements (titre, description, date_event, image, active, epingle)
+               VALUES (?,?,?,?,?,?)''',
+            (f.get('titre','').strip(), f.get('description','').strip(),
+             f.get('date_event','').strip() or None, image,
+             1 if f.get('active') else 0, 1 if f.get('epingle') else 0))
+    flash('Événement ajouté.', 'success')
+    return redirect(url_for('admin_events'))
+
+
+@app.route('/admin/evenements/<int:evt_id>/modifier', methods=['POST'])
+@login_required
+def admin_edit_event(evt_id):
+    f = request.form
+    image = save_upload('image')
+    if not image:
+        image = f.get('image_existing', '').strip() or None
+    execute('''UPDATE evenements
+               SET titre=?, description=?, date_event=?, image=?, active=?, epingle=?
+               WHERE id=?''',
+            (f.get('titre','').strip(), f.get('description','').strip(),
+             f.get('date_event','').strip() or None, image,
+             1 if f.get('active') else 0, 1 if f.get('epingle') else 0,
+             evt_id))
+    flash('Événement mis à jour.', 'success')
+    return redirect(url_for('admin_events'))
+
+
+@app.route('/admin/evenements/<int:evt_id>/supprimer', methods=['POST'])
+@login_required
+def admin_delete_event(evt_id):
+    execute('DELETE FROM evenements WHERE id=?', (evt_id,))
+    flash('Événement supprimé.', 'success')
+    return redirect(url_for('admin_events'))
+
+
+@app.route('/admin/evenements/<int:evt_id>/toggle', methods=['POST'])
+@login_required
+def admin_toggle_event(evt_id):
+    evt = query('SELECT active FROM evenements WHERE id=?', (evt_id,), one=True)
+    if evt:
+        execute('UPDATE evenements SET active=? WHERE id=?',
+                (0 if evt['active'] else 1, evt_id))
+    return redirect(url_for('admin_events'))
+
+
 # ── Admin – announcements ─────────────────────────────────────────────────────
 
 @app.route('/admin/annonces')
@@ -510,6 +609,6 @@ def admin_delete_announcement(ann_id):
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True)
+    app.run(debug=True, port=8080)
 else:
     init_db()

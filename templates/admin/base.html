@@ -25,6 +25,7 @@
       <a href="{{ url_for('admin_menu') }}"          class="{% if request.endpoint == 'admin_menu'          %}active{% endif %}"><span class="admin-nav-icon">🍽️</span> Menu</a>
       <a href="{{ url_for('admin_hours') }}"         class="{% if request.endpoint == 'admin_hours'         %}active{% endif %}"><span class="admin-nav-icon">🕐</span> Horaires</a>
       <a href="{{ url_for('admin_info') }}"          class="{% if request.endpoint == 'admin_info'          %}active{% endif %}"><span class="admin-nav-icon">ℹ️</span> Informations</a>
+      <a href="{{ url_for('admin_events') }}"        class="{% if request.endpoint == 'admin_events'        %}active{% endif %}"><span class="admin-nav-icon">🎉</span> Événements</a>
       <a href="{{ url_for('admin_announcements') }}" class="{% if request.endpoint == 'admin_announcements' %}active{% endif %}"><span class="admin-nav-icon">📢</span> Annonces</a>
       <div class="admin-nav-label" style="margin-top:.5rem;">Site public</div>
       <a href="{{ url_for('index') }}" target="_blank"><span class="admin-nav-icon">🌐</span> Voir le site</a>

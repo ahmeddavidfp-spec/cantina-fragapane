@@ -38,6 +38,45 @@
   </div>
 </section>
 
+{# ── Événements ── #}
+{% if evenements %}
+<section class="events-section">
+  <div class="container">
+    <div class="events-header">
+      <span class="section-label">Agenda</span>
+      <h2 class="section-title">Événements à venir</h2>
+    </div>
+    <div class="events-grid {% if evenements|length == 1 %}events-grid-single{% endif %}">
+      {% for evt in evenements %}
+      <div class="event-card {% if evt['epingle'] %}event-card-featured{% endif %}">
+        {% if evt['image'] %}
+        <div class="event-card-img">
+          <img src="/static/images/{{ evt['image'] }}"
+               alt="{{ evt['titre'] }} – La Cantina Fragapane"
+               loading="lazy">
+        </div>
+        {% endif %}
+        <div class="event-card-body">
+          {% if evt['date_event'] %}
+          <div class="event-date">
+            📅 {{ evt['date_event'] }}
+          </div>
+          {% endif %}
+          <h3 class="event-title">{{ evt['titre'] }}</h3>
+          {% if evt['description'] %}
+          <p class="event-desc">{{ evt['description'] }}</p>
+          {% endif %}
+          <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-primary event-btn">
+            📞 Réserver
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
 {# ── About ── #}
 <section class="about-section" id="about">
   <div class="container">
