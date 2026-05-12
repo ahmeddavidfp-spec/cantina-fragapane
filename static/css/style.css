@@ -1,21 +1,22 @@
 /* ── Variables ─────────────────────────────────────────────────────────────── */
 :root {
-  --wine:    #7D1B2E;
-  --wine-dk: #5A1220;
-  --wine-lt: #9D2A3E;
-  --olive:   #3D5A28;
-  --olive-lt:#4E7234;
-  --cream:   #F5EDD6;
-  --cream-dk:#EDE0BF;
-  --gold:    #C5963A;
-  --gold-lt: #D9AB50;
-  --dark:    #1A0B05;
-  --text:    #3A2415;
-  --text-lt: #6B4C38;
-  --light:   #FBF7F0;
+  /* Palette italienne — tricolore raffiné */
+  --wine:    #C8253A;   /* rosso italiano */
+  --wine-dk: #A01D2E;
+  --wine-lt: #E03050;
+  --olive:   #2A7040;   /* verde italiano */
+  --olive-lt:#359050;
+  --cream:   #FEFAF0;
+  --cream-dk:#EDE5C8;
+  --gold:    #C9984A;
+  --gold-lt: #D9AE60;
+  --dark:    #0C180C;   /* noir teinté vert — profondeur italienne */
+  --text:    #1E3020;
+  --text-lt: #5A7060;
+  --light:   #F4F8F4;   /* blanc légèrement vert */
   --white:   #FFFFFF;
-  --border:  #E2D5C0;
-  --shadow:  rgba(26,11,5,.12);
+  --border:  #D5E5D8;
+  --shadow:  rgba(10,24,10,.13);
 
   --font-heading: 'Playfair Display', Georgia, serif;
   --font-body:    'Lato', 'Helvetica Neue', Arial, sans-serif;
@@ -146,13 +147,23 @@ input, textarea, select { font-family: inherit; }
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(26,11,5,.95);
+  background: rgba(12,24,12,.95);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: var(--transition);
 }
+.site-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(to right,
+    #009246 33.33%,
+    rgba(255,255,255,.35) 33.33% 66.66%,
+    #CE2B37 66.66%);
+}
 .site-header.scrolled {
-  box-shadow: 0 2px 20px rgba(0,0,0,.3);
+  box-shadow: 0 2px 24px rgba(0,0,0,.35);
 }
 .announcement-bar ~ .site-header { top: 0; }
 
@@ -258,8 +269,8 @@ input, textarea, select { font-family: inherit; }
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 70% 50%, rgba(125,27,46,.25) 0%, transparent 60%),
-    linear-gradient(160deg, #1A0B05 0%, #2C1208 40%, #1A0B05 100%);
+    linear-gradient(to bottom, rgba(12,24,12,.80) 0%, rgba(12,24,12,.55) 50%, rgba(12,24,12,.75) 100%),
+    url('/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg') center/cover no-repeat;
 }
 .hero-pattern {
   position: absolute;
@@ -387,21 +398,19 @@ input, textarea, select { font-family: inherit; }
 }
 .about-frame {
   aspect-ratio: 4/5;
-  background: linear-gradient(145deg, var(--wine-dk) 0%, var(--wine) 60%, var(--wine-lt) 100%);
   border-radius: var(--radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
+  position: relative;
+  background: var(--cream-dk);
+}
+.about-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 .about-frame-inner {
-  text-align: center;
-  color: rgba(255,255,255,.2);
-  font-family: var(--font-heading);
-  font-size: 8rem;
-  font-style: italic;
-  line-height: 1;
-  user-select: none;
+  display: none;
 }
 .about-accent {
   position: absolute;
@@ -499,14 +508,25 @@ input, textarea, select { font-family: inherit; }
   box-shadow: 0 12px 40px var(--shadow);
 }
 .dish-card-thumb {
-  height: 160px;
-  background: linear-gradient(135deg, var(--cream-dk) 0%, var(--cream) 100%);
+  height: 200px;
+  background: linear-gradient(135deg, var(--cream-dk) 0%, var(--cream) 100%) center/cover no-repeat;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-end;
+  justify-content: flex-start;
   font-size: 3.5rem;
   position: relative;
   overflow: hidden;
+}
+.dish-card-thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .4s ease;
+}
+.dish-card:hover .dish-card-thumb img {
+  transform: scale(1.05);
 }
 .dish-card-cat {
   position: absolute;
@@ -696,7 +716,9 @@ input, textarea, select { font-family: inherit; }
 /* ── Full Menu page ────────────────────────────────────────────────────────── */
 .page-hero {
   padding: 8rem 0 4rem;
-  background: var(--dark);
+  background:
+    linear-gradient(to bottom, rgba(12,24,12,.82) 0%, rgba(12,24,12,.65) 100%),
+    url('/static/images/cantina-fragapane-salle-tables-neon-soir-chatelet.jpeg') center/cover no-repeat;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -706,7 +728,7 @@ input, textarea, select { font-family: inherit; }
   position: absolute;
   inset: 0;
   background-image: repeating-linear-gradient(
-    45deg, rgba(197,150,58,.04) 0, rgba(197,150,58,.04) 1px,
+    45deg, rgba(197,150,58,.03) 0, rgba(197,150,58,.03) 1px,
     transparent 0, transparent 50%);
   background-size: 28px 28px;
 }

@@ -78,12 +78,20 @@
           {{ info['google_maps_embed']|safe }}
         </div>
         {% else %}
-        <div class="map-placeholder">
-          <div>
-            <div style="font-size:2.5rem; margin-bottom:.75rem;">📍</div>
-            <strong style="color:var(--text);">Rue du Taillis Pré 86</strong><br>
-            6200 Châtelet, Belgique<br><br>
-            <a href="https://www.google.com/maps/search/Cantina+Fragapane+Châtelet" target="_blank" rel="noopener" class="btn btn-outline" style="margin-top:.5rem;">Ouvrir dans Google Maps</a>
+        <div style="border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--border); aspect-ratio:4/3; position:relative;">
+          <img src="/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg"
+               alt="Intérieur La Cantina Fragapane Châtelet"
+               style="width:100%; height:100%; object-fit:cover; display:block;">
+          <div style="position:absolute; inset:0; background:rgba(12,24,12,.55); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; text-align:center; color:#fff;">
+            <div style="font-size:2.5rem;">📍</div>
+            <div>
+              <strong style="font-family:var(--font-heading); font-size:1.1rem; display:block; margin-bottom:.25rem;">Rue du Taillis Pré 86</strong>
+              6200 Châtelet, Belgique
+            </div>
+            <a href="https://www.google.com/maps/search/Cantina+Fragapane+Chatelet+Belgique" target="_blank" rel="noopener"
+               class="btn btn-gold" style="font-size:.8rem; padding:.5rem 1.2rem;">
+              📌 Ouvrir dans Google Maps
+            </a>
           </div>
         </div>
         {% endif %}

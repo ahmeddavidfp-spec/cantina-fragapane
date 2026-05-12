@@ -44,7 +44,9 @@
     <div class="about-grid">
       <div class="about-visual">
         <div class="about-frame">
-          <div class="about-frame-inner">CF</div>
+          <img src="/static/images/cantina-fragapane-planche-antipasti-signature-logo-chatelet.jpeg"
+               alt="Planche antipasti signature La Cantina Fragapane Châtelet"
+               loading="lazy">
         </div>
         <div class="about-accent">
           <div class="about-accent-num">★4.6</div>
@@ -102,11 +104,32 @@
       <p class="section-sub">Pâtes fraîches, viandes grillées, douceurs maison — un voyage culinaire au cœur de l'Italie.</p>
     </div>
     <div class="dishes-grid">
-      {% set emoji_map = {'Antipasti':'🫒','Pasta Fresca':'🍝','Carni & Grigliata':'🥩','Dolci':'🍮'} %}
+      {% set dish_img = {
+        'Planche Mixte Maison':       'cantina-fragapane-grande-planche-apero-antipasti-chatelet.jpeg',
+        'Burrata Pugliese':           'cantina-fragapane-planche-antipasti-signature-logo-chatelet.jpeg',
+        'Raviolis aux Truffes':       'cantina-fragapane-casarecce-pesto-ricotta-pro-chatelet.jpeg',
+        'Tagliatelles à la Chicorée': 'cantina-fragapane-tagliolini-safran-petits-pois-pancetta-chatelet.jpeg',
+        'Pasta au Saumon':            'cantina-fragapane-spaghetti-fruits-de-mer-tomates-chatelet.jpeg',
+        'Spaghetti Carbonara':        'cantina-fragapane-tagliatelles-bolognaise-sauce-tomate-chatelet.jpeg',
+        'Tagliatelles Bolognaise':    'cantina-fragapane-tagliatelles-bolognaise-sauce-tomate-chatelet.jpeg',
+        'Arrosticinis Abruzzesi':     'cantina-fragapane-escalope-milanaise-spaghetti-tomates-chatelet.jpeg',
+        'Brochettes Mixtes':          'cantina-fragapane-escalope-milanaise-spaghetti-tomates-chatelet.jpeg',
+        'Entrecôte Angus':            'cantina-fragapane-escalope-milanaise-spaghetti-tomates-chatelet.jpeg',
+        'Escalope à la Milanaise':    'cantina-fragapane-escalope-milanaise-spaghetti-tomates-chatelet.jpeg',
+        'Tiramisu Maison':            'cantina-fragapane-plateau-desserts-verrines-chatelet.jpeg',
+        'Mousse au Chocolat':         'cantina-fragapane-plateau-desserts-verrines-chatelet.jpeg',
+        'Panna Cotta':                'cantina-fragapane-plateau-desserts-verrines-chatelet.jpeg',
+        'Croquettes au Fromage':      'cantina-fragapane-croquettes-fromage-salade-chatelet.jpeg',
+      } %}
       {% for dish in featured %}
       <div class="dish-card fade-up fade-up-d{{ loop.index % 3 + 1 }}">
         <div class="dish-card-thumb">
-          {{ emoji_map.get(dish['cat_name'], '🍽️') }}
+          {% set img = dish_img.get(dish['name']) %}
+          {% if img %}
+          <img src="/static/images/{{ img }}"
+               alt="{{ dish['name'] }} – La Cantina Fragapane Châtelet"
+               loading="lazy">
+          {% endif %}
           <span class="dish-card-cat">{{ dish['cat_name'] }}</span>
         </div>
         <div class="dish-card-body">
