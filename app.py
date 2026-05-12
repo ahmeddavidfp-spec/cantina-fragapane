@@ -1,6 +1,7 @@
 import os
-import sqlite3
 import uuid
+import psycopg2
+import psycopg2.extras
 from datetime import datetime
 from functools import wraps
 from werkzeug.utils import secure_filename
@@ -27,15 +28,15 @@ app.secret_key = os.environ.get('SECRET_KEY', 'cantina-fragapane-secret-2024')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'fragapane2024')
-DATABASE = os.path.join(os.path.dirname(__file__), 'cantina.db')
+DATABASE_URL    = os.environ.get('DATABASE_URL', '')
 
 
 # ── Database ──────────────────────────────────────────────────────────────────
 
 def get_db():
     if 'db' not in g:
-        g.db = sqlite3.connect(DATABASE)
-        g.db.row_factory = sqlite3.Row
+        g.db = psycopg2.connect(DATABASE_URL,
+                                cursor_factory=psycopg2.extras.RealDictCursor)
     return g.db
 
 
@@ -47,31 +48,37 @@ def close_db(e=None):
 
 
 def query(sql, args=(), one=False):
-    cur = get_db().execute(sql, args)
+    cur = get_db().cursor()
+    cur.execute(sql, args)
     rv = cur.fetchall()
     return (rv[0] if rv else None) if one else rv
 
 
 def execute(sql, args=()):
     db = get_db()
-    db.execute(sql, args)
+    cur = db.cursor()
+    cur.execute(sql, args)
     db.commit()
 
 
 # ── Init & Seed ───────────────────────────────────────────────────────────────
 
 def init_db():
-    db = sqlite3.connect(DATABASE)
-    db.row_factory = sqlite3.Row
-    db.executescript('''
+    db = psycopg2.connect(DATABASE_URL,
+                          cursor_factory=psycopg2.extras.RealDictCursor)
+    cur = db.cursor()
+
+    cur.execute('''
         CREATE TABLE IF NOT EXISTS menu_categories (
-            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            id         SERIAL PRIMARY KEY,
             name       TEXT NOT NULL,
             icon       TEXT DEFAULT '🍽️',
             sort_order INTEGER DEFAULT 0
-        );
+        )
+    ''')
+    cur.execute('''
         CREATE TABLE IF NOT EXISTS menu_items (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            id          SERIAL PRIMARY KEY,
             category_id INTEGER NOT NULL,
             name        TEXT NOT NULL,
             description TEXT,
@@ -80,29 +87,37 @@ def init_db():
             available   INTEGER DEFAULT 1,
             featured    INTEGER DEFAULT 0,
             sort_order  INTEGER DEFAULT 0
-        );
+        )
+    ''')
+    cur.execute('''
         CREATE TABLE IF NOT EXISTS hours (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
-            day_name    TEXT NOT NULL,
-            day_order   INTEGER NOT NULL,
-            lunch_open  TEXT,
-            lunch_close TEXT,
+            id           SERIAL PRIMARY KEY,
+            day_name     TEXT NOT NULL,
+            day_order    INTEGER NOT NULL,
+            lunch_open   TEXT,
+            lunch_close  TEXT,
             dinner_open  TEXT,
             dinner_close TEXT,
-            is_closed   INTEGER DEFAULT 0
-        );
+            is_closed    INTEGER DEFAULT 0
+        )
+    ''')
+    cur.execute('''
         CREATE TABLE IF NOT EXISTS info (
             key   TEXT PRIMARY KEY,
             value TEXT
-        );
+        )
+    ''')
+    cur.execute('''
         CREATE TABLE IF NOT EXISTS announcements (
-            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            id         SERIAL PRIMARY KEY,
             message    TEXT NOT NULL,
             active     INTEGER DEFAULT 1,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
+        )
+    ''')
+    cur.execute('''
         CREATE TABLE IF NOT EXISTS evenements (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            id          SERIAL PRIMARY KEY,
             titre       TEXT NOT NULL,
             description TEXT,
             date_event  TEXT,
@@ -110,10 +125,12 @@ def init_db():
             active      INTEGER DEFAULT 1,
             epingle     INTEGER DEFAULT 0,
             created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
+        )
     ''')
+    db.commit()
 
-    if db.execute('SELECT COUNT(*) FROM menu_categories').fetchone()[0] == 0:
+    cur.execute('SELECT COUNT(*) AS c FROM menu_categories')
+    if cur.fetchone()['c'] == 0:
         _seed(db)
 
     db.commit()
@@ -121,6 +138,8 @@ def init_db():
 
 
 def _seed(db):
+    cur = db.cursor()
+
     cats = [
         ('Antipasti',        '🫒', 1),
         ('Pasta Fresca',     '🍝', 2),
@@ -128,8 +147,9 @@ def _seed(db):
         ('Dolci',            '🍮', 4),
     ]
     for name, icon, order in cats:
-        db.execute('INSERT INTO menu_categories (name, icon, sort_order) VALUES (?,?,?)',
-                   (name, icon, order))
+        cur.execute(
+            'INSERT INTO menu_categories (name, icon, sort_order) VALUES (%s,%s,%s)',
+            (name, icon, order))
 
     items = [
         # Antipasti
@@ -186,9 +206,9 @@ def _seed(db):
            7.00,'Lactose',1,0,3),
     ]
     for it in items:
-        db.execute('''INSERT INTO menu_items
+        cur.execute('''INSERT INTO menu_items
             (category_id,name,description,price,allergens,available,featured,sort_order)
-            VALUES (?,?,?,?,?,?,?,?)''', it)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s)''', it)
 
     hours_data = [
         ('Lundi',    1, None,    None,    '18:30','22:00', 0),
@@ -200,9 +220,9 @@ def _seed(db):
         ('Dimanche', 7, '12:00', '14:00', '18:30','22:00', 0),
     ]
     for h in hours_data:
-        db.execute('''INSERT INTO hours
+        cur.execute('''INSERT INTO hours
             (day_name,day_order,lunch_open,lunch_close,dinner_open,dinner_close,is_closed)
-            VALUES (?,?,?,?,?,?,?)''', h)
+            VALUES (%s,%s,%s,%s,%s,%s,%s)''', h)
 
     info_data = [
         ('name',              'La Cantina Fragapane'),
@@ -227,15 +247,19 @@ def _seed(db):
         ('google_maps_embed', ''),
     ]
     for key, val in info_data:
-        db.execute('INSERT OR REPLACE INTO info (key,value) VALUES (?,?)', (key, val))
+        cur.execute(
+            'INSERT INTO info (key,value) VALUES (%s,%s) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value',
+            (key, val))
 
-    db.execute('''INSERT INTO evenements (titre, description, date_event, image, active, epingle)
-                  VALUES (?,?,?,?,1,1)''', (
+    cur.execute('''INSERT INTO evenements (titre, description, date_event, image, active, epingle)
+                   VALUES (%s,%s,%s,%s,1,1)''', (
         '⚠️ Dimanche 10 mai – Fête des mères ⚠️',
         'Nous aurons le menu qui sera disponible mais nous aurons également la carte à disposition pour ceux qui ne veulent pas le menu.',
         '2025-05-10',
         'cantina-fragapane-evenement-fete-des-meres-mai-2025.jpeg',
     ))
+
+    db.commit()
 
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
@@ -273,7 +297,7 @@ def get_full_menu():
     result = []
     for cat in cats:
         items = query(
-            'SELECT * FROM menu_items WHERE category_id=? AND available=1 ORDER BY sort_order',
+            'SELECT * FROM menu_items WHERE category_id=%s AND available=1 ORDER BY sort_order',
             (cat['id'],))
         result.append({'category': cat, 'plats': items})
     return result
@@ -421,7 +445,7 @@ def admin_menu():
     cats = query('SELECT * FROM menu_categories ORDER BY sort_order')
     items_by_cat = {
         cat['id']: query(
-            'SELECT * FROM menu_items WHERE category_id=? ORDER BY sort_order',
+            'SELECT * FROM menu_items WHERE category_id=%s ORDER BY sort_order',
             (cat['id'],))
         for cat in cats
     }
@@ -435,7 +459,7 @@ def admin_add_category():
     icon = request.form.get('icon', '🍽️').strip() or '🍽️'
     if name:
         max_o = query('SELECT MAX(sort_order) AS m FROM menu_categories', one=True)['m'] or 0
-        execute('INSERT INTO menu_categories (name,icon,sort_order) VALUES (?,?,?)',
+        execute('INSERT INTO menu_categories (name,icon,sort_order) VALUES (%s,%s,%s)',
                 (name, icon, max_o + 1))
         flash(f'Catégorie « {name} » ajoutée.', 'success')
     return redirect(url_for('admin_menu'))
@@ -447,7 +471,7 @@ def admin_edit_category(cat_id):
     name = request.form.get('name', '').strip()
     icon = request.form.get('icon', '').strip() or '🍽️'
     if name:
-        execute('UPDATE menu_categories SET name=?, icon=? WHERE id=?', (name, icon, cat_id))
+        execute('UPDATE menu_categories SET name=%s, icon=%s WHERE id=%s', (name, icon, cat_id))
         flash('Catégorie mise à jour.', 'success')
     return redirect(url_for('admin_menu'))
 
@@ -455,8 +479,8 @@ def admin_edit_category(cat_id):
 @app.route('/admin/menu/categorie/<int:cat_id>/supprimer', methods=['POST'])
 @login_required
 def admin_delete_category(cat_id):
-    execute('DELETE FROM menu_items WHERE category_id=?', (cat_id,))
-    execute('DELETE FROM menu_categories WHERE id=?', (cat_id,))
+    execute('DELETE FROM menu_items WHERE category_id=%s', (cat_id,))
+    execute('DELETE FROM menu_categories WHERE id=%s', (cat_id,))
     flash('Catégorie supprimée.', 'success')
     return redirect(url_for('admin_menu'))
 
@@ -470,11 +494,11 @@ def admin_add_item():
     if cat_id and name:
         price = f.get('price', '').strip()
         price = float(price) if price else None
-        max_o = (query('SELECT MAX(sort_order) AS m FROM menu_items WHERE category_id=?',
+        max_o = (query('SELECT MAX(sort_order) AS m FROM menu_items WHERE category_id=%s',
                        (cat_id,), one=True)['m'] or 0)
         execute('''INSERT INTO menu_items
             (category_id,name,description,price,allergens,available,featured,sort_order)
-            VALUES (?,?,?,?,?,?,?,?)''',
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s)''',
                 (cat_id, name, f.get('description', ''), price,
                  f.get('allergens', ''),
                  1 if f.get('available') else 0,
@@ -491,8 +515,8 @@ def admin_edit_item(item_id):
     price = f.get('price', '').strip()
     price = float(price) if price else None
     execute('''UPDATE menu_items
-               SET name=?, description=?, price=?, allergens=?, available=?, featured=?
-               WHERE id=?''',
+               SET name=%s, description=%s, price=%s, allergens=%s, available=%s, featured=%s
+               WHERE id=%s''',
             (f.get('name', ''), f.get('description', ''), price,
              f.get('allergens', ''),
              1 if f.get('available') else 0,
@@ -505,7 +529,7 @@ def admin_edit_item(item_id):
 @app.route('/admin/menu/plat/<int:item_id>/supprimer', methods=['POST'])
 @login_required
 def admin_delete_item(item_id):
-    execute('DELETE FROM menu_items WHERE id=?', (item_id,))
+    execute('DELETE FROM menu_items WHERE id=%s', (item_id,))
     flash('Plat supprimé.', 'success')
     return redirect(url_for('admin_menu'))
 
@@ -523,15 +547,16 @@ def admin_hours():
 @login_required
 def admin_edit_hours():
     all_hours = query('SELECT id FROM hours')
+    allowed_fields = ('lunch_open', 'lunch_close', 'dinner_open', 'dinner_close')
 
     for h in all_hours:
         hid = h['id']
         is_closed = 1 if request.form.get(f'h_{hid}_is_closed') else 0
-        execute('UPDATE hours SET is_closed=? WHERE id=?', (is_closed, hid))
+        execute('UPDATE hours SET is_closed=%s WHERE id=%s', (is_closed, hid))
 
-        for field in ('lunch_open', 'lunch_close', 'dinner_open', 'dinner_close'):
+        for field in allowed_fields:
             val = request.form.get(f'h_{hid}_{field}', '').strip() or None
-            execute(f'UPDATE hours SET {field}=? WHERE id=?', (val, hid))
+            execute(f'UPDATE hours SET {field}=%s WHERE id=%s', (val, hid))
 
     flash('Horaires mis à jour.', 'success')
     return redirect(url_for('admin_hours'))
@@ -555,7 +580,9 @@ def admin_edit_info():
                'reservation_note','price_range','google_maps_embed']
     for key in allowed:
         val = request.form.get(key, '').strip()
-        execute('INSERT OR REPLACE INTO info (key,value) VALUES (?,?)', (key, val))
+        execute(
+            'INSERT INTO info (key,value) VALUES (%s,%s) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value',
+            (key, val))
     flash('Informations mises à jour.', 'success')
     return redirect(url_for('admin_info'))
 
@@ -577,7 +604,7 @@ def admin_add_event():
     if not image:
         image = f.get('image_existing', '').strip() or None
     execute('''INSERT INTO evenements (titre, description, date_event, image, active, epingle)
-               VALUES (?,?,?,?,?,?)''',
+               VALUES (%s,%s,%s,%s,%s,%s)''',
             (f.get('titre','').strip(), f.get('description','').strip(),
              f.get('date_event','').strip() or None, image,
              1 if f.get('active') else 0, 1 if f.get('epingle') else 0))
@@ -593,8 +620,8 @@ def admin_edit_event(evt_id):
     if not image:
         image = f.get('image_existing', '').strip() or None
     execute('''UPDATE evenements
-               SET titre=?, description=?, date_event=?, image=?, active=?, epingle=?
-               WHERE id=?''',
+               SET titre=%s, description=%s, date_event=%s, image=%s, active=%s, epingle=%s
+               WHERE id=%s''',
             (f.get('titre','').strip(), f.get('description','').strip(),
              f.get('date_event','').strip() or None, image,
              1 if f.get('active') else 0, 1 if f.get('epingle') else 0,
@@ -606,7 +633,7 @@ def admin_edit_event(evt_id):
 @app.route('/admin/evenements/<int:evt_id>/supprimer', methods=['POST'])
 @login_required
 def admin_delete_event(evt_id):
-    execute('DELETE FROM evenements WHERE id=?', (evt_id,))
+    execute('DELETE FROM evenements WHERE id=%s', (evt_id,))
     flash('Événement supprimé.', 'success')
     return redirect(url_for('admin_events'))
 
@@ -614,9 +641,9 @@ def admin_delete_event(evt_id):
 @app.route('/admin/evenements/<int:evt_id>/toggle', methods=['POST'])
 @login_required
 def admin_toggle_event(evt_id):
-    evt = query('SELECT active FROM evenements WHERE id=?', (evt_id,), one=True)
+    evt = query('SELECT active FROM evenements WHERE id=%s', (evt_id,), one=True)
     if evt:
-        execute('UPDATE evenements SET active=? WHERE id=?',
+        execute('UPDATE evenements SET active=%s WHERE id=%s',
                 (0 if evt['active'] else 1, evt_id))
     return redirect(url_for('admin_events'))
 
@@ -635,7 +662,7 @@ def admin_announcements():
 def admin_add_announcement():
     msg = request.form.get('message', '').strip()
     if msg:
-        execute('INSERT INTO announcements (message, active) VALUES (?,1)', (msg,))
+        execute('INSERT INTO announcements (message, active) VALUES (%s,1)', (msg,))
         flash('Annonce ajoutée.', 'success')
     return redirect(url_for('admin_announcements'))
 
@@ -643,9 +670,9 @@ def admin_add_announcement():
 @app.route('/admin/annonces/<int:ann_id>/toggle', methods=['POST'])
 @login_required
 def admin_toggle_announcement(ann_id):
-    ann = query('SELECT active FROM announcements WHERE id=?', (ann_id,), one=True)
+    ann = query('SELECT active FROM announcements WHERE id=%s', (ann_id,), one=True)
     if ann:
-        execute('UPDATE announcements SET active=? WHERE id=?',
+        execute('UPDATE announcements SET active=%s WHERE id=%s',
                 (0 if ann['active'] else 1, ann_id))
     return redirect(url_for('admin_announcements'))
 
@@ -653,7 +680,7 @@ def admin_toggle_announcement(ann_id):
 @app.route('/admin/annonces/<int:ann_id>/supprimer', methods=['POST'])
 @login_required
 def admin_delete_announcement(ann_id):
-    execute('DELETE FROM announcements WHERE id=?', (ann_id,))
+    execute('DELETE FROM announcements WHERE id=%s', (ann_id,))
     flash('Annonce supprimée.', 'success')
     return redirect(url_for('admin_announcements'))
 
