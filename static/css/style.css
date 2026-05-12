@@ -200,6 +200,10 @@ input, textarea, select { font-family: inherit; }
   align-items: center;
   gap: .25rem;
 }
+/* Le menu mobile (hors header) est toujours caché sur desktop */
+.nav-menu-mobile {
+  display: none;
+}
 .nav-link {
   font-size: .85rem;
   font-weight: 700;
@@ -1605,25 +1609,27 @@ html, body { overflow-x: hidden; }
 }
 
 @media (max-width: 860px) {
-  /* Nav burger — se déclenche dès 860px pour avoir la place */
-  .nav-toggle { display: flex; z-index: 1101; position: relative; }
-  .nav-menu {
+  /* Nav burger — se déclenche dès 860px */
+  .nav-toggle       { display: flex; z-index: 1101; position: relative; }
+  .nav-menu-desktop { display: none; } /* cache le menu desktop */
+
+  /* Menu mobile : overlay plein écran hors du header (pas de bug iOS) */
+  .nav-menu-mobile {
     display: none;
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: #0C180C;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     justify-content: flex-start;
-    gap: 0;
     z-index: 1100;
-    padding-top: 90px;
+    padding-top: 80px;
     padding-bottom: 2rem;
     overflow-y: auto;
+    list-style: none;
   }
-  .nav-menu.open { display: flex; }
-  .nav-menu li { width: 100%; text-align: center; }
-  .nav-link {
+  .nav-menu-mobile.open { display: flex; }
+  .nav-menu-mobile .nav-link {
     display: block;
     font-size: 1.15rem;
     letter-spacing: .1em;
@@ -1632,16 +1638,15 @@ html, body { overflow-x: hidden; }
     font-weight: 700;
     padding: 1.1rem 2rem;
     border-bottom: 1px solid rgba(255,255,255,.08);
-    width: 100%;
     text-align: center;
     border-radius: 0;
   }
-  .nav-link::after { display: none; }
-  .nav-link.active { color: var(--gold) !important; }
-  .nav-link:hover  { color: var(--gold) !important; background: rgba(255,255,255,.05); }
-  .nav-link-delivery { color: var(--gold) !important; }
-  .nav-menu li:last-child { margin-top: 1.5rem; padding: 0 2rem; }
-  .nav-menu .btn {
+  .nav-menu-mobile .nav-link::after { display: none; }
+  .nav-menu-mobile .nav-link.active { color: var(--gold) !important; }
+  .nav-menu-mobile .nav-link:hover  { color: var(--gold) !important; background: rgba(255,255,255,.05); }
+  .nav-menu-mobile .nav-link-delivery { color: var(--gold) !important; }
+  .nav-menu-mobile li:last-child { padding: 1.5rem 2rem 0; }
+  .nav-menu-mobile .btn {
     width: 100%;
     justify-content: center;
     font-size: 1rem;

@@ -33,7 +33,7 @@
         <button class="nav-toggle" id="navToggle" aria-label="Ouvrir le menu">
           <span></span><span></span><span></span>
         </button>
-        <ul class="nav-menu" id="navMenu">
+        <ul class="nav-menu nav-menu-desktop">
           <li><a href="{{ url_for('index') }}"     class="nav-link {% if request.endpoint == 'index'    %}active{% endif %}">Accueil</a></li>
           <li><a href="{{ url_for('menu') }}"      class="nav-link {% if request.endpoint == 'menu'     %}active{% endif %}">Notre Menu</a></li>
           <li><a href="{{ url_for('livraison') }}" class="nav-link nav-link-delivery {% if request.endpoint == 'livraison' %}active{% endif %}">🛵 Livraison</a></li>
@@ -44,6 +44,16 @@
       </nav>
     </div>
   </header>
+
+  {# Menu mobile — en dehors du header pour éviter le bug iOS backdrop-filter + position:fixed #}
+  <ul class="nav-menu nav-menu-mobile" id="navMenu">
+    <li><a href="{{ url_for('index') }}"     class="nav-link {% if request.endpoint == 'index'    %}active{% endif %}">Accueil</a></li>
+    <li><a href="{{ url_for('menu') }}"      class="nav-link {% if request.endpoint == 'menu'     %}active{% endif %}">Notre Menu</a></li>
+    <li><a href="{{ url_for('livraison') }}" class="nav-link nav-link-delivery {% if request.endpoint == 'livraison' %}active{% endif %}">🛵 Livraison</a></li>
+    <li><a href="{{ url_for('a_propos') }}"  class="nav-link {% if request.endpoint == 'a_propos' %}active{% endif %}">À Propos</a></li>
+    <li><a href="{{ url_for('contact') }}"   class="nav-link {% if request.endpoint == 'contact'  %}active{% endif %}">Contact</a></li>
+    <li><a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-outline btn-gold">📞 Réserver</a></li>
+  </ul>
 
   {# ── Main ── #}
   <main>{% block content %}{% endblock %}</main>

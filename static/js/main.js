@@ -1,16 +1,17 @@
 // Mobile nav toggle
-const navToggle = document.getElementById('navToggle');
-const navMenu   = document.getElementById('navMenu');
+const navToggle  = document.getElementById('navToggle');
+const navMenu    = document.getElementById('navMenu'); // ul.nav-menu-mobile hors du header
 if (navToggle && navMenu) {
   navToggle.addEventListener('click', () => {
-    navMenu.classList.toggle('open');
-    navToggle.classList.toggle('open');
+    const isOpen = navMenu.classList.toggle('open');
+    navToggle.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
   });
-  // Close on link click
   navMenu.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => {
       navMenu.classList.remove('open');
       navToggle.classList.remove('open');
+      document.body.style.overflow = '';
     });
   });
 }
