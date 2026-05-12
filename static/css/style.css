@@ -1604,9 +1604,9 @@ html, body { overflow-x: hidden; }
   .events-section { padding: 3rem 0; }
 }
 
-@media (max-width: 640px) {
-  /* Nav burger */
-  .nav-toggle { display: flex; }
+@media (max-width: 860px) {
+  /* Nav burger — se déclenche dès 860px pour avoir la place */
+  .nav-toggle { display: flex; z-index: 1101; position: relative; }
   .nav-menu {
     display: none;
     position: fixed;
@@ -1615,34 +1615,41 @@ html, body { overflow-x: hidden; }
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2rem;
+    gap: 1.25rem;
     z-index: 1100;
-    padding: 2rem;
+    padding: 5rem 2rem 2rem;
+    overflow-y: auto;
   }
   .nav-menu.open { display: flex; }
+  .nav-menu li { width: 100%; max-width: 320px; }
   .nav-link {
-    font-size: 1.3rem;
+    display: block;
+    font-size: 1.2rem;
     letter-spacing: .12em;
     text-transform: uppercase;
     color: rgba(245,237,214,.85) !important;
     font-weight: 700;
-    padding: .5rem 1rem;
-    border-bottom: 1px solid rgba(255,255,255,.08);
+    padding: .85rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,.1);
     width: 100%;
     text-align: center;
+    border-radius: 0;
   }
+  .nav-link::after { display: none; }
   .nav-link.active,
-  .nav-link:hover { color: var(--gold) !important; }
+  .nav-link:hover { color: var(--gold) !important; background: rgba(255,255,255,.04); }
   .nav-link-delivery { color: var(--gold) !important; }
   .nav-menu .btn {
-    margin-top: .5rem;
+    margin-top: .75rem;
     width: 100%;
+    max-width: 320px;
     justify-content: center;
     font-size: 1rem;
   }
-  /* Fermer le menu quand on clique le burger à nouveau */
-  .nav-toggle { z-index: 1101; position: relative; }
 
+}
+
+@media (max-width: 640px) {
   /* Grilles 1 colonne */
   .dishes-grid, .reviews-grid       { grid-template-columns: 1fr; }
   .about-features, .about-values    { grid-template-columns: 1fr 1fr; }
@@ -1650,7 +1657,6 @@ html, body { overflow-x: hidden; }
   .gallery-grid-3                   { grid-template-columns: 1fr; }
   .menu-items-grid                  { grid-template-columns: 1fr; }
   .footer-grid                      { grid-template-columns: 1fr; }
-  .stats-grid                       { grid-template-columns: 1fr 1fr; }
   .delivery-menu-grid               { grid-template-columns: 1fr; }
   .delivery-info-cards              { grid-template-columns: 1fr; }
 
@@ -1694,7 +1700,6 @@ html, body { overflow-x: hidden; }
 
   /* Hours */
   .hours-inner  { grid-template-columns: 1fr; gap: 2rem; }
-  .hours-reserve div[style] { flex-direction: column; }
   .hours-reserve .btn { width: 100%; justify-content: center; }
 
   /* Award badges */
