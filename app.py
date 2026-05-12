@@ -517,7 +517,7 @@ def reservation():
         else:
             flash('Veuillez remplir tous les champs obligatoires.', 'error')
         return redirect(url_for('reservation'))
-    hours = query('SELECT * FROM opening_hours ORDER BY day_order')
+    hours = query('SELECT * FROM hours ORDER BY day_order')
     return render_template('reservation.html', hours=hours)
 
 
