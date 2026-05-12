@@ -385,7 +385,7 @@ def send_contact_email(name, sender_email, phone, message):
             f"Message :\n{message}")
     msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
-    with smtplib.SMTP(server, port) as srv:
+    with smtplib.SMTP(server, port, timeout=10) as srv:
         srv.starttls()
         srv.login(username, password)
         srv.send_message(msg)
