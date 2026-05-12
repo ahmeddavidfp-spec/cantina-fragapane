@@ -1559,42 +1559,128 @@ input, textarea, select { font-family: inherit; }
 .fade-up-d2 { animation-delay: .2s; }
 .fade-up-d3 { animation-delay: .3s; }
 
+/* ── Galerie 3 colonnes (classe CSS pour éviter inline styles) ──────────────── */
+.gallery-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+/* Valeurs 4 colonnes (classe CSS) */
+.about-values-4col { grid-template-columns: repeat(4, 1fr); }
+
 /* ── Responsive ────────────────────────────────────────────────────────────── */
+
+/* Prevent horizontal overflow globally */
+html, body { overflow-x: hidden; }
+
+@media (max-width: 1024px) {
+  .delivery-menu-grid { grid-template-columns: 1fr 1fr; }
+}
+
 @media (max-width: 900px) {
+  /* Grilles principales */
   .award-grid { grid-template-columns: 1fr; gap: 2.5rem; text-align: center; }
   .award-badge-row { justify-content: center; }
   .award-img { max-width: 220px; }
   .about-grid, .about-page-grid,
-  .hours-inner, .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
-  .dishes-grid, .reviews-grid  { grid-template-columns: 1fr 1fr; }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .hours-inner, .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .dishes-grid              { grid-template-columns: 1fr 1fr; }
+  .reviews-grid             { grid-template-columns: 1fr 1fr; }
+  .footer-grid              { grid-template-columns: 1fr 1fr; }
   .footer-grid > *:first-child { grid-column: 1 / -1; }
-  .about-accent { display: none; }
-  .admin-layout { flex-direction: column; }
-  .admin-sidebar { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; }
+  .about-accent             { display: none; }
+  .about-values-4col        { grid-template-columns: 1fr 1fr; }
+  .gallery-grid-3           { grid-template-columns: 1fr 1fr; }
+  /* About frame moins haut sur tablette */
+  .about-frame              { aspect-ratio: 3/2 !important; }
+  /* Admin */
+  .admin-layout   { flex-direction: column; }
+  .admin-sidebar  { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; }
+  /* Sections padding */
+  .about-section, .featured-section, .award-section,
+  .about-page, .contact-page, .menu-page { padding-top: 3.5rem; padding-bottom: 3.5rem; }
+  .hours-section  { padding: 3.5rem 0; }
+  .events-section { padding: 3rem 0; }
 }
+
 @media (max-width: 640px) {
+  /* Nav burger */
   .nav-toggle { display: flex; }
   .nav-menu {
     display: none;
     position: fixed;
     top: 70px; left: 0; right: 0; bottom: 0;
-    background: rgba(26,11,5,.98);
+    background: rgba(12,24,12,.97);
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1.5rem;
+    gap: 1.75rem;
     z-index: 999;
+    padding: 2rem;
   }
   .nav-menu.open { display: flex; }
-  .nav-link { font-size: 1.1rem; }
-  .dishes-grid, .reviews-grid { grid-template-columns: 1fr; }
-  .about-features, .about-values { grid-template-columns: 1fr; }
-  .menu-items-grid { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr; }
-  .stats-grid { grid-template-columns: 1fr; }
-  .hero-badges { gap: 1.5rem; }
-  .hours-inner { grid-template-columns: 1fr; }
+  .nav-link { font-size: 1.15rem; }
+
+  /* Grilles 1 colonne */
+  .dishes-grid, .reviews-grid       { grid-template-columns: 1fr; }
+  .about-features, .about-values    { grid-template-columns: 1fr 1fr; }
+  .about-values-4col                { grid-template-columns: 1fr 1fr; }
+  .gallery-grid-3                   { grid-template-columns: 1fr; }
+  .menu-items-grid                  { grid-template-columns: 1fr; }
+  .footer-grid                      { grid-template-columns: 1fr; }
+  .stats-grid                       { grid-template-columns: 1fr 1fr; }
+  .delivery-menu-grid               { grid-template-columns: 1fr; }
+  .delivery-info-cards              { grid-template-columns: 1fr; }
+
+  /* About frame ratio portrait raisonnable */
+  .about-frame { aspect-ratio: 4/3 !important; }
+
+  /* Hero homepage */
+  .hero { min-height: 90vh; padding: 6rem 1rem 5rem; }
+  .hero-cta { flex-direction: column; align-items: center; }
+  .hero-cta .btn { width: 100%; justify-content: center; max-width: 280px; }
+  .hero-badges { gap: 1.25rem; }
+  .hero-badge-num { font-size: 1.4rem; }
+
+  /* Page heroes */
+  .page-hero { padding: 6rem 1rem 3rem; }
+
+  /* Sections padding réduit */
+  .about-section, .featured-section, .award-section,
+  .about-page, .contact-page { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+  .hours-section  { padding: 2.5rem 0; }
+  .events-section { padding: 2.5rem 0; }
+
+  /* Delivery strip colonne */
+  .delivery-strip-inner   { flex-direction: column; text-align: center; gap: 1rem; }
+  .delivery-strip-actions { justify-content: center; width: 100%; }
+  .delivery-strip-actions .btn { flex: 1; justify-content: center; min-width: 140px; }
+
+  /* Delivery steps colonne */
+  .delivery-steps         { flex-direction: column; align-items: stretch; }
+  .delivery-step          { max-width: 100%; }
+  .delivery-step-arrow    { transform: rotate(90deg); text-align: center; }
+  .delivery-zone-grid     { grid-template-columns: 1fr; }
+  .delivery-hero-cta      { flex-direction: column; align-items: center; }
+  .delivery-hero-cta .btn { width: 100%; justify-content: center; max-width: 280px; }
+  .delivery-cta-btns      { flex-direction: column; align-items: center; }
+  .delivery-cta-btns .btn { width: 100%; justify-content: center; max-width: 280px; }
+
+  /* Boutons CTA */
+  .cta-group { flex-direction: column; align-items: center; }
+  .cta-group .btn { width: 100%; justify-content: center; max-width: 280px; }
+
+  /* Hours */
+  .hours-inner  { grid-template-columns: 1fr; gap: 2rem; }
+  .hours-reserve div[style] { flex-direction: column; }
+  .hours-reserve .btn { width: 100%; justify-content: center; }
+
+  /* Award badges */
+  .award-badge-row { flex-direction: column; gap: .75rem; align-items: center; }
+
+  /* Admin */
+  .stats-grid { grid-template-columns: 1fr 1fr; }
 }
 
 /* ── Nav – lien livraison mis en avant ──────────────────────────────────────── */
