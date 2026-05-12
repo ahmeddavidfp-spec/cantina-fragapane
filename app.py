@@ -28,13 +28,31 @@ app.secret_key = os.environ.get('SECRET_KEY', 'cantina-fragapane-secret-2024')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'fragapane2024')
-DATABASE_URL    = os.environ.get('DATABASE_URL')
 
+# Railway injecte soit DATABASE_URL directement, soit les variables PG* individuelles
+DATABASE_URL = os.environ.get('DATABASE_URL')
 if not DATABASE_URL:
-    raise RuntimeError(
-        "DATABASE_URL n'est pas définie. "
-        "Ajoute la variable dans Railway : DATABASE_URL = ${{Postgres.DATABASE_URL}}"
-    )
+    pghost = os.environ.get('PGHOST', '')
+    pgport = os.environ.get('PGPORT', '5432')
+    pguser = os.environ.get('PGUSER', '')
+    pgpass = os.environ.get('PGPASSWORD', '')
+    pgdb   = os.environ.get('PGDATABASE') or os.environ.get('POSTGRES_DB', '')
+    if pghost and pguser:
+        import urllib.parse
+        DATABASE_URL = (
+            f"postgresql://{urllib.parse.quote(pguser)}:"
+            f"{urllib.parse.quote(pgpass)}@{pghost}:{pgport}/{pgdb}"
+        )
+    else:
+        raise RuntimeError(
+            "Aucune variable de connexion PostgreSQL trouvée. "
+            "Dans Railway → service web → Variables, ajoute :\n"
+            "PGHOST=${{Postgres.PGHOST}}\n"
+            "PGPORT=${{Postgres.PGPORT}}\n"
+            "PGUSER=${{Postgres.PGUSER}}\n"
+            "PGPASSWORD=${{Postgres.PGPASSWORD}}\n"
+            "PGDATABASE=${{Postgres.PGDATABASE}}"
+        )
 
 
 # ── Database ──────────────────────────────────────────────────────────────────
