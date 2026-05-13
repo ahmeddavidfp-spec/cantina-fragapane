@@ -163,25 +163,27 @@
     <div class="section-header">
       <span class="section-label">Nos spécialités</span>
       <h2 class="section-title">Les incontournables</h2>
-      <p class="section-sub">Pâtes fraîches, viandes grillées, douceurs maison — un voyage culinaire au cœur de l'Italie.</p>
+      <p class="section-sub">Antipasti, pasta fresca, grillades et douceurs maison.</p>
     </div>
     <div class="dishes-grid">
       {% set dish_img = {
-        'Planche Mixte Maison':       'cantina-fragapane-grande-planche-apero-antipasti-chatelet.jpeg',
-        'Burrata Pugliese':           'cantina-fragapane-planche-antipasti-signature-logo-chatelet.jpeg',
-        'Raviolis aux Truffes':       'cantina-fragapane-casarecce-pesto-ricotta-pro-chatelet.jpeg',
-        'Tagliatelles à la Chicorée': 'cantina-fragapane-tagliolini-safran-petits-pois-pancetta-chatelet.jpeg',
-        'Pasta au Saumon':            'cantina-fragapane-spaghetti-fruits-de-mer-tomates-chatelet.jpeg',
-        'Spaghetti Carbonara':        'cantina-fragapane-tagliatelles-bolognaise-sauce-tomate-chatelet.jpeg',
-        'Tagliatelles Bolognaise':    'cantina-fragapane-tagliatelles-bolognaise-sauce-tomate-chatelet.jpeg',
-        'Arrosticinis Abruzzesi':     'cantina-fragapane-escalope-milanaise-spaghetti-tomates-chatelet.jpeg',
-        'Brochettes Mixtes':          'cantina-fragapane-escalope-milanaise-spaghetti-tomates-chatelet.jpeg',
-        'Entrecôte Angus':            'cantina-fragapane-escalope-milanaise-spaghetti-tomates-chatelet.jpeg',
-        'Escalope à la Milanaise':    'cantina-fragapane-escalope-milanaise-spaghetti-tomates-chatelet.jpeg',
-        'Tiramisu Maison':            'cantina-fragapane-plateau-desserts-verrines-chatelet.jpeg',
-        'Mousse au Chocolat':         'cantina-fragapane-plateau-desserts-verrines-chatelet.jpeg',
-        'Panna Cotta':                'cantina-fragapane-plateau-desserts-verrines-chatelet.jpeg',
-        'Croquettes au Fromage':      'cantina-fragapane-croquettes-fromage-salade-chatelet.jpeg',
+        'La Planche Mixte':                       'cantina-fragapane-grande-planche-apero-antipasti-chatelet.jpeg',
+        'La Planche Terre et Mer':                'cantina-fragapane-planche-antipasti-signature-logo-chatelet.jpeg',
+        'Scampis Ail ou Piquant':                 'cantina-fragapane-planche-antipasti-signature-logo-chatelet.jpeg',
+        'Scampis Diabolo':                        'cantina-fragapane-planche-antipasti-signature-logo-chatelet.jpeg',
+        'Napoli':                                 'cantina-fragapane-spaghetti-fruits-de-mer-tomates-chatelet.jpeg',
+        'Aglio e Olio':                           'cantina-fragapane-tagliolini-safran-petits-pois-pancetta-chatelet.jpeg',
+        'Al Ragù':                                'cantina-fragapane-tagliatelles-bolognaise-sauce-tomate-chatelet.jpeg',
+        'Quattro Formaggi':                       'cantina-fragapane-casarecce-pesto-ricotta-pro-chatelet.jpeg',
+        'Pesto Pistache, Burrata & Mortadelle':   'cantina-fragapane-casarecce-pesto-ricotta-pro-chatelet.jpeg',
+        'Arrosticini Traditionnels':              'cantina-fragapane-escalope-milanaise-spaghetti-tomates-chatelet.jpeg',
+        'Black Angus':                            'cantina-fragapane-escalope-milanaise-spaghetti-tomates-chatelet.jpeg',
+        'Brochette Agneau':                       'cantina-fragapane-escalope-milanaise-spaghetti-tomates-chatelet.jpeg',
+        'Cannoli':                                'cantina-fragapane-plateau-desserts-verrines-chatelet.jpeg',
+        'Tiramisu':                               'cantina-fragapane-plateau-desserts-verrines-chatelet.jpeg',
+        'Dame Blanche':                           'cantina-fragapane-plateau-desserts-verrines-chatelet.jpeg',
+        'Moelleux Chocolat':                      'cantina-fragapane-plateau-desserts-verrines-chatelet.jpeg',
+        'Café Gourmand':                          'cantina-fragapane-plateau-desserts-verrines-chatelet.jpeg',
       } %}
       {% for dish in featured %}
       <div class="dish-card fade-up fade-up-d{{ loop.index % 3 + 1 }}">
