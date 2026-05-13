@@ -434,7 +434,8 @@ def index():
         FROM menu_items m
         JOIN menu_categories c ON m.category_id = c.id
         WHERE m.featured=1 AND m.available=1
-        ORDER BY m.sort_order
+          AND c.name IN ('Entrées','Pâtes Fraîches','Grillades')
+        ORDER BY c.sort_order, m.sort_order
         LIMIT 6
     ''')
     reviews = [
@@ -1079,10 +1080,10 @@ def admin_reset_menu():
         # ── Desserts ─────────────────────────────────────────────────────
         (4, 'Cannoli',
          'Cannoli siciliens au choix parmi 3 parfums',
-         6.00, 'Gluten, Lactose', 1, 1, 1),
+         6.00, 'Gluten, Lactose', 1, 0, 1),
         (4, 'Tiramisu',
          'Tiramisu maison à la recette traditionnelle',
-         8.00, 'Gluten, Lactose, Œufs', 1, 1, 2),
+         8.00, 'Gluten, Lactose, Œufs', 1, 0, 2),
         (4, 'Dame Blanche',
          'Glace vanille, coulis de chocolat blanc chaud',
          8.00, 'Lactose', 1, 0, 3),
@@ -1131,7 +1132,7 @@ def admin_reset_menu():
          12.00, 'Gluten, Œufs, Lactose', 1, 0, 3),
 
         # ── Apéritifs ────────────────────────────────────────────────────
-        (7, 'Prosecco',      'Prosecco pétillant italien',        7.50, '', 1, 1, 1),
+        (7, 'Prosecco',      'Prosecco pétillant italien',        7.50, '', 1, 0, 1),
         (7, 'Porto',         'Porto rouge ou blanc',              6.00, '', 1, 0, 2),
         (7, 'Campari',       'Campari aperitivo',                 7.00, '', 1, 0, 3),
         (7, 'Cynar',         'Cynar, apéritif à l\'artichaut',   7.00, '', 1, 0, 4),
@@ -1143,8 +1144,8 @@ def admin_reset_menu():
         (7, 'Martini Rossini','Martini avec Prosecco et fraise',  8.00, '', 1, 0, 10),
 
         # ── Cocktails ────────────────────────────────────────────────────
-        (8, 'Apéro Maison',              'Cocktail signature de la maison',         9.00, '', 1, 1, 1),
-        (8, 'Apérol Spritz',             'Aperol, Prosecco, soda',                  9.00, '', 1, 1, 2),
+        (8, 'Apéro Maison',              'Cocktail signature de la maison',         9.00, '', 1, 0, 1),
+        (8, 'Apérol Spritz',             'Aperol, Prosecco, soda',                  9.00, '', 1, 0, 2),
         (8, 'Mojito',                    'Rhum blanc, menthe, citron vert, soda',   9.00, '', 1, 0, 3),
         (8, 'Mojito Sans Alcool',        'Menthe, citron vert, soda — sans alcool', 5.50, '', 1, 0, 4),
         (8, 'Apérol Spritz Sans Alcool', 'Apérol sans alcool, soda, orange',        5.50, '', 1, 0, 5),
