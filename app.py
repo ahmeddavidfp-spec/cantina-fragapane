@@ -983,19 +983,26 @@ def admin_reset_menu():
 
     # ── Catégories ──────────────────────────────────────────────────────────
     cats = [
-        (1, 'Entrées',          '🫒', 1),
-        (2, 'Pâtes Fraîches',   '🍝', 2),
-        (3, 'Grillades',        '🥩', 3),
-        (4, 'Desserts',         '🍮', 4),
-        (5, 'Boissons Chaudes', '☕', 5),
-        (6, 'Menu Enfants',     '🧒', 6),
+        (1,  'Entrées',          '🫒',  1),
+        (2,  'Pâtes Fraîches',   '🍝',  2),
+        (3,  'Grillades',        '🥩',  3),
+        (4,  'Desserts',         '🍮',  4),
+        (5,  'Boissons Chaudes', '☕',  5),
+        (6,  'Menu Enfants',     '🧒',  6),
+        (7,  'Apéritifs',        '🥂',  7),
+        (8,  'Cocktails',        '🍹',  8),
+        (9,  'Alcools',          '🥃',  9),
+        (10, 'Digestifs',        '🍾', 10),
+        (11, 'Bières',           '🍺', 11),
+        (12, 'Softs',            '🧃', 12),
+        (13, 'Schweppes',        '🫧', 13),
     ]
     for cid, name, icon, order in cats:
         cur.execute(
             'INSERT INTO menu_categories (id, name, icon, sort_order) VALUES (%s,%s,%s,%s)',
             (cid, name, icon, order))
     # Avance la séquence après les insertions manuelles
-    cur.execute("SELECT setval(pg_get_serial_sequence('menu_categories','id'), 6)")
+    cur.execute("SELECT setval(pg_get_serial_sequence('menu_categories','id'), 13)")
 
     # ── Plats ───────────────────────────────────────────────────────────────
     # (category_id, name, description, price, allergens, available, featured, sort_order)
@@ -1122,6 +1129,74 @@ def admin_reset_menu():
         (6, 'La Pasta Prosciutto e Formaggio',
          'Pâtes au jambon et fromage pour enfants',
          12.00, 'Gluten, Œufs, Lactose', 1, 0, 3),
+
+        # ── Apéritifs ────────────────────────────────────────────────────
+        (7, 'Prosecco',      'Prosecco pétillant italien',        7.50, '', 1, 1, 1),
+        (7, 'Porto',         'Porto rouge ou blanc',              6.00, '', 1, 0, 2),
+        (7, 'Campari',       'Campari aperitivo',                 7.00, '', 1, 0, 3),
+        (7, 'Cynar',         'Cynar, apéritif à l\'artichaut',   7.00, '', 1, 0, 4),
+        (7, 'Pisang',        'Pisang Ambon, liqueur de banane',   7.00, '', 1, 0, 5),
+        (7, 'Batida Coco',   'Batida de coco',                    7.00, '', 1, 0, 6),
+        (7, 'Martini Blanc', 'Martini Bianco',                    7.00, '', 1, 0, 7),
+        (7, 'Martini Rouge', 'Martini Rosso',                     7.00, '', 1, 0, 8),
+        (7, 'Martini Bellini','Martini avec Prosecco et pêche',   8.00, '', 1, 0, 9),
+        (7, 'Martini Rossini','Martini avec Prosecco et fraise',  8.00, '', 1, 0, 10),
+
+        # ── Cocktails ────────────────────────────────────────────────────
+        (8, 'Apéro Maison',              'Cocktail signature de la maison',         9.00, '', 1, 1, 1),
+        (8, 'Apérol Spritz',             'Aperol, Prosecco, soda',                  9.00, '', 1, 1, 2),
+        (8, 'Mojito',                    'Rhum blanc, menthe, citron vert, soda',   9.00, '', 1, 0, 3),
+        (8, 'Mojito Sans Alcool',        'Menthe, citron vert, soda — sans alcool', 5.50, '', 1, 0, 4),
+        (8, 'Apérol Spritz Sans Alcool', 'Apérol sans alcool, soda, orange',        5.50, '', 1, 0, 5),
+        (8, 'Cocktail Sans Alcool',      'Cocktail fruité sans alcool',             5.50, '', 1, 0, 6),
+
+        # ── Alcools ──────────────────────────────────────────────────────
+        (9, 'William Lawson',   'Whisky',                   7.00, '', 1, 0, 1),
+        (9, 'Jack Daniels',     'Whiskey américain',        7.50, '', 1, 0, 2),
+        (9, 'Bacardi Blanc',    'Rhum blanc',               7.00, '', 1, 0, 3),
+        (9, 'Bacardi Brun',     'Rhum ambré',               7.00, '', 1, 0, 4),
+        (9, 'Eristoff Blanche', 'Vodka blanche',            7.00, '', 1, 0, 5),
+        (9, 'Eristoff Rouge',   'Vodka rouge',              7.00, '', 1, 0, 6),
+        (9, 'Bombay Sapphire',  'Gin premium',              7.00, '', 1, 0, 7),
+
+        # ── Digestifs ────────────────────────────────────────────────────
+        (10, 'Baileys',          'Crème de whisky irlandais', 7.50, 'Lactose', 1, 0, 1),
+        (10, 'Averna',           'Amaro sicilien',            8.50, '', 1, 0, 2),
+        (10, 'Amaro Del Capo',   'Amaro calabrais aux herbes', 8.50, '', 1, 0, 3),
+        (10, 'Vecchia Romania',  'Brandy roumain',            6.00, '', 1, 0, 4),
+        (10, 'Limoncello',       'Liqueur de citron sicilienne', 7.00, '', 1, 0, 5),
+        (10, 'Grappa',           'Grappa traditionnelle',     7.00, '', 1, 0, 6),
+        (10, 'Grappa Miel',      'Grappa au miel',            7.00, '', 1, 0, 7),
+        (10, 'Amaretto',         'Liqueur d\'amande',         7.00, '', 1, 0, 8),
+        (10, 'Sambucca',         'Liqueur d\'anis italienne', 7.00, '', 1, 0, 9),
+
+        # ── Bières ───────────────────────────────────────────────────────
+        (11, 'Jupiler 25 cl',      'Bière belge pression',  3.50, 'Gluten', 1, 0, 1),
+        (11, 'Leffe Blonde 33 cl', 'Bière abbaye blonde',   5.00, 'Gluten', 1, 0, 2),
+        (11, 'Moretti 33 cl',      'Bière italienne',       4.50, 'Gluten', 1, 0, 3),
+        (11, 'Peroni 33 cl',       'Bière italienne premium',4.50,'Gluten', 1, 0, 4),
+
+        # ── Softs ────────────────────────────────────────────────────────
+        (12, 'Aqua Panna 25 cl',          'Eau plate italienne',             3.00, '', 1, 0, 1),
+        (12, 'Aqua Panna 50 cl',          'Eau plate italienne',             4.50, '', 1, 0, 2),
+        (12, 'San Pellegrino 25 cl',      'Eau gazeuse italienne',           3.50, '', 1, 0, 3),
+        (12, 'San Pellegrino 50 cl',      'Eau gazeuse italienne',           4.50, '', 1, 0, 4),
+        (12, 'Coca Cola',                 'Coca Cola',                       3.50, '', 1, 0, 5),
+        (12, 'Coca Cola Zero',            'Coca Cola Zero sucre',            3.50, '', 1, 0, 6),
+        (12, 'Looza Orange/Pomme Cerise', 'Jus de fruits Looza',             3.50, '', 1, 0, 7),
+        (12, 'Sprite',                    'Limonade',                        3.50, '', 1, 0, 8),
+        (12, 'Fanta',                     'Fanta orange',                    3.50, '', 1, 0, 9),
+        (12, 'Ice Tea Pêche',             'Ice Tea saveur pêche',            3.50, '', 1, 0, 10),
+        (12, 'Ice Tea Pétillant',         'Ice Tea pétillant',               3.50, '', 1, 0, 11),
+        (12, 'Coca Cola 1L',             'Coca Cola grand format',           9.00, '', 1, 0, 12),
+        (12, 'Coca Cola Zero 1L',        'Coca Cola Zero grand format',      9.00, '', 1, 0, 13),
+        (12, 'San Pellegrino 1L',        'San Pellegrino grand format',      7.50, '', 1, 0, 14),
+        (12, 'Aqua Panna 1L',            'Aqua Panna grand format',          7.50, '', 1, 0, 15),
+
+        # ── Schweppes ────────────────────────────────────────────────────
+        (13, 'Schweppes Mojito',  'Schweppes saveur mojito',  4.00, '', 1, 0, 1),
+        (13, 'Schweppes Tonic',   'Schweppes tonic',          4.00, '', 1, 0, 2),
+        (13, 'Schweppes Agrume',  'Schweppes agrumes',        4.00, '', 1, 0, 3),
     ]
 
     for (cat_id, name, desc, price, allergens, available, featured, sort_order) in items:
@@ -1135,7 +1210,7 @@ def admin_reset_menu():
                 (len(items),))
     db.commit()
 
-    flash(f'Menu réinitialisé avec succès — {len(items)} plats dans 6 catégories.', 'success')
+    flash(f'Menu réinitialisé avec succès — {len(items)} plats dans 13 catégories.', 'success')
     return redirect(url_for('admin_menu'))
 
 
