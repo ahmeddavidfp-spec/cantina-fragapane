@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block title %}Réinitialiser le menu{% endblock %}
+
+{% block content %}
+<div class="admin-page-header">
+  <h1>⚠️ Réinitialiser le menu</h1>
+  <a href="{{ url_for('admin_menu') }}" class="btn-secondary">← Retour au menu</a>
+</div>
+
+<div class="admin-card" style="max-width:600px; margin:2rem auto; text-align:center;">
+  <div style="font-size:3rem; margin-bottom:1rem;">⚠️</div>
+  <h2 style="color:#c0392b; margin-bottom:1rem;">Action irréversible</h2>
+  <p style="margin-bottom:1.5rem; color:#555;">
+    Cette action va <strong>supprimer toutes les catégories et tous les plats actuels</strong>
+    et les remplacer par le menu mis à jour (6 catégories, 39 plats).<br><br>
+    Cette opération ne peut pas être annulée.
+  </p>
+  <form method="POST" action="{{ url_for('admin_reset_menu') }}">
+    <button type="submit" class="btn-danger" style="margin-right:1rem;">
+      Confirmer la réinitialisation
+    </button>
+    <a href="{{ url_for('admin_menu') }}" class="btn-secondary">Annuler</a>
+  </form>
+</div>
+{% endblock %}

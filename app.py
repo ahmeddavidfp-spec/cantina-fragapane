@@ -963,6 +963,182 @@ def admin_delete_sub(sub_id):
     return redirect(url_for('admin_newsletter'))
 
 
+# ── Reset Menu ───────────────────────────────────────────────────────────────
+
+@app.route('/admin/reset-menu', methods=['GET', 'POST'])
+@login_required
+def admin_reset_menu():
+    if request.method == 'GET':
+        return render_template('admin/reset_menu_confirm.html')
+
+    # POST → effectuer le reset
+    db = get_db()
+    cur = db.cursor()
+
+    cur.execute('DELETE FROM menu_items')
+    cur.execute('DELETE FROM menu_categories')
+    # Réinitialise les séquences
+    cur.execute("SELECT setval(pg_get_serial_sequence('menu_categories','id'), 1, false)")
+    cur.execute("SELECT setval(pg_get_serial_sequence('menu_items','id'), 1, false)")
+
+    # ── Catégories ──────────────────────────────────────────────────────────
+    cats = [
+        (1, 'Entrées',          '🫒', 1),
+        (2, 'Pâtes Fraîches',   '🍝', 2),
+        (3, 'Grillades',        '🥩', 3),
+        (4, 'Desserts',         '🍮', 4),
+        (5, 'Boissons Chaudes', '☕', 5),
+        (6, 'Menu Enfants',     '🧒', 6),
+    ]
+    for cid, name, icon, order in cats:
+        cur.execute(
+            'INSERT INTO menu_categories (id, name, icon, sort_order) VALUES (%s,%s,%s,%s)',
+            (cid, name, icon, order))
+    # Avance la séquence après les insertions manuelles
+    cur.execute("SELECT setval(pg_get_serial_sequence('menu_categories','id'), 6)")
+
+    # ── Plats ───────────────────────────────────────────────────────────────
+    # (category_id, name, description, price, allergens, available, featured, sort_order)
+    items = [
+        # ── Entrées ──────────────────────────────────────────────────────
+        (1, 'La Planche Mixte',
+         'Charcuteries italiennes, fromages affinés, bruschetta et olives marinées',
+         17.00, '', 1, 1, 1),
+        (1, 'La Planche Terre et Mer',
+         'Sélection de charcuteries, fruits de mer et accompagnements maison',
+         22.00, '', 1, 1, 2),
+        (1, 'Scampis Ail ou Piquant',
+         'Scampis sautés à l\'ail ou épicés, servis avec pain artisanal',
+         17.00, 'Crustacés, Gluten', 1, 0, 3),
+        (1, 'Scampis Diabolo',
+         'Scampis flambés à la sauce diablo piquante',
+         17.00, 'Crustacés, Gluten', 1, 0, 4),
+
+        # ── Pâtes Fraîches ───────────────────────────────────────────────
+        (2, 'Napoli',
+         'Pâtes fraîches maison, sauce tomate San Marzano et basilic frais',
+         16.00, 'Gluten, Œufs', 1, 0, 1),
+        (2, 'Aglio e Olio',
+         'Pâtes fraîches maison, ail, huile d\'olive extra vierge et persil',
+         16.00, 'Gluten, Œufs', 1, 0, 2),
+        (2, 'Al Ragù',
+         'Pâtes fraîches maison, ragù de viande mijoté à l\'italienne',
+         17.00, 'Gluten, Œufs', 1, 1, 3),
+        (2, 'Quattro Formaggi',
+         'Pâtes fraîches maison, crème aux quatre fromages italiens',
+         18.50, 'Gluten, Œufs, Lactose', 1, 1, 4),
+        (2, 'Pesto Pistache, Burrata & Mortadelle',
+         'Pâtes fraîches maison, pesto pistache maison, burrata crémeuse et mortadelle',
+         19.50, 'Gluten, Œufs, Lactose', 1, 1, 5),
+
+        # ── Grillades ────────────────────────────────────────────────────
+        (3, 'Arrosticini Traditionnels',
+         'Brochettes d\'agneau grillées à la façon traditionnelle abruzzaise',
+         2.20, '', 1, 1, 1),
+        (3, 'Black Angus',
+         'Pièce de Black Angus grillée à la perfection',
+         3.00, '', 1, 0, 2),
+        (3, 'Poulet Pané',
+         'Filet de poulet pané croustillant grillé',
+         2.20, 'Gluten', 1, 0, 3),
+        (3, 'Calamar Pané',
+         'Calamar pané croustillant grillé',
+         2.20, 'Gluten, Mollusques', 1, 0, 4),
+        (3, 'Brochette Agneau',
+         'Brochette d\'agneau grillée',
+         2.80, '', 1, 0, 5),
+        (3, 'Brochette Bœuf',
+         'Brochette de bœuf grillée',
+         2.80, '', 1, 0, 6),
+        (3, 'Brochette Poulet',
+         'Brochette de poulet grillée',
+         2.80, '', 1, 0, 7),
+        (3, 'Pâtes Classiques (accompagnement)',
+         'Pâtes classiques en accompagnement',
+         12.00, 'Gluten', 1, 0, 8),
+        (3, 'Pâtes Suggestions (accompagnement)',
+         'Pâtes du moment en accompagnement',
+         13.00, 'Gluten', 1, 0, 9),
+        (3, 'Burrata (accompagnement)',
+         'Burrata crémeuse en accompagnement',
+         4.50, 'Lactose', 1, 0, 10),
+        (3, 'Salade (accompagnement)',
+         'Salade fraîche en accompagnement',
+         5.50, '', 1, 0, 11),
+        (3, 'Frites (accompagnement)',
+         'Frites maison en accompagnement',
+         4.50, '', 1, 0, 12),
+
+        # ── Desserts ─────────────────────────────────────────────────────
+        (4, 'Cannoli',
+         'Cannoli siciliens au choix parmi 3 parfums',
+         6.00, 'Gluten, Lactose', 1, 1, 1),
+        (4, 'Tiramisu',
+         'Tiramisu maison à la recette traditionnelle',
+         8.00, 'Gluten, Lactose, Œufs', 1, 1, 2),
+        (4, 'Dame Blanche',
+         'Glace vanille, coulis de chocolat blanc chaud',
+         8.00, 'Lactose', 1, 0, 3),
+        (4, 'Dame Noire',
+         'Glace vanille, coulis de chocolat noir chaud',
+         8.00, 'Lactose', 1, 0, 4),
+        (4, 'Sorbet',
+         'Sorbet aux fruits de saison',
+         4.50, '', 1, 0, 5),
+        (4, 'Moelleux Chocolat',
+         'Moelleux au chocolat avec cœur coulant, servi chaud',
+         8.00, 'Gluten, Lactose, Œufs', 1, 0, 6),
+        (4, 'Café Gourmand',
+         'Café accompagné d\'une sélection de petites douceurs maison',
+         12.00, 'Gluten, Lactose', 1, 0, 7),
+        (4, 'Irish Gourmand',
+         'Irish Coffee accompagné d\'une sélection de petites douceurs maison',
+         15.00, 'Gluten, Lactose', 1, 0, 8),
+        (4, 'Irish Coffee',
+         'Whiskey, café chaud, crème fouettée',
+         9.00, 'Lactose', 1, 0, 9),
+        (4, 'Italian Coffee',
+         'Café à l\'italienne avec touche de liqueur',
+         9.00, 'Lactose', 1, 0, 10),
+
+        # ── Boissons Chaudes ─────────────────────────────────────────────
+        (5, 'Café',
+         'Café expresso',
+         3.00, '', 1, 0, 1),
+        (5, 'Cappuccino',
+         'Cappuccino onctueux à l\'italienne',
+         3.50, 'Lactose', 1, 0, 2),
+        (5, 'Expresso',
+         'Expresso serré',
+         3.00, '', 1, 0, 3),
+
+        # ── Menu Enfants ─────────────────────────────────────────────────
+        (6, 'Le Melone',
+         'Menu enfant au melon',
+         12.00, '', 1, 0, 1),
+        (6, 'La Pasta Bolognata',
+         'Pâtes à la sauce bolognaise pour enfants',
+         12.00, 'Gluten, Œufs', 1, 0, 2),
+        (6, 'La Pasta Prosciutto e Formaggio',
+         'Pâtes au jambon et fromage pour enfants',
+         12.00, 'Gluten, Œufs, Lactose', 1, 0, 3),
+    ]
+
+    for (cat_id, name, desc, price, allergens, available, featured, sort_order) in items:
+        cur.execute(
+            '''INSERT INTO menu_items
+               (category_id, name, description, price, allergens, available, featured, sort_order)
+               VALUES (%s,%s,%s,%s,%s,%s,%s,%s)''',
+            (cat_id, name, desc, price, allergens, available, featured, sort_order))
+
+    cur.execute("SELECT setval(pg_get_serial_sequence('menu_items','id'), %s)",
+                (len(items),))
+    db.commit()
+
+    flash(f'Menu réinitialisé avec succès — {len(items)} plats dans 6 catégories.', 'success')
+    return redirect(url_for('admin_menu'))
+
+
 # ── SEO ──────────────────────────────────────────────────────────────────────
 
 @app.route('/google58e74cd6796edb1c.html')
