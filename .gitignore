@@ -5,3 +5,4 @@ venv/
 .venv/
 .env
 .DS_Store
+documentation.html

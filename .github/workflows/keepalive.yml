@@ -1,0 +1,33 @@
+name: Keep-alive (empêche la mise en veille Render)
+
+# Ping le service Render toutes les 10 min pendant la journée pour éviter
+# le "cold start" (~30-50 s) du plan gratuit.
+#
+# GitHub Actions planifie en UTC. La fenêtre 09:00–22:59 UTC couvre en permanence
+# ~11h00–23h00 heure belge (CEST/CET), été comme hiver, avec une petite marge.
+# La nuit, le service dort (économie des heures gratuites Render).
+
+on:
+  schedule:
+    - cron: '*/10 9-22 * * *'
+  workflow_dispatch:        # permet aussi un déclenchement manuel
+
+# Évite que deux pings se chevauchent
+concurrency:
+  group: keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Réveiller le service
+        run: |
+          URL="https://cantina-fragapane.onrender.com/"
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 90 "$URL" || echo "000")
+          echo "Ping $URL -> HTTP $code"
+          # On ne fait pas échouer le job si le réveil est lent (Render peut renvoyer 502 pendant le boot)
+          if [ "$code" = "000" ]; then
+            echo "::warning::Aucune réponse du service (timeout)."
+          fi
