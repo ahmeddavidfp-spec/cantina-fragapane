@@ -604,35 +604,7 @@ def cookies_page():
     return render_template('legal/cookies.html')
 
 
-@app.route('/sitemap.xml')
-def sitemap():
-    from flask import Response
-    pages = [
-        ('/', '1.0', 'weekly'),
-        ('/menu', '0.9', 'weekly'),
-        ('/livraison', '0.9', 'monthly'),
-        ('/a-propos', '0.8', 'monthly'),
-        ('/contact', '0.8', 'monthly'),
-    ]
-    base = 'https://web-production-e3877.up.railway.app'
-    xml = ['<?xml version="1.0" encoding="UTF-8"?>',
-           '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
-    for path, priority, freq in pages:
-        xml.append(f'  <url><loc>{base}{path}</loc>'
-                   f'<changefreq>{freq}</changefreq>'
-                   f'<priority>{priority}</priority></url>')
-    xml.append('</urlset>')
-    return Response('\n'.join(xml), mimetype='application/xml')
-
-
-@app.route('/robots.txt')
-def robots():
-    from flask import Response
-    txt = ('User-agent: *\n'
-           'Allow: /\n'
-           'Disallow: /admin\n'
-           'Sitemap: https://web-production-e3877.up.railway.app/sitemap.xml\n')
-    return Response(txt, mimetype='text/plain')
+# Les routes /sitemap.xml et /robots.txt sont définies plus bas (basées sur SITE_URL).
 
 
 # ── Admin – auth ──────────────────────────────────────────────────────────────

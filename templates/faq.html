@@ -3,6 +3,27 @@
 {% block description %}Toutes les réponses à vos questions sur La Cantina Fragapane : réservation, parking, allergènes, livraison, végétarien, anniversaires. Restaurant italien à Châtelet.{% endblock %}
 
 {% block content %}
+
+{# ── JSON-LD FAQPage (rich snippets Google) ── #}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"Faut-il réserver une table ?","acceptedAnswer":{"@type":"Answer","text":"La réservation est vivement recommandée, surtout le week-end et lors des événements. Notre salle est chaleureuse mais intimiste. Appelez-nous ou envoyez un message via WhatsApp."}},
+    {"@type":"Question","name":"Organisez-vous des événements privés (anniversaires, communions…) ?","acceptedAnswer":{"@type":"Answer","text":"Oui ! Anniversaires, communions, repas d'entreprise, dîners de groupe : nous adaptons le menu et la salle selon vos besoins. Découvrez notre offre traiteur et événements privés."}},
+    {"@type":"Question","name":"Y a-t-il un parking à proximité ?","acceptedAnswer":{"@type":"Answer","text":"Oui, le stationnement est gratuit en rue devant et autour du restaurant. La Cantina Fragapane se trouve Rue du Taillis Pré 86, 6200 Châtelet, facilement accessible en voiture."}},
+    {"@type":"Question","name":"Proposez-vous des options végétariennes ?","acceptedAnswer":{"@type":"Answer","text":"Plusieurs plats conviennent aux végétariens : burrata, carpaccio végétal, pâtes fraîches aux légumes, raviolis ricotta-épinards, tiramisu. Signalez-le lors de la réservation."}},
+    {"@type":"Question","name":"Livrez-vous à domicile ?","acceptedAnswer":{"@type":"Answer","text":"Oui, nous livrons dans un rayon de 10 km autour du restaurant (Châtelet, Châtelineau et communes environnantes), via Takeaway.com, par téléphone ou par WhatsApp."}},
+    {"@type":"Question","name":"Quels allergènes sont présents dans vos plats ?","acceptedAnswer":{"@type":"Answer","text":"Notre cuisine peut contenir : gluten, œufs, lait, fruits à coque, céleri, moutarde, sésame, soja. Les allergènes sont indiqués sur le menu pour chaque plat. En cas d'allergie grave, signalez-le impérativement."}},
+    {"@type":"Question","name":"Acceptez-vous les cartes bancaires ?","acceptedAnswer":{"@type":"Answer","text":"Oui, nous acceptons les paiements par carte bancaire (Visa, Mastercard, Bancontact) ainsi que les espèces."}},
+    {"@type":"Question","name":"Le restaurant est-il accessible aux personnes à mobilité réduite ?","acceptedAnswer":{"@type":"Answer","text":"Oui, La Cantina Fragapane est accessible aux fauteuils roulants. Appelez-nous à l'avance pour que nous réservions une place adaptée."}},
+    {"@type":"Question","name":"Proposez-vous un menu du midi ?","acceptedAnswer":{"@type":"Answer","text":"Nous sommes ouverts le midi le vendredi et le dimanche (12h–14h30). Le reste de la semaine, nous ouvrons uniquement le soir, du mercredi au dimanche dès 18h30 (fermé lundi et mardi)."}},
+    {"@type":"Question","name":"Avez-vous une carte des vins ?","acceptedAnswer":{"@type":"Answer","text":"Oui, nous proposons une sélection de vins italiens soigneusement choisis pour accompagner nos plats. Demandez la carte des vins lors de votre visite."}}
+  ]
+}
+</script>
+
 <section class="page-hero" style="min-height:220px; padding:6rem 1rem 3rem;">
   <div class="page-hero-content">
     <span class="section-label">Vos questions</span>
@@ -74,7 +95,7 @@
       <details class="faq-item">
         <summary class="faq-question">Proposez-vous un menu du midi ?</summary>
         <div class="faq-answer">
-          <p>Nous sommes ouverts le midi le <strong>samedi et le dimanche</strong> (12h–14h). En semaine, nous ouvrons uniquement le soir. Consultez nos <a href="{{ url_for('contact') }}">horaires complets ici.</a></p>
+          <p>Nous sommes ouverts le midi le <strong>vendredi et le dimanche</strong> (12h–14h30). Le reste de la semaine, nous ouvrons uniquement le soir, du <strong>mercredi au dimanche dès 18h30</strong> (fermé lundi et mardi). Consultez nos <a href="{{ url_for('contact') }}">horaires complets ici.</a></p>
         </div>
       </details>
 
