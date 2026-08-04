@@ -79,6 +79,13 @@
           <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-primary" style="width:100%; justify-content:center;">📞 Appeler pour réserver</a>
         </div>
 
+        {# ── Avis Google ── #}
+        <div style="margin-top:1.5rem; padding:1.25rem; background:var(--cream); border-radius:var(--radius); border:1px solid var(--border); text-align:center;">
+          <div style="font-size:1.35rem; letter-spacing:.18em; color:var(--gold); margin-bottom:.35rem;">★★★★★</div>
+          <p style="font-size:.9rem; color:var(--text-lt); margin-bottom:1rem;">Vous avez passé un bon moment&nbsp;? Votre avis nous aide énormément&nbsp;🙏</p>
+          <a href="https://search.google.com/local/writereview?placeid=ChIJQUl2nsApwkcRW8PGZVB9848" target="_blank" rel="noopener" class="btn btn-gold" style="width:100%; justify-content:center;">⭐ Laisser un avis Google</a>
+        </div>
+
         {% if info.get('tripadvisor_embed') %}
         <div style="margin-top:1.5rem;">
           {% if info['tripadvisor_embed'].startswith('http') %}

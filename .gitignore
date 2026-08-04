@@ -6,3 +6,5 @@ venv/
 .env
 .DS_Store
 documentation.html
+qr-avis-google.png
+carte-avis-google.png
