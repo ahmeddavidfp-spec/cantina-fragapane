@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: cantina-fragapane
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /
+    envVars:
+      # Chaîne de connexion Postgres (Neon recommandé). À coller dans le dashboard Render.
+      - key: DATABASE_URL
+        sync: false
+      # Généré automatiquement par Render (sessions Flask).
+      - key: SECRET_KEY
+        generateValue: true
+      # Mot de passe du back-office /admin. À définir dans le dashboard Render.
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SITE_URL
+        value: https://www.cantinafragapane.be
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      # Emails de réservation (optionnel — SMTP Office365 déjà câblé). À définir si besoin.
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_TO
+        sync: false
