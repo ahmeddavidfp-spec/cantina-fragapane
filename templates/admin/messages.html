@@ -1,0 +1,51 @@
+{% extends "admin/base.html" %}
+{% block title %}Messages – Admin{% endblock %}
+{% block content %}
+<div class="admin-header">
+  <h1>Messages de contact</h1>
+  <span class="admin-count">{{ msgs|length }} au total</span>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}{% for cat, msg in messages %}
+  <div class="flash flash-{{ cat }}">{{ msg }}</div>
+  {% endfor %}{% endif %}
+{% endwith %}
+
+{% if not msgs %}
+<div class="admin-empty">Aucun message pour l'instant.</div>
+{% else %}
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Reçu le</th><th>Nom</th><th>Coordonnées</th><th>Message</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in msgs %}
+      <tr{% if not m['is_read'] %} style="background:rgba(201,152,74,.08);"{% endif %}>
+        <td style="white-space:nowrap; font-size:.82rem; color:var(--text-lt);">
+          {% if not m['is_read'] %}<span title="Nouveau" style="color:var(--gold);">●</span> {% endif %}
+          {{ m['created_at'].strftime('%d/%m/%Y %H:%M') if m['created_at'] else '' }}
+        </td>
+        <td><strong>{{ m['name'] }}</strong></td>
+        <td style="font-size:.82rem;">
+          {% if m['email'] %}<a href="mailto:{{ m['email'] }}">{{ m['email'] }}</a><br>{% endif %}
+          {% if m['phone'] %}<a href="tel:{{ m['phone'] }}">{{ m['phone'] }}</a>{% endif %}
+          {% if not m['email'] and not m['phone'] %}—{% endif %}
+        </td>
+        <td style="max-width:440px; white-space:pre-wrap; font-size:.9rem;">{{ m['message'] }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('admin_delete_message', msg_id=m['id']) }}"
+                onsubmit="return confirm('Supprimer ce message ?')">
+            <button class="btn-admin-del">✕</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

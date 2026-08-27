@@ -1,6 +1,8 @@
 import os
+import json
 import uuid
 import smtplib
+import urllib.request
 import pyotp
 import psycopg2
 import psycopg2.extras
@@ -207,6 +209,17 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS messages (
+            id         SERIAL PRIMARY KEY,
+            name       TEXT NOT NULL,
+            email      TEXT,
+            phone      TEXT,
+            message    TEXT NOT NULL,
+            is_read    INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
     db.commit()
 
     cur.execute('SELECT COUNT(*) AS c FROM menu_categories')
@@ -392,41 +405,71 @@ def get_open_status():
 
 # ── Email contact ─────────────────────────────────────────────────────────────
 
+def _send_via_brevo(subject, body, to_addr, reply_to=None):
+    """Envoi via l'API HTTPS de Brevo (fonctionne depuis Render, contrairement au SMTP direct)."""
+    key = os.environ.get('BREVO_API_KEY', '')
+    if not key:
+        return False
+    sender = os.environ.get('MAIL_FROM') or os.environ.get('MAIL_USERNAME') or 'info@cantinafragapane.be'
+    payload = {
+        "sender":  {"name": "La Cantina Fragapane", "email": sender},
+        "to":      [{"email": to_addr}],
+        "subject": subject,
+        "textContent": body,
+    }
+    if reply_to:
+        payload["replyTo"] = {"email": reply_to}
+    req = urllib.request.Request(
+        "https://api.brevo.com/v3/smtp/email",
+        data=json.dumps(payload).encode('utf-8'),
+        headers={"api-key": key, "content-type": "application/json", "accept": "application/json"},
+        method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return 200 <= resp.status < 300
+    except Exception as e:
+        app.logger.warning('Échec envoi email (Brevo) : %s', e)
+        return False
+
+
 def send_contact_email(name, sender_email, phone, message):
+    to_addr = os.environ.get('MAIL_TO') or os.environ.get('MAIL_USERNAME') or 'info@cantinafragapane.be'
+    subject = f'[Cantina Fragapane] Message de {name}'
+    body = (f"Nom : {name}\nEmail : {sender_email}\nTéléphone : {phone}\n\n"
+            f"Message :\n{message}")
+
+    # 1) Brevo (API HTTPS) — méthode recommandée depuis Render
+    if os.environ.get('BREVO_API_KEY'):
+        return _send_via_brevo(subject, body, to_addr, reply_to=sender_email)
+
+    # 2) SMTP direct (repli — souvent bloqué par les hébergeurs cloud)
     server   = os.environ.get('MAIL_SERVER', 'mail.cantinafragapane.be')
     port     = int(os.environ.get('MAIL_PORT', '587'))
     username = os.environ.get('MAIL_USERNAME', '')
     password = os.environ.get('MAIL_PASSWORD', '')
-    to_addr  = os.environ.get('MAIL_TO', username)
-
     if not username or not password:
-        app.logger.warning('Email non envoyé : MAIL_USERNAME ou MAIL_PASSWORD manquant (vars Render).')
+        app.logger.warning('Email non envoyé : ni BREVO_API_KEY ni MAIL_USERNAME/PASSWORD configurés.')
         return False
-
     msg = MIMEMultipart()
     msg['From']    = username
     msg['To']      = to_addr
-    msg['Subject'] = f'[Cantina Fragapane] Message de {name}'
+    msg['Subject'] = subject
     if sender_email:
         msg['Reply-To'] = sender_email
-    body = (f"Nom : {name}\nEmail : {sender_email}\nTéléphone : {phone}\n\n"
-            f"Message :\n{message}")
     msg.attach(MIMEText(body, 'plain', 'utf-8'))
-
-    # Un échec d'envoi ne doit JAMAIS casser la requête (la réservation est déjà enregistrée)
     try:
-        if port == 465:  # SSL direct (LWS : 465 SSL)
+        if port == 465:
             with smtplib.SMTP_SSL(server, port, timeout=15) as srv:
                 srv.login(username, password)
                 srv.send_message(msg)
-        else:            # STARTTLS (LWS : 587)
+        else:
             with smtplib.SMTP(server, port, timeout=15) as srv:
                 srv.starttls()
                 srv.login(username, password)
                 srv.send_message(msg)
         return True
     except Exception as e:
-        app.logger.warning('Échec envoi email : %s', e)
+        app.logger.warning('Échec envoi email (SMTP) : %s', e)
         return False
 
 
@@ -513,6 +556,9 @@ def contact():
         phone   = request.form.get('phone', '').strip()
         message = request.form.get('message', '').strip()
         if name and message:
+            # On enregistre TOUJOURS le message (visible dans /admin), même si l'email échoue
+            execute('INSERT INTO messages (name, email, phone, message) VALUES (%s,%s,%s,%s)',
+                    (name, email, phone, message))
             try:
                 sent = send_contact_email(name, email, phone, message)
                 if sent:
@@ -1014,6 +1060,24 @@ def admin_delete_sub(sub_id):
     execute('DELETE FROM newsletter_subscribers WHERE id=%s', (sub_id,))
     flash('Abonné supprimé.', 'success')
     return redirect(url_for('admin_newsletter'))
+
+
+# ── Admin – messages de contact ───────────────────────────────────────────────
+
+@app.route('/admin/messages')
+@login_required
+def admin_messages():
+    msgs = query('SELECT * FROM messages ORDER BY created_at DESC')
+    execute('UPDATE messages SET is_read=1 WHERE is_read=0')  # marqués lus à l'ouverture
+    return render_template('admin/messages.html', msgs=msgs)
+
+
+@app.route('/admin/messages/<int:msg_id>/supprimer', methods=['POST'])
+@login_required
+def admin_delete_message(msg_id):
+    execute('DELETE FROM messages WHERE id=%s', (msg_id,))
+    flash('Message supprimé.', 'success')
+    return redirect(url_for('admin_messages'))
 
 
 # ── Reset Menu ───────────────────────────────────────────────────────────────
