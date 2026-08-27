@@ -240,6 +240,7 @@
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
   </button>
 
+  <script>window.CANTINA_HOURS = {{ hours|tojson }};</script>
   <script src="{{ url_for('static', filename='js/main.js') }}?v={{ now.strftime('%Y%m%d%H%M%S') }}"></script>
   {% block extra_js %}{% endblock %}
 </body>

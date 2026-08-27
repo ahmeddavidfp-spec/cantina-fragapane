@@ -406,8 +406,10 @@ def inject_globals():
     evenements = query(
         'SELECT * FROM evenements WHERE active=1 ORDER BY epingle DESC, date_event DESC LIMIT 6')
     open_status = get_open_status()
+    hours_all = query('SELECT * FROM hours ORDER BY day_order')
     return dict(info=info, announcements=announcements, evenements=evenements,
-                open_status=open_status, now=datetime.now(), site_url=SITE_URL)
+                open_status=open_status, hours=hours_all,
+                now=datetime.now(), site_url=SITE_URL)
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
