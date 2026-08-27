@@ -98,11 +98,19 @@ if (tabs.length && sections.length) {
     document.querySelectorAll('[data-day]').forEach(el => {
       el.classList.toggle('today', el.dataset.day === dayName);
     });
-    const badges = document.querySelectorAll('.js-hours-status');
-    if (!HOURS.length || !badges.length) return;
+    if (!HOURS.length) return;
     const st = computeStatus(dayName, time);
+
+    // Badge natif du hero (conserve son style propre)
+    document.querySelectorAll('.hero-status').forEach(el => {
+      el.classList.remove('hero-status--open', 'hero-status--soon', 'hero-status--closed');
+      el.classList.add('hero-status--' + st.state);
+      el.innerHTML = '<span class="hero-status-dot"></span>' + st.label;
+    });
+
+    // Badges "pilule" (section horaires accueil + contact)
     const c = COLORS[st.state] || COLORS.closed;
-    badges.forEach(b => {
+    document.querySelectorAll('.js-hours-status').forEach(b => {
       b.style.cssText = 'display:inline-flex;align-items:center;gap:.5rem;padding:.45rem .95rem;'
         + 'border-radius:99px;font-size:.85rem;font-weight:700;background:'+c.bg+';color:'+c.fg+';';
       b.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:'+c.dot+';'
