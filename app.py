@@ -400,6 +400,7 @@ def send_contact_email(name, sender_email, phone, message):
     to_addr  = os.environ.get('MAIL_TO', username)
 
     if not username or not password:
+        app.logger.warning('Email non envoyé : MAIL_USERNAME ou MAIL_PASSWORD manquant (vars Render).')
         return False
 
     msg = MIMEMultipart()
