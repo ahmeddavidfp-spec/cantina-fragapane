@@ -4,7 +4,8 @@ import smtplib
 import pyotp
 import psycopg2
 import psycopg2.extras
-from datetime import datetime
+import time
+from datetime import datetime, timedelta
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from functools import wraps
@@ -29,12 +30,33 @@ def save_upload(file_field):
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'cantina-fragapane-secret-2024')
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 2592000  # 30 j : cache des fichiers statiques (perf)
+ASSET_VERSION = str(int(time.time()))  # stable pour un déploiement, change à chaque redéploiement
 
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'fragapane2024')
 TOTP_SECRET = os.environ.get('TOTP_SECRET', '')   # Google Authenticator (secret base32)
 ADMIN_PIN = os.environ.get('ADMIN_PIN', '')       # PIN de secours à 6 chiffres
 SITE_URL = os.environ.get('SITE_URL', 'https://www.cantinafragapane.be')
+
+# ── Anti-brute-force sur /admin/login : 3 essais puis blocage temporaire ──
+LOGIN_MAX_ATTEMPTS = 3
+LOGIN_BLOCK_MINUTES = 15
+_login_attempts = {}   # ip -> {'count': int, 'until': datetime|None}
+
+def _client_ip():
+    return (request.headers.get('CF-Connecting-IP')
+            or request.headers.get('X-Forwarded-For', '').split(',')[0].strip()
+            or request.remote_addr or 'unknown')
+
+
+@app.after_request
+def _security_headers(resp):
+    resp.headers.setdefault('X-Content-Type-Options', 'nosniff')
+    resp.headers.setdefault('X-Frame-Options', 'SAMEORIGIN')
+    resp.headers.setdefault('Referrer-Policy', 'strict-origin-when-cross-origin')
+    resp.headers.setdefault('Permissions-Policy', 'geolocation=(), microphone=(), camera=()')
+    resp.headers.setdefault('Strict-Transport-Security', 'max-age=15552000')
+    return resp
 
 # Connexion PostgreSQL — on préfère les variables individuelles (plus fiables sur Railway)
 import urllib.parse as _urlparse
@@ -371,7 +393,7 @@ def get_open_status():
 # ── Email contact ─────────────────────────────────────────────────────────────
 
 def send_contact_email(name, sender_email, phone, message):
-    server   = os.environ.get('MAIL_SERVER', 'smtp.office365.com')
+    server   = os.environ.get('MAIL_SERVER', 'mail.cantinafragapane.be')
     port     = int(os.environ.get('MAIL_PORT', '587'))
     username = os.environ.get('MAIL_USERNAME', '')
     password = os.environ.get('MAIL_PASSWORD', '')
@@ -384,15 +406,27 @@ def send_contact_email(name, sender_email, phone, message):
     msg['From']    = username
     msg['To']      = to_addr
     msg['Subject'] = f'[Cantina Fragapane] Message de {name}'
+    if sender_email:
+        msg['Reply-To'] = sender_email
     body = (f"Nom : {name}\nEmail : {sender_email}\nTéléphone : {phone}\n\n"
             f"Message :\n{message}")
     msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
-    with smtplib.SMTP(server, port, timeout=10) as srv:
-        srv.starttls()
-        srv.login(username, password)
-        srv.send_message(msg)
-    return True
+    # Un échec d'envoi ne doit JAMAIS casser la requête (la réservation est déjà enregistrée)
+    try:
+        if port == 465:  # SSL direct (LWS : 465 SSL)
+            with smtplib.SMTP_SSL(server, port, timeout=15) as srv:
+                srv.login(username, password)
+                srv.send_message(msg)
+        else:            # STARTTLS (LWS : 587)
+            with smtplib.SMTP(server, port, timeout=15) as srv:
+                srv.starttls()
+                srv.login(username, password)
+                srv.send_message(msg)
+        return True
+    except Exception as e:
+        app.logger.warning('Échec envoi email : %s', e)
+        return False
 
 
 # ── Context processors ────────────────────────────────────────────────────────
@@ -408,7 +442,7 @@ def inject_globals():
     open_status = get_open_status()
     hours_all = query('SELECT * FROM hours ORDER BY day_order')
     return dict(info=info, announcements=announcements, evenements=evenements,
-                open_status=open_status, hours=hours_all,
+                open_status=open_status, hours=hours_all, asset_version=ASSET_VERSION,
                 now=datetime.now(), site_url=SITE_URL)
 
 
@@ -619,7 +653,18 @@ def admin_login():
     if session.get('admin'):
         return redirect(url_for('admin_dashboard'))
     error = None
+    strong_auth = bool(TOTP_SECRET or ADMIN_PIN)
     if request.method == 'POST':
+        ip = _client_ip()
+        now = datetime.now()
+        rec = _login_attempts.get(ip, {'count': 0, 'until': None})
+
+        # Bloqué ?
+        if rec['until'] and rec['until'] > now:
+            mins = int((rec['until'] - now).total_seconds() // 60) + 1
+            error = f"Trop de tentatives. Réessayez dans {mins} min."
+            return render_template('admin/login.html', error=error, strong_auth=strong_auth)
+
         code = (request.form.get('code') or request.form.get('password') or '').strip().replace(' ', '')
         ok = False
         # 1) Code Google Authenticator (TOTP)
@@ -636,13 +681,24 @@ def admin_login():
         #    ni Google Authenticator ni PIN ne sont configurés (évite le blocage).
         if not ok and not TOTP_SECRET and not ADMIN_PIN and code and code == ADMIN_PASSWORD:
             ok = True
+
         if ok:
+            _login_attempts.pop(ip, None)
             session['admin'] = True
             flash("Bienvenue dans l'espace admin !", 'success')
             return redirect(url_for('admin_dashboard'))
-        error = 'Code incorrect. Réessayez.'
-    # Indique au template si l'authentification forte est active
-    strong_auth = bool(TOTP_SECRET or ADMIN_PIN)
+
+        # Échec → on compte, et on bloque après LOGIN_MAX_ATTEMPTS
+        rec['count'] += 1
+        if rec['count'] >= LOGIN_MAX_ATTEMPTS:
+            rec['until'] = now + timedelta(minutes=LOGIN_BLOCK_MINUTES)
+            rec['count'] = 0
+            error = f"Trop de tentatives. Connexion bloquée pendant {LOGIN_BLOCK_MINUTES} min."
+        else:
+            left = LOGIN_MAX_ATTEMPTS - rec['count']
+            error = f"Code incorrect. Il reste {left} essai{'s' if left > 1 else ''}."
+        _login_attempts[ip] = rec
+
     return render_template('admin/login.html', error=error, strong_auth=strong_auth)
 
 
