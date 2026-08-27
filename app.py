@@ -13,6 +13,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from functools import wraps
 from werkzeug.utils import secure_filename
+from markupsafe import escape
 from flask import (Flask, render_template, request, redirect,
                    url_for, session, flash, g)
 
@@ -406,7 +407,7 @@ def get_open_status():
 
 # ── Email contact ─────────────────────────────────────────────────────────────
 
-def _send_via_brevo(subject, body, to_addr, reply_to=None):
+def _send_via_brevo(subject, body, to_addr, reply_to=None, html=None):
     """Envoi via l'API HTTPS de Brevo (fonctionne depuis Render, contrairement au SMTP direct)."""
     key = os.environ.get('BREVO_API_KEY', '')
     if not key:
@@ -418,6 +419,8 @@ def _send_via_brevo(subject, body, to_addr, reply_to=None):
         "subject": subject,
         "textContent": body,
     }
+    if html:
+        payload["htmlContent"] = html
     if reply_to:
         payload["replyTo"] = {"email": reply_to}
     req = urllib.request.Request(
@@ -480,6 +483,58 @@ def send_contact_email(name, sender_email, phone, message):
     except Exception as e:
         app.logger.warning('Échec envoi email (SMTP) : %s', e)
         return False
+
+
+def _ack_html(name):
+    """Modèle HTML de l'accusé de réception envoyé au client."""
+    safe = escape(name)
+    return f"""\
+<div style="background:#f4f1ea;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;">
+ <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+  <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e9e0d3;">
+   <tr><td style="padding:0;font-size:0;line-height:0;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+     <td width="33%" style="height:5px;line-height:5px;background:#009246;">&nbsp;</td>
+     <td width="34%" style="height:5px;line-height:5px;background:#ffffff;">&nbsp;</td>
+     <td width="33%" style="height:5px;line-height:5px;background:#ce2b37;">&nbsp;</td>
+    </tr></table>
+   </td></tr>
+   <tr><td style="background:#15221a;padding:28px 24px;text-align:center;">
+    <div style="color:#c9984a;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:bold;">La Cantina</div>
+    <div style="color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:bold;margin-top:2px;">Fragapane</div>
+   </td></tr>
+   <tr><td style="padding:30px 30px 26px;">
+    <p style="font-size:16px;margin:0 0 14px;color:#2b2620;">Bonjour <strong>{safe}</strong>,</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 14px;color:#4a453e;">Merci pour votre message&nbsp;! Nous l'avons bien reçu et nous vous répondrons dans les <strong>meilleurs délais</strong>.</p>
+    <p style="font-size:15px;line-height:1.65;margin:0 0 24px;color:#4a453e;">Pour une demande urgente ou une réservation du jour, le plus simple est de nous appeler&nbsp;:</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto;"><tr>
+     <td style="border-radius:10px;background:#c9984a;"><a href="tel:+32491227207" style="display:inline-block;padding:13px 28px;color:#ffffff;font-weight:bold;font-size:15px;text-decoration:none;">&#128222;&nbsp; +32 491 22 72 07</a></td>
+    </tr></table>
+   </td></tr>
+   <tr><td style="background:#faf7f2;padding:20px 30px;border-top:1px solid #eee3d3;color:#7a7065;font-size:13px;line-height:1.7;text-align:center;">
+    <strong style="color:#2b2620;">La Cantina Fragapane</strong><br>
+    Rue du Taillis Pré 86, 6200 Châtelet<br>
+    <a href="https://www.cantinafragapane.be" style="color:#c9984a;text-decoration:none;">cantinafragapane.be</a> &nbsp;&middot;&nbsp;
+    <a href="https://www.cantinafragapane.be/menu" style="color:#c9984a;text-decoration:none;">Voir le menu</a>
+   </td></tr>
+  </table>
+  <p style="color:#a89e8f;font-size:11px;margin:16px 0 0;">Message automatique de confirmation, merci de ne pas y répondre.</p>
+ </td></tr></table>
+</div>"""
+
+
+def send_customer_ack(name, to_email):
+    """Accusé de réception automatique envoyé au client (via Brevo, si email fourni)."""
+    if not to_email or not os.environ.get('BREVO_API_KEY'):
+        return False
+    subject = "Merci pour votre message – La Cantina Fragapane"
+    text = (f"Bonjour {name},\n\n"
+            "Merci pour votre message ! Nous l'avons bien reçu et nous vous répondrons "
+            "dans les meilleurs délais.\n\n"
+            "Pour une demande urgente ou une réservation du jour, appelez-nous au +32 491 22 72 07.\n\n"
+            "À très bientôt,\nL'équipe de La Cantina Fragapane\n"
+            "Rue du Taillis Pré 86, 6200 Châtelet — cantinafragapane.be")
+    return _send_via_brevo(subject, text, to_email, html=_ack_html(name))
 
 
 # ── Context processors ────────────────────────────────────────────────────────
@@ -570,6 +625,7 @@ def contact():
                     (name, email, phone, message))
             try:
                 sent = send_contact_email(name, email, phone, message)
+                send_customer_ack(name, email)   # accusé de réception automatique au client
                 if sent:
                     flash('Votre message a bien été envoyé ! Nous vous répondrons bientôt.', 'success')
                 else:
