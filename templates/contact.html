@@ -130,13 +130,26 @@
 
         {# ── Itinéraire (Google Maps + Waze) ── #}
         {% set nav_dest = (info.get('address','') ~ ', ' ~ info.get('city','') ~ ', Belgique')|urlencode %}
-        <div style="margin-top:1.25rem; display:flex; gap:.75rem; flex-wrap:wrap;">
-          <a href="https://www.google.com/maps/dir/?api=1&destination={{ nav_dest }}"
-             target="_blank" rel="noopener" class="btn btn-primary"
-             style="flex:1; justify-content:center; min-width:160px;">🗺️ Itinéraire Google Maps</a>
-          <a href="https://waze.com/ul?q={{ nav_dest }}&navigate=yes"
-             target="_blank" rel="noopener" class="btn btn-outline"
-             style="flex:1; justify-content:center; min-width:160px;">🚗 Itinéraire Waze</a>
+        <style>
+          .dir-label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-lt);margin:1.25rem 0 .55rem;}
+          .dir-row{display:flex;gap:.7rem;}
+          .dir-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.85rem .5rem;
+                   border-radius:12px;background:var(--light);border:1px solid var(--border);color:var(--dark);
+                   font-weight:700;font-size:.92rem;text-decoration:none;box-shadow:0 1px 3px rgba(0,0,0,.05);
+                   transition:all .2s ease;}
+          .dir-btn:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.08);}
+          .dir-btn svg{flex-shrink:0;}
+        </style>
+        <div class="dir-label">S'y rendre</div>
+        <div class="dir-row">
+          <a class="dir-btn" href="https://www.google.com/maps/dir/?api=1&destination={{ nav_dest }}" target="_blank" rel="noopener">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="#EA4335"><path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 7 11.5 7.3 11.77.4.35.99.35 1.4 0C13 21.5 20 15.25 20 10c0-4.42-3.58-8-8-8zm0 10.75A2.75 2.75 0 1 1 12 7.25a2.75 2.75 0 0 1 0 5.5z"/></svg>
+            Google Maps
+          </a>
+          <a class="dir-btn" href="https://waze.com/ul?q={{ nav_dest }}&navigate=yes" target="_blank" rel="noopener">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="#05C8F7"><path d="M20.94 3.06a1 1 0 0 0-1.09-.22L3.43 11.2a1 1 0 0 0 .12 1.86l6.5 2.15 2.15 6.5a1 1 0 0 0 1.86.12l8.38-16.42a1 1 0 0 0-.4-1.25z"/></svg>
+            Waze
+          </a>
         </div>
 
         <div style="margin-top:1.5rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
