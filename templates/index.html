@@ -262,8 +262,24 @@
     #reserver .resa-row { display:grid; gap:1rem; }
     #reserver .resa-row-2 { grid-template-columns:1fr 1fr; }
     #reserver .resa-row-3 { grid-template-columns:1fr 1fr 1fr; }
-    #reserver .contact-form-group { min-width:0; }
-    #reserver input, #reserver select, #reserver textarea { width:100%; max-width:100%; box-sizing:border-box; }
+    #reserver .contact-form-group { min-width:0; margin-bottom:1rem; }
+    #reserver input, #reserver select, #reserver textarea {
+      width:100%; max-width:100%; box-sizing:border-box;
+      height:52px; padding:0 .9rem;
+      border:1px solid var(--border); border-radius:10px;
+      background:#fff; color:var(--dark);
+      font-size:1rem; font-family:inherit; line-height:52px;
+      -webkit-appearance:none; -moz-appearance:none; appearance:none;
+    }
+    #reserver textarea { height:auto; padding:.7rem .9rem; line-height:1.5; min-height:76px; resize:vertical; }
+    #reserver select {
+      cursor:pointer; padding-right:2.4rem;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23b3822f' stroke-width='1.7'/%3E%3C/svg%3E");
+      background-repeat:no-repeat; background-position:right .95rem center;
+    }
+    #reserver input:focus, #reserver select:focus, #reserver textarea:focus {
+      outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,152,74,.18);
+    }
     @media (max-width:600px){
       #reserver .resa-row-2, #reserver .resa-row-3 { grid-template-columns:1fr; }
     }
@@ -328,7 +344,7 @@
         <label for="hr-notes">Demandes particulières</label>
         <textarea id="hr-notes" name="notes" rows="2" placeholder="Allergie, anniversaire, chaise haute, terrasse…"></textarea>
       </div>
-      <button type="submit" class="btn btn-gold" style="width:100%; justify-content:center; padding:1rem;">Envoyer ma demande de réservation</button>
+      <button type="submit" class="btn btn-gold" style="width:100%; justify-content:center; padding:1rem;">Réserver ma table</button>
       <p style="font-size:.78rem; color:var(--text-lt); text-align:center; margin-top:.75rem;">Confirmation par téléphone dans les 2h. Aucun paiement en ligne.</p>
     </form>
   </div>
