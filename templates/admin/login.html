@@ -8,6 +8,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .code-input{
+      width:100%; text-align:center; font-size:2rem; font-weight:700;
+      letter-spacing:.7rem; padding:.7rem .5rem; border:1px solid var(--border,#e5ded2);
+      border-radius:12px; background:var(--light,#fff); color:var(--dark,#2b2620);
+      font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    }
+    .code-input:focus{outline:none; border-color:var(--gold,#c9984a); box-shadow:0 0 0 3px rgba(201,152,74,.18);}
+    .code-hint{font-size:.82rem; color:var(--text-lt,#7a7065); text-align:center; margin-top:.9rem; line-height:1.5;}
+  </style>
 </head>
 <body class="admin-body">
 <div class="admin-login-page">
@@ -20,15 +30,31 @@
     {% if error %}
     <div class="admin-login-error">{{ error }}</div>
     {% endif %}
-    <form method="POST">
+    <form method="POST" autocomplete="off">
+      {% if strong_auth %}
       <div class="admin-form-group">
-        <label for="password">Mot de passe</label>
-        <input class="admin-input" type="password" id="password" name="password"
+        <label for="code" style="text-align:center; display:block; margin-bottom:.6rem;">Code à 6 chiffres</label>
+        <input class="code-input" type="text" id="code" name="code"
+               inputmode="numeric" pattern="[0-9]*" maxlength="6"
+               autocomplete="one-time-code" placeholder="••••••" required autofocus>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:1rem;">
+        Se connecter
+      </button>
+      <p class="code-hint">
+        🔐 Ouvrez <strong>Google Authenticator</strong> et saisissez le code du compte
+        « La Cantina Fragapane ».<br>Pas votre téléphone ? Utilisez votre <strong>PIN de secours</strong>.
+      </p>
+      {% else %}
+      <div class="admin-form-group">
+        <label for="code">Mot de passe</label>
+        <input class="admin-input" type="password" id="code" name="code"
                placeholder="••••••••" required autofocus>
       </div>
       <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:.5rem;">
         Se connecter
       </button>
+      {% endif %}
     </form>
     <div style="text-align:center; margin-top:1.5rem;">
       <a href="{{ url_for('index') }}" style="font-size:.8rem; color:var(--text-lt);">← Retour au site</a>

@@ -1,6 +1,7 @@
 import os
 import uuid
 import smtplib
+import pyotp
 import psycopg2
 import psycopg2.extras
 from datetime import datetime
@@ -31,6 +32,8 @@ app.secret_key = os.environ.get('SECRET_KEY', 'cantina-fragapane-secret-2024')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'fragapane2024')
+TOTP_SECRET = os.environ.get('TOTP_SECRET', '')   # Google Authenticator (secret base32)
+ADMIN_PIN = os.environ.get('ADMIN_PIN', '')       # PIN de secours à 6 chiffres
 SITE_URL = os.environ.get('SITE_URL', 'https://www.cantinafragapane.be')
 
 # Connexion PostgreSQL — on préfère les variables individuelles (plus fiables sur Railway)
@@ -615,12 +618,30 @@ def admin_login():
         return redirect(url_for('admin_dashboard'))
     error = None
     if request.method == 'POST':
-        if request.form.get('password') == ADMIN_PASSWORD:
+        code = (request.form.get('code') or request.form.get('password') or '').strip().replace(' ', '')
+        ok = False
+        # 1) Code Google Authenticator (TOTP)
+        if TOTP_SECRET and code:
+            try:
+                if pyotp.TOTP(TOTP_SECRET).verify(code, valid_window=1):
+                    ok = True
+            except Exception:
+                pass
+        # 2) PIN de secours à 6 chiffres
+        if not ok and ADMIN_PIN and code and code == ADMIN_PIN:
+            ok = True
+        # 3) Filet de sécurité : ancien mot de passe, uniquement tant que
+        #    ni Google Authenticator ni PIN ne sont configurés (évite le blocage).
+        if not ok and not TOTP_SECRET and not ADMIN_PIN and code and code == ADMIN_PASSWORD:
+            ok = True
+        if ok:
             session['admin'] = True
             flash("Bienvenue dans l'espace admin !", 'success')
             return redirect(url_for('admin_dashboard'))
-        error = 'Mot de passe incorrect.'
-    return render_template('admin/login.html', error=error)
+        error = 'Code incorrect. Réessayez.'
+    # Indique au template si l'authentification forte est active
+    strong_auth = bool(TOTP_SECRET or ADMIN_PIN)
+    return render_template('admin/login.html', error=error, strong_auth=strong_auth)
 
 
 @app.route('/admin/logout')
