@@ -224,10 +224,10 @@
         <div class="js-hours-status" style="display:none; margin:.85rem 0;"></div>
         <p class="section-sub">{{ info.get('reservation_note','') }}</p>
         <div class="hours-reserve" style="margin-top:2rem;">
-          <p>Réservation par téléphone ou email, vivement recommandée le week-end.</p>
+          <p>Réservez par téléphone ou directement en ligne — recommandé le week-end.</p>
           <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
             <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-gold">📞 {{ info.get('phone','') }}</a>
-            <a href="mailto:{{ info.get('email','') }}" class="btn btn-outline" style="color:var(--cream); border-color:rgba(255,255,255,.3);">✉️ Email</a>
+            <a href="#reserver" class="btn btn-outline" style="color:var(--cream); border-color:rgba(255,255,255,.3);">📅 Réserver en ligne</a>
           </div>
         </div>
       </div>
@@ -255,6 +255,75 @@
     </div>
   </div>
 </section>
+
+{# ── Réservation (formulaire embarqué) ── #}
+<section id="reserver" style="padding:4.5rem 0; background:var(--cream); scroll-margin-top:80px;">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">À table !</span>
+      <h2 class="section-title">Réservez votre table</h2>
+      <p class="section-sub">Nous confirmons votre demande rapidement, par téléphone ou par email.</p>
+    </div>
+
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% if msgs %}{% for cat, m in msgs %}
+      <div class="flash flash-{{ cat }}" style="max-width:660px; margin:1.5rem auto 0;">{{ m }}</div>
+      {% endfor %}{% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('reservation') }}"
+          style="max-width:660px; margin:2rem auto 0; background:var(--light); border:1px solid var(--border); border-radius:var(--radius-lg,18px); padding:2rem; box-shadow:var(--shadow,0 8px 28px rgba(60,48,30,.06));">
+      <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <input type="hidden" name="from" value="home">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div class="contact-form-group">
+          <label for="hr-name">Nom complet *</label>
+          <input type="text" id="hr-name" name="name" required placeholder="Votre nom">
+        </div>
+        <div class="contact-form-group">
+          <label for="hr-phone">Téléphone *</label>
+          <input type="tel" id="hr-phone" name="phone" required placeholder="+32 4xx xx xx xx">
+        </div>
+      </div>
+      <div class="contact-form-group">
+        <label for="hr-email">Email <span style="font-weight:400; color:var(--text-lt);">— pour recevoir la confirmation</span></label>
+        <input type="email" id="hr-email" name="email" placeholder="votre@email.com">
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+        <div class="contact-form-group">
+          <label for="hr-date">Date *</label>
+          <input type="date" id="hr-date" name="date" required>
+        </div>
+        <div class="contact-form-group">
+          <label for="hr-time">Heure *</label>
+          <select id="hr-time" name="time" required>
+            <option value="">Choisir</option>
+            <optgroup label="Midi (ven & dim)">
+              <option>12:00</option><option>12:30</option><option>13:00</option><option>13:30</option>
+            </optgroup>
+            <optgroup label="Soir (mer–dim)">
+              <option>18:30</option><option>19:00</option><option>19:30</option><option>20:00</option><option>20:30</option><option>21:00</option><option>21:30</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="contact-form-group">
+          <label for="hr-guests">Personnes *</label>
+          <select id="hr-guests" name="guests" required>
+            <option value="">Combien ?</option>
+            {% for n in range(1, 21) %}<option value="{{ n }}">{{ n }}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="contact-form-group">
+        <label for="hr-notes">Demandes particulières</label>
+        <textarea id="hr-notes" name="notes" rows="2" placeholder="Allergie, anniversaire, chaise haute, terrasse…"></textarea>
+      </div>
+      <button type="submit" class="btn btn-gold" style="width:100%; justify-content:center; padding:1rem;">Envoyer ma demande de réservation</button>
+      <p style="font-size:.78rem; color:var(--text-lt); text-align:center; margin-top:.75rem;">Confirmation par téléphone dans les 2h. Aucun paiement en ligne.</p>
+    </form>
+  </div>
+</section>
+<script>document.getElementById('hr-date').min = new Date().toISOString().split('T')[0];</script>
 
 {# ── Award ── #}
 <section class="award-section">

@@ -755,6 +755,8 @@ def reservation():
             flash('Demande reçue ! Nous vous confirmons par téléphone dans les 2h.', 'success')
         else:
             flash('Veuillez remplir tous les champs obligatoires.', 'error')
+        if request.form.get('from') == 'home':
+            return redirect(url_for('index') + '#reserver')
         return redirect(url_for('reservation'))
     hours = query('SELECT * FROM hours ORDER BY day_order')
     return render_template('reservation.html', hours=hours)
