@@ -314,6 +314,31 @@
       <h2 class="section-title">Ils nous font confiance</h2>
       <p class="section-sub">Plus de 330 avis clients sur Google, Facebook et TripAdvisor.</p>
     </div>
+
+    {# ── Notes par plateforme ── #}
+    <div style="display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; max-width:920px; margin:0 auto 2.75rem;">
+      <div style="flex:1 1 170px; background:var(--light); border:1px solid var(--border); border-radius:var(--radius); padding:1.15rem 1rem; text-align:center;">
+        <div style="font-weight:700; color:var(--dark); font-size:.92rem; margin-bottom:.45rem;">Google</div>
+        <div style="font-size:1.5rem; font-weight:700; color:var(--gold); line-height:1;">★ 4,6<span style="font-size:.78rem; color:var(--text-lt); font-weight:400;"> /5</span></div>
+        <div style="font-size:.78rem; color:var(--text-lt); margin-top:.4rem;">155 avis</div>
+      </div>
+      <div style="flex:1 1 170px; background:var(--light); border:1px solid var(--border); border-radius:var(--radius); padding:1.15rem 1rem; text-align:center;">
+        <div style="font-weight:700; color:var(--dark); font-size:.92rem; margin-bottom:.45rem;">Facebook</div>
+        <div style="font-size:1.5rem; font-weight:700; color:var(--gold); line-height:1;">★ 5<span style="font-size:.78rem; color:var(--text-lt); font-weight:400;"> /5</span></div>
+        <div style="font-size:.78rem; color:var(--text-lt); margin-top:.4rem;">157 avis</div>
+      </div>
+      <div style="flex:1 1 170px; background:var(--light); border:1px solid var(--border); border-radius:var(--radius); padding:1.15rem 1rem; text-align:center;">
+        <div style="font-weight:700; color:var(--dark); font-size:.92rem; margin-bottom:.45rem;">TripAdvisor</div>
+        <div style="font-size:1.5rem; font-weight:700; color:var(--gold); line-height:1;">★ 3,7<span style="font-size:.78rem; color:var(--text-lt); font-weight:400;"> /5</span></div>
+        <div style="font-size:.78rem; color:var(--text-lt); margin-top:.4rem;">23 avis</div>
+      </div>
+      <div style="flex:1 1 170px; background:var(--light); border:1px solid var(--border); border-radius:var(--radius); padding:1.15rem 1rem; text-align:center;">
+        <div style="font-weight:700; color:var(--dark); font-size:.92rem; margin-bottom:.45rem;">Restaurant Guru</div>
+        <div style="font-size:1.5rem; font-weight:700; color:var(--gold); line-height:1;">★ 4,6<span style="font-size:.78rem; color:var(--text-lt); font-weight:400;"> /5</span></div>
+        <div style="font-size:.78rem; color:var(--text-lt); margin-top:.4rem;">153 avis</div>
+      </div>
+    </div>
+
     <div class="reviews-grid">
       {% for r in reviews %}
       <div class="review-card fade-up fade-up-d{{ loop.index }}">
