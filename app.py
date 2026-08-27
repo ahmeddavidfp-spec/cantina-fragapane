@@ -555,6 +555,50 @@ def send_reservation_ack(name, to_email, date, time, guests):
     return _send_via_brevo(subject, text, to_email, html=_ack_html(name, intro))
 
 
+def build_restaurant_jsonld(info, hours):
+    """Génère le JSON-LD Restaurant (fiable, échappement JSON correct)."""
+    days_map = {"Lundi": "Monday", "Mardi": "Tuesday", "Mercredi": "Wednesday", "Jeudi": "Thursday",
+                "Vendredi": "Friday", "Samedi": "Saturday", "Dimanche": "Sunday"}
+    specs = []
+    for h in hours:
+        if h.get('is_closed'):
+            continue
+        day = days_map.get(h['day_name'], h['day_name'])
+        if h.get('lunch_open') and h.get('lunch_close'):
+            specs.append({"@type": "OpeningHoursSpecification", "dayOfWeek": day,
+                          "opens": h['lunch_open'], "closes": h['lunch_close']})
+        if h.get('dinner_open') and h.get('dinner_close'):
+            specs.append({"@type": "OpeningHoursSpecification", "dayOfWeek": day,
+                          "opens": h['dinner_open'], "closes": h['dinner_close']})
+    city = info.get('city', '')
+    locality = city.split(',')[0].strip() if ',' in city else city
+    data = {
+        "@context": "https://schema.org",
+        "@type": "Restaurant",
+        "name": info.get('name', 'La Cantina Fragapane'),
+        "description": info.get('about_short', "Restaurant italien authentique à Châtelet, fondé par "
+                                "Carlo et Brenda. Pâtes fraîches maison, viandes grillées, arrosticinis, "
+                                "livraison à domicile."),
+        "url": SITE_URL,
+        "telephone": info.get('phone', '').replace(' ', ''),
+        "email": info.get('email', ''),
+        "address": {"@type": "PostalAddress", "streetAddress": info.get('address', ''),
+                    "addressLocality": locality, "postalCode": "6200", "addressCountry": "BE"},
+        "geo": {"@type": "GeoCoordinates", "latitude": 50.4012, "longitude": 4.5278},
+        "servesCuisine": "Italienne",
+        "priceRange": info.get('price_range', '€€'),
+        "currenciesAccepted": "EUR",
+        "openingHoursSpecification": specs,
+        "hasMenu": SITE_URL + "/menu",
+        "acceptsReservations": True,
+        "image": SITE_URL + "/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg",
+    }
+    sameas = [x for x in (info.get('facebook'), info.get('instagram')) if x]
+    if sameas:
+        data["sameAs"] = sameas
+    return json.dumps(data, ensure_ascii=False)
+
+
 # ── Context processors ────────────────────────────────────────────────────────
 
 @app.context_processor
@@ -567,8 +611,10 @@ def inject_globals():
         'SELECT * FROM evenements WHERE active=1 ORDER BY epingle DESC, date_event DESC LIMIT 6')
     open_status = get_open_status()
     hours_all = query('SELECT * FROM hours ORDER BY day_order')
+    restaurant_jsonld = build_restaurant_jsonld(info, hours_all)
     return dict(info=info, announcements=announcements, evenements=evenements,
                 open_status=open_status, hours=hours_all, asset_version=ASSET_VERSION,
+                restaurant_jsonld=restaurant_jsonld,
                 now=datetime.now(), site_url=SITE_URL)
 
 
@@ -621,7 +667,24 @@ def index():
 @app.route('/menu')
 def menu():
     menu_data = get_full_menu()
-    return render_template('menu.html', menu_data=menu_data)
+    # Données structurées Menu (rich results Google)
+    sections = []
+    for entry in menu_data:
+        items = []
+        for it in entry['plats']:
+            mi = {"@type": "MenuItem", "name": it['name']}
+            if it.get('description'):
+                mi["description"] = it['description']
+            if it.get('price'):
+                mi["offers"] = {"@type": "Offer", "price": f"{float(it['price']):.2f}", "priceCurrency": "EUR"}
+            items.append(mi)
+        if items:
+            sections.append({"@type": "MenuSection", "name": entry['category']['name'], "hasMenuItem": items})
+    menu_jsonld = json.dumps(
+        {"@context": "https://schema.org", "@type": "Menu",
+         "name": "Menu – La Cantina Fragapane", "inLanguage": "fr",
+         "hasMenuSection": sections}, ensure_ascii=False)
+    return render_template('menu.html', menu_data=menu_data, menu_jsonld=menu_jsonld)
 
 
 @app.route('/a-propos')

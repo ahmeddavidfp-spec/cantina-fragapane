@@ -41,55 +41,19 @@
   <meta name="twitter:description" content="Cuisine italienne authentique à Châtelet. Pâtes fraîches, arrosticinis, livraison à domicile.">
   <meta name="twitter:image"       content="{{ site_url }}/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg">
 
-  {# ── JSON-LD Structured Data (Google Rich Results) ── #}
+  {# ── JSON-LD Restaurant (généré côté serveur, échappement JSON fiable) ── #}
+  <script type="application/ld+json">{{ restaurant_jsonld|safe }}</script>
+
+  {# ── Breadcrumb (fil d'Ariane) pour les pages internes ── #}
+  {% set _crumbs = {'menu':'Menu','galerie':'Galerie','evenements_prives':'Événements privés','livraison':'Livraison','a_propos':'À Propos','faq':'FAQ','contact':'Contact','reservation':'Réservation'} %}
+  {% if request.endpoint in _crumbs %}
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Restaurant",
-    "name": "{{ info.get('name','La Cantina Fragapane') }}",
-    "description": "{{ info.get('about_short','Restaurant italien authentique à Châtelet, fondé par Carlo et Brenda. Pâtes fraîches maison, viandes grillées, arrosticinis, livraison à domicile.') }}",
-    "url": "{{ site_url }}",
-    "telephone": "{{ info.get('phone','').replace(' ','') }}",
-    "email": "{{ info.get('email','') }}",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "{{ info.get('address','') }}",
-      "addressLocality": "{{ info.get('city','').split(',')[0].strip() if ',' in info.get('city','') else info.get('city','') }}",
-      "addressCountry": "BE"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": 50.4012,
-      "longitude": 4.5278
-    },
-    "servesCuisine": "Italienne",
-    "priceRange": "{{ info.get('price_range','€€') }}",
-    "currenciesAccepted": "EUR",
-    "hasOfferCatalog": {
-      "@type": "OfferCatalog",
-      "name": "Menu La Cantina Fragapane"
-    },
-    "openingHoursSpecification": [
-      {% set days_map = {"Mardi":"Tuesday","Mercredi":"Wednesday","Jeudi":"Thursday","Vendredi":"Friday","Samedi":"Saturday","Dimanche":"Sunday","Lundi":"Monday"} %}
-      {% set specs = [] %}
-      {% for h in hours %}{% if not h['is_closed'] %}
-        {% if h['lunch_open'] and h['lunch_close'] %}{% set _ = specs.append('{"@type":"OpeningHoursSpecification","dayOfWeek":"' ~ days_map.get(h["day_name"],h["day_name"]) ~ '","opens":"' ~ h["lunch_open"] ~ '","closes":"' ~ h["lunch_close"] ~ '"}') %}{% endif %}
-        {% if h['dinner_open'] and h['dinner_close'] %}{% set _ = specs.append('{"@type":"OpeningHoursSpecification","dayOfWeek":"' ~ days_map.get(h["day_name"],h["day_name"]) ~ '","opens":"' ~ h["dinner_open"] ~ '","closes":"' ~ h["dinner_close"] ~ '"}') %}{% endif %}
-      {% endif %}{% endfor %}
-      {{ specs|join(',\n      ') }}
-    ],
-    "image": "{{ site_url }}/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg"
-    {% if info.get('facebook') %}
-    ,"sameAs": ["{{ info.get('facebook') }}"{% if info.get('instagram') %},"{{ info.get('instagram') }}"{% endif %}]
-    {% endif %}
-    ,"aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.6",
-      "reviewCount": "155",
-      "bestRating": "5"
-    }
-  }
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Accueil","item":"{{ site_url }}/"},
+    {"@type":"ListItem","position":2,"name":"{{ _crumbs[request.endpoint] }}","item":"{{ site_url }}{{ request.path }}"}
+  ]}
   </script>
+  {% endif %}
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

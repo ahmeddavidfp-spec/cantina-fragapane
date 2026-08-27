@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 
 {% block title %}Menu – La Cantina Fragapane, Restaurant Italien à Châtelet{% endblock %}
-{% block description %}Découvrez notre menu : pâtes fraîches maison, viandes grillées, antipasti et desserts. Restaurant italien à Châtelet.{% endblock %}
+{% block description %}Le menu de La Cantina Fragapane à Châtelet : antipasti, pâtes fraîches maison, arrosticinis, viandes grillées Angus, escalopes, desserts italiens et suggestions du moment. Prix et allergènes indiqués.{% endblock %}
 
 {% block content %}
+<script type="application/ld+json">{{ menu_jsonld|safe }}</script>
+
 
 <section class="page-hero">
   <div class="page-hero-content">

@@ -10,7 +10,7 @@
   <div class="hero-bg"></div>
   <div class="hero-pattern"></div>
   <div class="hero-content">
-    <div class="hero-eyebrow">Depuis Châtelet, Belgique</div>
+    <div class="hero-eyebrow">Restaurant italien · Châtelet, Belgique</div>
     <h1 class="hero-title">La Cantina<br><em>Fragapane</em></h1>
     <p class="hero-tagline">{{ info.get('tagline', 'Cucina italiana autentica') }}</p>
     <p class="hero-subtitle">{{ info.get('subtitle', '') }}</p>
@@ -378,9 +378,26 @@
   </div>
 </section>
 
-{# SDK Facebook — chargé automatiquement au chargement de la page #}
-<script async defer crossorigin="anonymous"
-        src="https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v19.0"></script>
+{# SDK Facebook — chargé en différé (à l'approche du scroll) pour ne pas pénaliser la vitesse de la page #}
+<script>
+(function(){
+  var sec = document.querySelector('.facebook-section');
+  if (!sec) return;
+  function loadFB(){
+    if (window.__fbSDK) return; window.__fbSDK = true;
+    var s = document.createElement('script');
+    s.async = true; s.defer = true; s.crossOrigin = 'anonymous';
+    s.src = 'https://connect.facebook.net/fr_FR/sdk.js#xfbml=1&version=v19.0';
+    document.body.appendChild(s);
+  }
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if (e.isIntersecting) { loadFB(); obs.disconnect(); } });
+    }, { rootMargin: '500px' });
+    obs.observe(sec);
+  } else { loadFB(); }
+})();
+</script>
 
 {# ── CTA ── #}
 <section class="cta-strip">
