@@ -3,6 +3,7 @@ import json
 import uuid
 import smtplib
 import urllib.request
+import urllib.error
 import pyotp
 import psycopg2
 import psycopg2.extras
@@ -427,6 +428,14 @@ def _send_via_brevo(subject, body, to_addr, reply_to=None):
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
             return 200 <= resp.status < 300
+    except urllib.error.HTTPError as e:
+        detail = ''
+        try:
+            detail = e.read().decode('utf-8', 'ignore')[:300]
+        except Exception:
+            pass
+        app.logger.warning('Échec envoi email (Brevo) HTTP %s : %s', e.code, detail)
+        return False
     except Exception as e:
         app.logger.warning('Échec envoi email (Brevo) : %s', e)
         return False
