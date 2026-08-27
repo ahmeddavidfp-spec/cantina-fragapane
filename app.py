@@ -222,6 +222,7 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+    cur.execute('ALTER TABLE reservations ADD COLUMN IF NOT EXISTS email TEXT')
     db.commit()
 
     cur.execute('SELECT COUNT(*) AS c FROM menu_categories')
@@ -485,8 +486,8 @@ def send_contact_email(name, sender_email, phone, message):
         return False
 
 
-def _ack_html(name):
-    """Modèle HTML de l'accusé de réception envoyé au client."""
+def _ack_html(name, intro):
+    """Modèle HTML de l'accusé de réception envoyé au client (intro = paragraphe central)."""
     safe = escape(name)
     return f"""\
 <div style="background:#f4f1ea;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;">
@@ -505,7 +506,7 @@ def _ack_html(name):
    </td></tr>
    <tr><td style="padding:30px 30px 26px;">
     <p style="font-size:16px;margin:0 0 14px;color:#2b2620;">Bonjour <strong>{safe}</strong>,</p>
-    <p style="font-size:15px;line-height:1.65;margin:0 0 14px;color:#4a453e;">Merci pour votre message&nbsp;! Nous l'avons bien reçu et nous vous répondrons dans les <strong>meilleurs délais</strong>.</p>
+    {intro}
     <p style="font-size:15px;line-height:1.65;margin:0 0 24px;color:#4a453e;">Pour une demande urgente ou une réservation du jour, le plus simple est de nous appeler&nbsp;:</p>
     <table role="presentation" cellpadding="0" cellspacing="0" align="center" style="margin:0 auto;"><tr>
      <td style="border-radius:10px;background:#c9984a;"><a href="tel:+32491227207" style="display:inline-block;padding:13px 28px;color:#ffffff;font-weight:bold;font-size:15px;text-decoration:none;">&#128222;&nbsp; +32 491 22 72 07</a></td>
@@ -523,18 +524,35 @@ def _ack_html(name):
 </div>"""
 
 
+_ACK_P = 'font-size:15px;line-height:1.65;margin:0 0 14px;color:#4a453e;'
+
 def send_customer_ack(name, to_email):
-    """Accusé de réception automatique envoyé au client (via Brevo, si email fourni)."""
+    """Accusé de réception automatique — formulaire de contact."""
     if not to_email or not os.environ.get('BREVO_API_KEY'):
         return False
     subject = "Merci pour votre message – La Cantina Fragapane"
-    text = (f"Bonjour {name},\n\n"
-            "Merci pour votre message ! Nous l'avons bien reçu et nous vous répondrons "
-            "dans les meilleurs délais.\n\n"
-            "Pour une demande urgente ou une réservation du jour, appelez-nous au +32 491 22 72 07.\n\n"
-            "À très bientôt,\nL'équipe de La Cantina Fragapane\n"
+    text = (f"Bonjour {name},\n\nMerci pour votre message ! Nous l'avons bien reçu et nous vous "
+            "répondrons dans les meilleurs délais.\n\nPour une demande urgente, appelez-nous au "
+            "+32 491 22 72 07.\n\nÀ très bientôt,\nL'équipe de La Cantina Fragapane\n"
             "Rue du Taillis Pré 86, 6200 Châtelet — cantinafragapane.be")
-    return _send_via_brevo(subject, text, to_email, html=_ack_html(name))
+    intro = (f'<p style="{_ACK_P}">Merci pour votre message&nbsp;! Nous l\'avons bien reçu et nous '
+             'vous répondrons dans les <strong>meilleurs délais</strong>.</p>')
+    return _send_via_brevo(subject, text, to_email, html=_ack_html(name, intro))
+
+
+def send_reservation_ack(name, to_email, date, time, guests):
+    """Accusé de réception automatique — demande de réservation."""
+    if not to_email or not os.environ.get('BREVO_API_KEY'):
+        return False
+    subject = "Votre demande de réservation – La Cantina Fragapane"
+    text = (f"Bonjour {name},\n\nNous avons bien reçu votre demande de réservation pour le {date} "
+            f"à {time} ({guests} pers.). Nous vous recontactons rapidement pour la confirmer.\n\n"
+            "Pour toute urgence, appelez-nous au +32 491 22 72 07.\n\nÀ très bientôt,\n"
+            "L'équipe de La Cantina Fragapane\nRue du Taillis Pré 86, 6200 Châtelet — cantinafragapane.be")
+    intro = (f'<p style="{_ACK_P}">Nous avons bien reçu votre <strong>demande de réservation</strong> '
+             f'pour le <strong>{escape(str(date))}</strong> à <strong>{escape(str(time))}</strong> '
+             f'({escape(str(guests))}&nbsp;pers.). Nous vous recontactons rapidement pour la <strong>confirmer</strong>.</p>')
+    return _send_via_brevo(subject, text, to_email, html=_ack_html(name, intro))
 
 
 # ── Context processors ────────────────────────────────────────────────────────
@@ -615,6 +633,8 @@ def a_propos():
 def contact():
     hours = get_hours()
     if request.method == 'POST':
+        if request.form.get('website'):          # honeypot anti-spam
+            return redirect(url_for('contact'))
         name    = request.form.get('name', '').strip()
         email   = request.form.get('email', '').strip()
         phone   = request.form.get('phone', '').strip()
@@ -646,23 +666,27 @@ def livraison():
 @app.route('/reservation', methods=['GET', 'POST'])
 def reservation():
     if request.method == 'POST':
+        if request.form.get('website'):          # honeypot anti-spam
+            return redirect(url_for('reservation'))
         name   = request.form.get('name', '').strip()
+        email  = request.form.get('email', '').strip()
         phone  = request.form.get('phone', '').strip()
         date   = request.form.get('date', '').strip()
         time   = request.form.get('time', '').strip()
         guests = request.form.get('guests', '').strip()
         notes  = request.form.get('notes', '').strip()
-        if name and phone and date and time and guests:
+        if name and phone and date and time and guests.isdigit():
             execute(
-                'INSERT INTO reservations (name,phone,date,time,guests,notes) VALUES (%s,%s,%s,%s,%s,%s)',
-                (name, phone, date, time, int(guests), notes or None))
+                'INSERT INTO reservations (name,email,phone,date,time,guests,notes) VALUES (%s,%s,%s,%s,%s,%s,%s)',
+                (name, email or None, phone, date, time, int(guests), notes or None))
             try:
                 body = (f"Nouvelle demande de réservation :\n\n"
-                        f"Nom : {name}\nTéléphone : {phone}\n"
+                        f"Nom : {name}\nEmail : {email or '—'}\nTéléphone : {phone}\n"
                         f"Date : {date} à {time}\nPersonnes : {guests}\n"
                         f"Notes : {notes or '—'}")
-                send_contact_email(name, '', phone,
+                send_contact_email(name, email, phone,
                                    f"[RÉSERVATION] {date} {time} – {guests} pers.\n\n{body}")
+                send_reservation_ack(name, email, date, time, guests)
             except Exception:
                 pass
             flash('Demande reçue ! Nous vous confirmons par téléphone dans les 2h.', 'success')
@@ -685,6 +709,18 @@ def newsletter_subscribe():
     else:
         flash('Adresse email invalide.', 'error')
     return redirect(request.referrer or url_for('index'))
+
+
+@app.route('/desinscription', methods=['GET', 'POST'])
+def newsletter_unsubscribe():
+    done = False
+    if request.method == 'POST':
+        if not request.form.get('website'):      # honeypot
+            email = request.form.get('email', '').strip().lower()
+            if email:
+                execute('DELETE FROM newsletter_subscribers WHERE lower(email)=%s', (email,))
+        done = True
+    return render_template('desinscription.html', done=done)
 
 
 @app.route('/galerie')

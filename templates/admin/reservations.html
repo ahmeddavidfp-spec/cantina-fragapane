@@ -27,7 +27,7 @@
       <tr class="resa-row resa-{{ r['status'] }}">
         <td>{{ r['date'] }}</td>
         <td>{{ r['time'] }}</td>
-        <td><strong>{{ r['name'] }}</strong></td>
+        <td><strong>{{ r['name'] }}</strong>{% if r['email'] %}<br><a href="mailto:{{ r['email'] }}" style="font-size:.78rem; color:var(--text-lt);">{{ r['email'] }}</a>{% endif %}</td>
         <td><a href="tel:{{ r['phone'] }}">{{ r['phone'] }}</a></td>
         <td>{{ r['guests'] }}</td>
         <td style="font-size:.82rem; color:var(--text-lt);">{{ r['notes'] or '—' }}</td>

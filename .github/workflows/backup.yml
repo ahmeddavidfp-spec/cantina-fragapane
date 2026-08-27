@@ -1,0 +1,29 @@
+name: Sauvegarde base de données
+
+# Exporte la base chaque semaine et conserve le fichier en artefact GitHub (90 jours).
+# Nécessite un secret GitHub : DATABASE_URL (chaîne de connexion Neon).
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'      # chaque lundi à 03:00 UTC
+  workflow_dispatch:          # + déclenchement manuel possible
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install --quiet psycopg2-binary
+      - name: Export de la base
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: python backup_db.py
+      - name: Conserver la sauvegarde (artefact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-cantina
+          path: backup-cantina-*.json
+          retention-days: 90

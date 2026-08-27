@@ -25,11 +25,12 @@
         <h2>2. Données collectées</h2>
         <p>Ce site ne collecte pas de données personnelles à des fins publicitaires ou commerciales. Les données traitées sont limitées à :</p>
         <ul>
-          <li><strong>Formulaire de contact & réservation</strong> : nom, téléphone, email et message transmis par email à l'équipe du restaurant. Ces données ne sont pas stockées en base de données.</li>
-          <li><strong>Newsletter</strong> : l'adresse email fournie volontairement est conservée pour l'envoi d'informations sur le restaurant (offres, événements). Vous pouvez vous désinscrire à tout moment en nous contactant.</li>
-          <li><strong>Session de connexion admin</strong> : un cookie de session est créé uniquement lors de la connexion à l'espace d'administration. Il est temporaire et supprimé à la fermeture de la session.</li>
-          <li><strong>Logs serveur</strong> : l'hébergeur (Railway) conserve des logs techniques (adresse IP, pages visitées) à des fins de sécurité, conformément à leur propre politique de confidentialité.</li>
-          <li><strong>Préférence cookies</strong> : un item localStorage (non-cookie) pour mémoriser votre accord à la bannière cookies.</li>
+          <li><strong>Formulaire de contact</strong> : nom, email, téléphone et message. Ces données sont <strong>enregistrées</strong> (base de données hébergée dans l'Union européenne) afin de traiter votre demande ; une notification est envoyée à l'équipe par email et un accusé de réception vous est adressé.</li>
+          <li><strong>Réservation</strong> : nom, téléphone, email (facultatif), date, heure et remarques, enregistrés pour gérer votre réservation. Si vous indiquez un email, vous recevez une confirmation automatique.</li>
+          <li><strong>Newsletter</strong> : l'adresse email fournie volontairement est conservée pour l'envoi d'informations sur le restaurant. Vous pouvez vous <a href="{{ url_for('newsletter_unsubscribe') }}">désinscrire à tout moment</a>.</li>
+          <li><strong>Session de connexion admin</strong> : un cookie de session temporaire, créé uniquement lors de la connexion à l'espace d'administration.</li>
+          <li><strong>Logs serveur & CDN</strong> : l'hébergeur (Render) et Cloudflare conservent des logs techniques (adresse IP, pages visitées) à des fins de sécurité.</li>
+          <li><strong>Préférence cookies</strong> : un item localStorage (non-cookie) pour mémoriser votre choix.</li>
         </ul>
       </div>
 
@@ -46,7 +47,7 @@
 
       <div class="legal-block">
         <h2>4. Durée de conservation</h2>
-        <p>Les cookies de session sont supprimés à la fermeture du navigateur. Les logs serveur sont conservés 30 jours maximum par l'hébergeur. Les adresses email newsletter sont conservées jusqu'à désinscription. Les données de contact/réservation ne sont pas stockées sur le site.</p>
+        <p>Les cookies de session sont supprimés à la fermeture du navigateur. Les logs techniques sont conservés environ 30 jours par l'hébergeur/CDN. Les messages de contact et les réservations sont conservés le temps nécessaire au traitement de votre demande, puis archivés ou supprimés. Les adresses email de la newsletter sont conservées jusqu'à désinscription.</p>
       </div>
 
       <div class="legal-block">
@@ -65,8 +66,9 @@
       </div>
 
       <div class="legal-block">
-        <h2>6. Sécurité</h2>
-        <p>Le site est hébergé sur des serveurs sécurisés (Railway). Les connexions sont chiffrées via HTTPS/TLS. L'accès à l'espace d'administration est protégé par mot de passe.</p>
+        <h2>6. Hébergement, sécurité & sous-traitants</h2>
+        <p>Le site et ses données sont hébergés dans l'Union européenne — application sur <strong>Render</strong>, base de données <strong>Neon</strong> (région Francfort). Le trafic passe par <strong>Cloudflare</strong> (DNS, protection). Les emails (accusés, confirmations, notifications) sont envoyés via <strong>Brevo</strong>. Chacun de ces prestataires agit comme sous-traitant et applique sa propre politique de confidentialité.</p>
+        <p>Les connexions sont chiffrées via HTTPS/TLS. L'accès à l'espace d'administration est protégé par une <strong>double authentification</strong> (application Google Authenticator).</p>
       </div>
 
       <div class="legal-block">

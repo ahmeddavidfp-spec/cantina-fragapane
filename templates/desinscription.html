@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Désinscription newsletter – La Cantina Fragapane{% endblock %}
+{% block description %}Se désinscrire de la newsletter de La Cantina Fragapane.{% endblock %}
+
+{% block content %}
+<section class="page-hero" style="min-height:200px; padding:6rem 1rem 2rem;">
+  <div class="page-hero-content">
+    <span class="section-label">Newsletter</span>
+    <h1 class="section-title">Désinscription</h1>
+  </div>
+</section>
+
+<section class="legal-page">
+  <div class="container" style="max-width:560px;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}{% for cat, msg in messages %}
+      <div class="flash flash-{{ cat }}">{{ msg }}</div>
+      {% endfor %}{% endif %}
+    {% endwith %}
+
+    {% if done %}
+      <div class="legal-block legal-block-highlight">
+        <p>✅ C'est fait. Si votre adresse était inscrite, elle a été retirée de notre newsletter — vous ne recevrez plus nos emails.</p>
+      </div>
+      <div style="text-align:center; margin-top:1.75rem;">
+        <a href="{{ url_for('index') }}" class="btn btn-gold">Retour à l'accueil</a>
+      </div>
+    {% else %}
+      <p style="color:var(--text-lt); margin-bottom:1.5rem;">Entrez l'adresse email à retirer de notre newsletter.</p>
+      <form method="POST" class="contact-form">
+        <div class="contact-form-group">
+          <label for="email">Votre email</label>
+          <input type="email" id="email" name="email" required placeholder="votre@email.com">
+        </div>
+        <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button type="submit" class="btn btn-gold">Me désinscrire</button>
+      </form>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

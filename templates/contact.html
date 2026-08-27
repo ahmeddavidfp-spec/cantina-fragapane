@@ -188,6 +188,7 @@
         </p>
       </div>
       <form class="contact-form" method="POST" action="{{ url_for('contact') }}">
+        <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="contact-form-row">
           <div class="contact-form-group">
             <label for="cf-name">Nom *</label>
