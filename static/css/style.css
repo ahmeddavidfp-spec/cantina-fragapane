@@ -159,7 +159,7 @@ input, textarea, select { font-family: inherit; }
   height: 3px;
   background: linear-gradient(to right,
     #009246 33.33%,
-    rgba(255,255,255,.35) 33.33% 66.66%,
+    #ffffff 33.33% 66.66%,
     #CE2B37 66.66%);
 }
 .site-header.scrolled {
