@@ -956,7 +956,7 @@ def admin_menu():
 @login_required
 def admin_add_category():
     name = request.form.get('name', '').strip()
-    icon = request.form.get('icon', '🍽️').strip() or '🍽️'
+    icon = request.form.get('icon', '').strip()
     if name:
         max_o = query('SELECT MAX(sort_order) AS m FROM menu_categories', one=True)['m'] or 0
         execute('INSERT INTO menu_categories (name,icon,sort_order) VALUES (%s,%s,%s)',
@@ -969,7 +969,7 @@ def admin_add_category():
 @login_required
 def admin_edit_category(cat_id):
     name = request.form.get('name', '').strip()
-    icon = request.form.get('icon', '').strip() or '🍽️'
+    icon = request.form.get('icon', '').strip()
     if name:
         execute('UPDATE menu_categories SET name=%s, icon=%s WHERE id=%s', (name, icon, cat_id))
         flash('Catégorie mise à jour.', 'success')

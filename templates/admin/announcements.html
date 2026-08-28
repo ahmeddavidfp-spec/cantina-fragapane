@@ -12,7 +12,7 @@
 <!-- Add announcement -->
 <div class="admin-card">
   <div class="admin-card-header">
-    <div class="admin-card-title">➕ Nouvelle annonce</div>
+    <div class="admin-card-title"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><path d="M12 5v14M5 12h14"/></svg> Nouvelle annonce</div>
   </div>
   <div class="admin-card-body">
     <form method="POST" action="{{ url_for('admin_add_announcement') }}"
@@ -20,12 +20,12 @@
       <div class="admin-form-group" style="flex:1; min-width:280px; margin:0;">
         <label>Message</label>
         <input class="admin-input" type="text" name="message" required
-               placeholder="Ex: Fermé le 25 décembre. Joyeux Noël ! 🎄">
+               placeholder="Ex: Fermé le 25 décembre. Joyeux Noël !">
       </div>
       <button type="submit" class="admin-btn admin-btn-primary">Publier</button>
     </form>
     <p style="font-size:.8rem; color:var(--text-lt); margin-top:.75rem;">
-      💡 Utilisez les annonces pour : fermetures exceptionnelles, menus du jour, événements, promotions.
+      <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V17h6v-.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/></svg> Utilisez les annonces pour : fermetures exceptionnelles, menus du jour, événements, promotions.
     </p>
   </div>
 </div>
@@ -33,7 +33,7 @@
 <!-- Announcements list -->
 <div class="admin-card">
   <div class="admin-card-header">
-    <div class="admin-card-title">📋 Toutes les annonces</div>
+    <div class="admin-card-title"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M8 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/></svg> Toutes les annonces</div>
   </div>
   {% if anns %}
   <div style="overflow-x:auto;">
@@ -64,12 +64,12 @@
             <div class="admin-actions">
               <form method="POST" action="{{ url_for('admin_toggle_announcement', ann_id=ann['id']) }}">
                 <button type="submit" class="admin-btn {% if ann['active'] %}admin-btn-outline{% else %}admin-btn-success{% endif %}">
-                  {% if ann['active'] %}👁️ Masquer{% else %}✓ Afficher{% endif %}
+                  {% if ann['active'] %}<svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg> Masquer{% else %}✓ Afficher{% endif %}
                 </button>
               </form>
               <form method="POST" action="{{ url_for('admin_delete_announcement', ann_id=ann['id']) }}"
                     onsubmit="return confirm('Supprimer cette annonce ?')">
-                <button type="submit" class="admin-btn admin-btn-danger">🗑️</button>
+                <button type="submit" class="admin-btn admin-btn-danger"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg></button>
               </form>
             </div>
           </td>
