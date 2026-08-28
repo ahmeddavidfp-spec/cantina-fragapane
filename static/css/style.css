@@ -2824,7 +2824,8 @@ html, body { overflow-x: hidden; }
 .resa-info-block p { font-size: .88rem; color: var(--text-lt); }
 
 @media (max-width: 860px) {
-  .resa-grid { grid-template-columns: 1fr; }
+  .resa-grid { grid-template-columns: minmax(0, 1fr); }
+  .resa-grid > * { min-width: 0; }
   .resa-form-row { grid-template-columns: 1fr; }
 }
 
