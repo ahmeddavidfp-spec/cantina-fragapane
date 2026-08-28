@@ -637,6 +637,13 @@ def get_full_menu():
 
 # ── Public routes ─────────────────────────────────────────────────────────────
 
+@app.route('/healthz')
+def healthz():
+    """Endpoint ultra-léger pour le keep-alive (aucune requête BDD, réponse instantanée).
+    Suffit à réveiller / maintenir éveillé le service Render."""
+    return 'ok', 200, {'Cache-Control': 'no-store'}
+
+
 @app.route('/')
 def index():
     hours = get_hours()
