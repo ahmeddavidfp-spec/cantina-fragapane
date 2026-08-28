@@ -205,6 +205,67 @@
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
   </button>
 
+  {# ── Bouton flottant + popup Réservation (toutes les pages) ── #}
+  <style>
+    .resa-fab{position:fixed;left:18px;bottom:18px;z-index:95;display:inline-flex;align-items:center;gap:.5rem;
+      background:var(--gold);color:#fff;border:none;border-radius:99px;padding:.8rem 1.25rem;font-weight:700;
+      font-size:.92rem;cursor:pointer;box-shadow:0 6px 20px rgba(201,152,74,.45);font-family:inherit;
+      transition:transform .2s ease,box-shadow .2s ease;}
+    .resa-fab:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(201,152,74,.55);}
+    .resa-modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem;}
+    .resa-modal.open{display:flex;}
+    .resa-modal-bd{position:absolute;inset:0;background:rgba(20,15,10,.62);}
+    .resa-modal-box{position:relative;background:var(--light,#fff);border-radius:18px;max-width:520px;width:100%;
+      max-height:92vh;overflow-y:auto;padding:2.25rem 1.4rem 1.9rem;box-shadow:0 24px 70px rgba(0,0,0,.4);}
+    .resa-modal-close{position:absolute;top:10px;right:12px;width:36px;height:36px;border:none;background:var(--cream,#f2ece2);
+      border-radius:50%;font-size:1rem;line-height:1;cursor:pointer;color:var(--text-lt);}
+    .resa-modal-box h2{font-family:var(--font-heading);font-size:1.55rem;margin:.2rem 0 .3rem;color:var(--dark);}
+    .resa-modal .rrow{display:grid;gap:.85rem;grid-template-columns:1fr 1fr;}
+    .resa-modal .rrow-3{grid-template-columns:1fr 1fr 1fr;}
+    .resa-modal .contact-form-group{min-width:0;margin-bottom:.85rem;}
+    .resa-modal input,.resa-modal select,.resa-modal textarea{width:100%;max-width:100%;box-sizing:border-box;
+      height:50px;padding:0 .85rem;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--dark);
+      font-size:1rem;font-family:inherit;line-height:50px;-webkit-appearance:none;appearance:none;}
+    .resa-modal textarea{height:auto;padding:.7rem .85rem;line-height:1.5;min-height:66px;resize:vertical;}
+    .resa-modal select{cursor:pointer;padding-right:2.3rem;background-repeat:no-repeat;background-position:right .9rem center;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23b3822f' stroke-width='1.7'/%3E%3C/svg%3E");}
+    .resa-modal input:focus,.resa-modal select:focus,.resa-modal textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,152,74,.18);}
+    @media(max-width:560px){.resa-modal .rrow,.resa-modal .rrow-3{grid-template-columns:1fr;}}
+  </style>
+  <button class="resa-fab" type="button" onclick="openResa()" aria-label="Réserver une table">📅 <span>Réserver</span></button>
+  <div class="resa-modal" id="resaModal" aria-hidden="true">
+    <div class="resa-modal-bd" onclick="closeResa()"></div>
+    <div class="resa-modal-box" role="dialog" aria-modal="true" aria-label="Réserver une table">
+      <button class="resa-modal-close" type="button" onclick="closeResa()" aria-label="Fermer">✕</button>
+      <div style="text-align:center;margin-bottom:1.1rem;">
+        <span class="section-label">À table !</span>
+        <h2>Réservez votre table</h2>
+        <p style="color:var(--text-lt);font-size:.9rem;">Confirmation rapide par téléphone ou email.</p>
+      </div>
+      <form method="POST" action="{{ url_for('reservation') }}">
+        <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="rrow">
+          <div class="contact-form-group"><label for="rm-name">Nom *</label><input type="text" id="rm-name" name="name" required placeholder="Votre nom"></div>
+          <div class="contact-form-group"><label for="rm-phone">Téléphone *</label><input type="tel" id="rm-phone" name="phone" required placeholder="+32 4xx…"></div>
+        </div>
+        <div class="contact-form-group"><label for="rm-email">Email <span style="font-weight:400;color:var(--text-lt);">— confirmation</span></label><input type="email" id="rm-email" name="email" placeholder="votre@email.com"></div>
+        <div class="rrow rrow-3">
+          <div class="contact-form-group"><label for="rm-date">Date *</label><input type="date" id="rm-date" name="date" required></div>
+          <div class="contact-form-group"><label for="rm-time">Heure *</label><select id="rm-time" name="time" required><option value="">Choisir</option><optgroup label="Midi (ven & dim)"><option>12:00</option><option>12:30</option><option>13:00</option><option>13:30</option></optgroup><optgroup label="Soir (mer–dim)"><option>18:30</option><option>19:00</option><option>19:30</option><option>20:00</option><option>20:30</option><option>21:00</option><option>21:30</option></optgroup></select></div>
+          <div class="contact-form-group"><label for="rm-guests">Pers. *</label><select id="rm-guests" name="guests" required><option value="">?</option>{% for n in range(1,21) %}<option value="{{ n }}">{{ n }}</option>{% endfor %}</select></div>
+        </div>
+        <div class="contact-form-group"><label for="rm-notes">Demandes particulières</label><textarea id="rm-notes" name="notes" rows="2" placeholder="Allergie, anniversaire, chaise haute…"></textarea></div>
+        <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;padding:.9rem;">Réserver ma table</button>
+        <p style="font-size:.75rem;color:var(--text-lt);text-align:center;margin-top:.6rem;">Confirmation par téléphone dans les 2h.</p>
+      </form>
+    </div>
+  </div>
+  <script>
+    function openResa(){var m=document.getElementById('resaModal');m.classList.add('open');m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';var d=document.getElementById('rm-date');if(d&&!d.min){d.min=new Date().toISOString().split('T')[0];}}
+    function closeResa(){var m=document.getElementById('resaModal');m.classList.remove('open');m.setAttribute('aria-hidden','true');document.body.style.overflow='';}
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeResa();}});
+  </script>
+
   <script>window.CANTINA_HOURS = {{ hours|tojson }};</script>
   <script src="{{ url_for('static', filename='js/main.js') }}?v={{ asset_version }}"></script>
   {% block extra_js %}{% endblock %}
