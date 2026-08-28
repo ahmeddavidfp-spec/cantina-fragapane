@@ -1782,8 +1782,13 @@ html, body { overflow-x: hidden; }
   .events-section { padding: 3rem 0; }
 }
 
-@media (max-width: 860px) {
-  /* Nav burger — se déclenche dès 860px */
+/* La barre desktop ne doit jamais passer à la ligne */
+.nav-menu-desktop { flex-wrap: nowrap; }
+.nav-menu-desktop .nav-link,
+.nav-menu-desktop .btn { white-space: nowrap; }
+
+@media (max-width: 1100px) {
+  /* Nav burger — dès 1100px (barre trop chargée avec Commander + Réserver) */
   .nav-toggle       { display: flex; z-index: 1101; position: relative; }
   .nav-menu-desktop { display: none; } /* cache le menu desktop */
 
