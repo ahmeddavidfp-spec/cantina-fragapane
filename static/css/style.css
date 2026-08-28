@@ -1789,8 +1789,8 @@ html, body { overflow-x: hidden; }
 .nav-menu-desktop .nav-link,
 .nav-menu-desktop .btn { white-space: nowrap; }
 
-@media (max-width: 1100px) {
-  /* Nav burger — dès 1100px (barre trop chargée avec Commander + Réserver) */
+@media (max-width: 1200px) {
+  /* Nav burger — dès 1200px (barre chargée : 5 liens + Commander + Réserver) */
   .nav-toggle       { display: flex; z-index: 1101; position: relative; }
   .nav-menu-desktop { display: none; } /* cache le menu desktop */
 
@@ -2909,7 +2909,7 @@ html, body { overflow-x: hidden; }
 
 /* Nav — Commander & Réserver de taille identique */
 .nav-menu-desktop .btn {
-  min-width: 150px;
+  min-width: 158px;
   padding: .8rem 1.5rem;
   justify-content: center;
 }
