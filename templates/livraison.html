@@ -17,7 +17,7 @@
       <a href="https://www.takeaway.com" target="_blank" rel="noopener" class="btn btn-gold btn-lg">
         Commander sur Takeaway
       </a>
-      <a href="tel:+32491227207" class="btn btn-light btn-lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.12 4.18 2 2 0 0 1 3.1 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.1 9.91a16 16 0 0 0 6 6l1.27-1.25a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg> 0491/22/72/07</a>
+      <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-light btn-lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.12 4.18 2 2 0 0 1 3.1 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.1 9.91a16 16 0 0 0 6 6l1.27-1.25a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg> {{ info.get('phone','') }}</a>
     </div>
   </div>
 </section>
@@ -72,7 +72,7 @@
           <div class="delivery-info-card">
             <div class="delivery-info-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#c9984a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.12 4.18 2 2 0 0 1 3.1 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.1 9.91a16 16 0 0 0 6 6l1.27-1.25a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
             <div>
-              <div class="delivery-info-title">0491/22/72/07</div>
+              <div class="delivery-info-title">{{ info.get('phone','') }}</div>
               <div class="delivery-info-sub">Commande directe par téléphone</div>
             </div>
           </div>
@@ -165,7 +165,7 @@
         <div class="delivery-step-num">1</div>
         <div class="delivery-step-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#c9984a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></svg></div>
         <h3 class="delivery-step-title">Choisissez</h3>
-        <p class="delivery-step-text">Via Takeaway ou par téléphone au <strong>0491/22/72/07</strong></p>
+        <p class="delivery-step-text">Via Takeaway ou par téléphone au <strong>{{ info.get('phone','') }}</strong></p>
       </div>
       <div class="delivery-step-arrow">→</div>
       <div class="delivery-step">
@@ -203,7 +203,7 @@
         <a href="https://www.takeaway.com" target="_blank" rel="noopener" class="btn btn-gold btn-lg">
           Commander sur Takeaway
         </a>
-        <a href="tel:+32491227207" class="btn btn-light btn-lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.12 4.18 2 2 0 0 1 3.1 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.1 9.91a16 16 0 0 0 6 6l1.27-1.25a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg> 0491/22/72/07</a>
+        <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-light btn-lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.12 4.18 2 2 0 0 1 3.1 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.1 9.91a16 16 0 0 0 6 6l1.27-1.25a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg> {{ info.get('phone','') }}</a>
       </div>
     </div>
   </div>

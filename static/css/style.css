@@ -1826,7 +1826,9 @@ html, body { overflow-x: hidden; }
   .nav-menu-mobile .nav-link.active { color: var(--gold) !important; }
   .nav-menu-mobile .nav-link:hover  { color: var(--gold) !important; background: rgba(255,255,255,.05); }
   .nav-menu-mobile .nav-link-delivery { color: var(--gold) !important; }
-  .nav-menu-mobile li:last-child { padding: 1.5rem 2rem 0; }
+  /* Les 2 boutons (Commander + Réserver) : même padding latéral => même largeur */
+  .nav-menu-mobile li:nth-last-child(2) { padding: 1.5rem 2rem .6rem; }
+  .nav-menu-mobile li:last-child        { padding: .6rem 2rem 1.5rem; }
   .nav-menu-mobile .btn {
     width: 100%;
     justify-content: center;

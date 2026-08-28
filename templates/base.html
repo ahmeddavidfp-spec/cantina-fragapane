@@ -182,12 +182,12 @@
   <div class="cookie-banner" id="cookieBanner" style="display:none;">
     <div class="cookie-banner-inner">
       <div class="cookie-banner-text">
-        Ce site utilise des cookies fonctionnels (session admin) et affiche notre fil Facebook, qui dépose ses propres cookies.
+        Ce site utilise des cookies fonctionnels (session admin) et affiche notre fil Facebook, qui dépose ses propres cookies. En refusant, le fil Facebook ne sera pas chargé.
         <a href="{{ url_for('cookies_page') }}">En savoir plus</a>
       </div>
       <div class="cookie-banner-btns">
         <button class="btn btn-gold" onclick="acceptCookies()">Accepter</button>
-        <button class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.4);" onclick="acceptCookies()">Fermer</button>
+        <button class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.4);" onclick="declineCookies()">Refuser</button>
       </div>
     </div>
   </div>
@@ -250,7 +250,7 @@
           <div class="contact-form-group"><label for="rm-guests">Pers. *</label><select id="rm-guests" name="guests" required><option value="">?</option>{% for n in range(1,21) %}<option value="{{ n }}">{{ n }}</option>{% endfor %}</select></div>
         </div>
         <div class="contact-form-group"><label for="rm-notes">Demandes particulières</label><textarea id="rm-notes" name="notes" rows="2" placeholder="Allergie, anniversaire, chaise haute…"></textarea></div>
-        <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;padding:.9rem;">Réserver ma table</button>
+        <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;padding:.9rem;">Envoyer ma demande de réservation</button>
         <p style="font-size:.75rem;color:var(--text-lt);text-align:center;margin-top:.6rem;">Confirmation par téléphone dans les 2h.</p>
       </form>
     </div>

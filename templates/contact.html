@@ -214,7 +214,7 @@
         </div>
         <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
           <button type="submit" class="btn btn-gold">Envoyer le message</button>
-          <span style="font-size:.82rem; color:var(--text-lt);">ou appelez-nous directement au <a href="tel:+32491227207" style="color:var(--gold);">+32 491 22 72 07</a></span>
+          <span style="font-size:.82rem; color:var(--text-lt);">ou appelez-nous directement au <a href="tel:{{ info.get('phone','').replace(' ','') }}" style="color:var(--gold);">+32 491 22 72 07</a></span>
         </div>
       </form>
     </div>
