@@ -32,23 +32,23 @@
         <div class="contact-info-block">
           <h3>Informations</h3>
           <div class="contact-item">
-            <span class="contact-item-icon">📍</span>
+            <span class="contact-item-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#c9984a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
             <div>
               {{ info.get('address','') }}<br>
               {{ info.get('city','') }}
             </div>
           </div>
           <div class="contact-item">
-            <span class="contact-item-icon">📞</span>
+            <span class="contact-item-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#c9984a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.12 4.18 2 2 0 0 1 3.1 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.1 9.91a16 16 0 0 0 6 6l1.27-1.25a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
             <a href="tel:{{ info.get('phone','').replace(' ','') }}">{{ info.get('phone','') }}</a>
           </div>
           <div class="contact-item">
-            <span class="contact-item-icon">✉️</span>
+            <span class="contact-item-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#c9984a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 6 10 7L22 6"/></svg></span>
             <a href="mailto:{{ info.get('email','') }}">{{ info.get('email','') }}</a>
           </div>
           {% if info.get('facebook') %}
           <div class="contact-item">
-            <span class="contact-item-icon">📘</span>
+            <span class="contact-item-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#c9984a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></span>
             <a href="{{ info['facebook'] }}" target="_blank" rel="noopener">Cantina Fragapane sur Facebook</a>
           </div>
           {% endif %}
@@ -77,14 +77,14 @@
 
         <div style="margin-top:1.5rem; padding:1.25rem; background:var(--cream); border-radius:var(--radius); border:1px solid var(--border);">
           <p style="font-size:.88rem; color:var(--text-lt); margin-bottom:1rem;">{{ info.get('reservation_note','') }}</p>
-          <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-primary" style="width:100%; justify-content:center;">📞 Appeler pour réserver</a>
+          <a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-primary" style="width:100%; justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 1.12 4.18 2 2 0 0 1 3.1 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.1 9.91a16 16 0 0 0 6 6l1.27-1.25a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Appeler pour réserver</a>
         </div>
 
         {# ── Avis Google ── #}
         <div style="margin-top:1.5rem; padding:1.25rem; background:var(--cream); border-radius:var(--radius); border:1px solid var(--border); text-align:center;">
           <div style="font-size:1.35rem; letter-spacing:.18em; color:var(--gold); margin-bottom:.35rem;">★★★★★</div>
-          <p style="font-size:.9rem; color:var(--text-lt); margin-bottom:1rem;">Vous avez passé un bon moment&nbsp;? Votre avis nous aide énormément&nbsp;🙏</p>
-          <a href="https://search.google.com/local/writereview?placeid=ChIJQUl2nsApwkcRW8PGZVB9848" target="_blank" rel="noopener" class="btn btn-gold" style="width:100%; justify-content:center;">⭐ Laisser un avis Google</a>
+          <p style="font-size:.9rem; color:var(--text-lt); margin-bottom:1rem;">Vous avez passé un bon moment&nbsp;? Votre avis nous aide énormément&nbsp;</p>
+          <a href="https://search.google.com/local/writereview?placeid=ChIJQUl2nsApwkcRW8PGZVB9848" target="_blank" rel="noopener" class="btn btn-gold" style="width:100%; justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01z"/></svg> Laisser un avis Google</a>
         </div>
 
         {% if info.get('tripadvisor_embed') %}
@@ -154,22 +154,22 @@
 
         <div style="margin-top:1.5rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
           <div style="background:var(--light); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; text-align:center;">
-            <div style="font-size:1.5rem; margin-bottom:.4rem;">🅿️</div>
+            <div style="font-size:1.5rem; margin-bottom:.4rem;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#c9984a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg></div>
             <div style="font-size:.82rem; font-weight:700; color:var(--dark);">Parking</div>
             <div style="font-size:.78rem; color:var(--text-lt);">Gratuit en rue</div>
           </div>
           <div style="background:var(--light); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; text-align:center;">
-            <div style="font-size:1.5rem; margin-bottom:.4rem;">♿</div>
+            <div style="font-size:1.5rem; margin-bottom:.4rem;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#c9984a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="1.6"/><path d="M12 6v6h4l2 5"/><path d="M16.5 17a5 5 0 1 1-5.5-6"/></svg></div>
             <div style="font-size:.82rem; font-weight:700; color:var(--dark);">Accessibilité</div>
             <div style="font-size:.78rem; color:var(--text-lt);">Accès fauteuil roulant</div>
           </div>
           <div style="background:var(--light); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; text-align:center;">
-            <div style="font-size:1.5rem; margin-bottom:.4rem;">💳</div>
+            <div style="font-size:1.5rem; margin-bottom:.4rem;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#c9984a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
             <div style="font-size:.82rem; font-weight:700; color:var(--dark);">Paiement</div>
             <div style="font-size:.78rem; color:var(--text-lt);">Carte acceptée</div>
           </div>
           <div style="background:var(--light); border:1px solid var(--border); border-radius:var(--radius); padding:1rem; text-align:center;">
-            <div style="font-size:1.5rem; margin-bottom:.4rem;">🛍️</div>
+            <div style="font-size:1.5rem; margin-bottom:.4rem;"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#c9984a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
             <div style="font-size:.82rem; font-weight:700; color:var(--dark);">À emporter</div>
             <div style="font-size:.78rem; color:var(--text-lt);">Disponible</div>
           </div>
