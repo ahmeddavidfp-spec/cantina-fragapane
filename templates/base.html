@@ -90,6 +90,7 @@
           <li><a href="{{ url_for('evenements_prives') }}" class="nav-link {% if request.endpoint == 'evenements_prives' %}active{% endif %}">Événements</a></li>
           <li><a href="{{ url_for('livraison') }}"        class="nav-link nav-link-delivery {% if request.endpoint == 'livraison' %}active{% endif %}">🛵 Livraison</a></li>
           <li><a href="{{ url_for('contact') }}"          class="nav-link {% if request.endpoint == 'contact'          %}active{% endif %}">Contact</a></li>
+          <li><a href="https://www.takeaway.com/be-fr/menu/la-cantina-fragapane-chatelet" target="_blank" rel="noopener" class="btn btn-gold">🛒 Commander</a></li>
           <li><a href="{{ url_for('reservation') }}" class="btn btn-outline {% if request.endpoint == 'reservation' %}active{% endif %}">📅 Réserver</a></li>
         </ul>
       </nav>
@@ -106,7 +107,8 @@
     <li><a href="{{ url_for('a_propos') }}"         class="nav-link {% if request.endpoint == 'a_propos'         %}active{% endif %}">À Propos</a></li>
     <li><a href="{{ url_for('faq') }}"              class="nav-link {% if request.endpoint == 'faq'              %}active{% endif %}">FAQ</a></li>
     <li><a href="{{ url_for('contact') }}"          class="nav-link {% if request.endpoint == 'contact'          %}active{% endif %}">Contact</a></li>
-    <li><a href="tel:{{ info.get('phone','').replace(' ','') }}" class="btn btn-outline btn-gold">📞 Réserver</a></li>
+    <li><a href="https://www.takeaway.com/be-fr/menu/la-cantina-fragapane-chatelet" target="_blank" rel="noopener" class="btn btn-gold">🛒 Commander en ligne</a></li>
+    <li><a href="{{ url_for('reservation') }}" class="btn btn-outline">📅 Réserver une table</a></li>
   </ul>
 
   {# ── Main ── #}
@@ -143,6 +145,7 @@
             <li><a href="{{ url_for('galerie') }}">Galerie</a></li>
             <li><a href="{{ url_for('evenements_prives') }}">Événements privés</a></li>
             <li><a href="{{ url_for('livraison') }}">🛵 Livraison & À emporter</a></li>
+            <li><a href="https://www.takeaway.com/be-fr/menu/la-cantina-fragapane-chatelet" target="_blank" rel="noopener">🛒 Commander sur Takeaway</a></li>
             <li><a href="{{ url_for('a_propos') }}">À Propos</a></li>
             <li><a href="{{ url_for('faq') }}">FAQ</a></li>
             <li><a href="{{ url_for('contact') }}">Contact</a></li>
