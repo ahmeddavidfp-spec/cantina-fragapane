@@ -2908,4 +2908,9 @@ html, body { overflow-x: hidden; }
 .ta-badge-arrow { color: #00aa6c; font-size: 1.1rem; }
 
 /* Nav — Commander & Réserver de taille identique */
-.nav-menu-desktop .btn { min-width: 148px; }
+.nav-menu-desktop .btn {
+  min-width: 150px;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  justify-content: center;
+}
