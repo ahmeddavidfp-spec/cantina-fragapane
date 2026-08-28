@@ -1233,6 +1233,17 @@ input, textarea, select { font-family: inherit; }
   min-height: 100vh;
   font-family: var(--font-body);
 }
+.admin-mobile-topbar { display: none; }
+.admin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+@media (max-width: 640px) {
+  /* Admin : les formulaires en grille passent à une colonne, les rangées flex retournent à la ligne */
+  .admin-main [style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  .admin-main [style*="display:flex"],
+  .admin-main [style*="display: flex"] { flex-wrap: wrap !important; }
+  .admin-card { padding: 1.1rem; }
+  .admin-card-header { flex-wrap: wrap; gap: .5rem; }
+  .admin-actions { flex-wrap: wrap; }
+}
 .admin-layout {
   display: flex;
   min-height: 100vh;
@@ -1774,9 +1785,36 @@ html, body { overflow-x: hidden; }
   .gallery-grid-3           { grid-template-columns: 1fr 1fr; }
   /* About frame moins haut sur tablette */
   .about-frame              { aspect-ratio: 3/2 !important; }
-  /* Admin */
+  /* Admin mobile : barre du haut + menu déroulant */
   .admin-layout   { flex-direction: column; }
-  .admin-sidebar  { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; }
+  .admin-mobile-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--dark); padding: .8rem 1.05rem;
+    position: sticky; top: 0; z-index: 60;
+  }
+  .admin-mobile-brand { font-family: var(--font-heading); font-size: 1.05rem; color: #fff; }
+  .admin-mobile-brand b { color: var(--gold); font-weight: 700; }
+  .admin-burger { background: none; border: 0; width: 40px; height: 40px; padding: 9px 8px;
+    display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; }
+  .admin-burger span { display: block; height: 2.5px; width: 100%; background: #fff; border-radius: 2px;
+    transition: transform .22s ease, opacity .22s ease; }
+  .admin-burger.is-open span:nth-child(1) { transform: translateY(8.5px) rotate(45deg); }
+  .admin-burger.is-open span:nth-child(2) { opacity: 0; }
+  .admin-burger.is-open span:nth-child(3) { transform: translateY(-8.5px) rotate(-45deg); }
+  .admin-sidebar {
+    width: 100%; height: auto; position: static;
+    max-height: 0; overflow: hidden; padding: 0;
+    transition: max-height .28s ease;
+  }
+  .admin-sidebar.open { max-height: 85vh; overflow-y: auto; border-bottom: 3px solid var(--gold); }
+  .admin-logo { display: none; }
+  .admin-nav { padding: .4rem 0; }
+  .admin-nav a { padding: .95rem 1.4rem; font-size: 1rem; }
+  .admin-logout { padding: .7rem 1.4rem 1.1rem; }
+  .admin-logout a { padding: .85rem 1rem; font-size: .95rem; }
+  .admin-main { padding: 1.1rem; }
+  .admin-topbar { flex-wrap: wrap; gap: .5rem; margin-bottom: 1.25rem; }
+  .admin-page-title { font-size: 1.3rem; }
   /* Sections padding */
   .about-section, .featured-section, .award-section,
   .about-page, .contact-page, .menu-page { padding-top: 3.5rem; padding-bottom: 3.5rem; }

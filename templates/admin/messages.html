@@ -16,7 +16,7 @@
 <div class="admin-empty">Aucun message pour l'instant.</div>
 {% else %}
 <div class="admin-table-wrap">
-  <table class="admin-table">
+  <div class="admin-table-wrap"><table class="admin-table">
     <thead>
       <tr>
         <th>Reçu le</th><th>Nom</th><th>Coordonnées</th><th>Message</th><th></th>
@@ -45,7 +45,7 @@
       </tr>
       {% endfor %}
     </tbody>
-  </table>
+  </table></div>
 </div>
 {% endif %}
 {% endblock %}

@@ -12,6 +12,15 @@
 <body class="admin-body">
 <div class="admin-layout">
 
+  <!-- Barre mobile (visible uniquement sur téléphone/tablette) -->
+  <div class="admin-mobile-topbar">
+    <div class="admin-mobile-brand">La Cantina <b>Fragapane</b></div>
+    <button class="admin-burger" type="button" aria-label="Ouvrir le menu"
+            onclick="document.querySelector('.admin-sidebar').classList.toggle('open'); this.classList.toggle('is-open');">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
   <!-- Sidebar -->
   <aside class="admin-sidebar">
     <div class="admin-logo">
@@ -24,7 +33,7 @@
       <a href="{{ url_for('admin_dashboard') }}"     class="{% if request.endpoint == 'admin_dashboard'     %}active{% endif %}"><span class="admin-nav-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></span> Tableau de bord</a>
       <a href="{{ url_for('admin_menu') }}"          class="{% if request.endpoint == 'admin_menu'          %}active{% endif %}"><span class="admin-nav-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><path d="M6 3v7a2 2 0 0 0 4 0V3M8 10v11M16 3c-1.5 1.5-1.5 5 0 6.5V21"/></svg></span> Menu</a>
       <a href="{{ url_for('admin_hours') }}"         class="{% if request.endpoint == 'admin_hours'         %}active{% endif %}"><span class="admin-nav-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span> Horaires</a>
-      <a href="{{ url_for('admin_info') }}"          class="{% if request.endpoint == 'admin_info'          %}active{% endif %}"><span class="admin-nav-icon">ℹ</span> Informations</a>
+      <a href="{{ url_for('admin_info') }}"          class="{% if request.endpoint == 'admin_info'          %}active{% endif %}"><span class="admin-nav-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg></span> Informations</a>
       <a href="{{ url_for('admin_events') }}"        class="{% if request.endpoint == 'admin_events'        %}active{% endif %}"><span class="admin-nav-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><path d="M2 22l6-16 10 10z"/><path d="M14 6l1-2M18 8l2-1M19 13h2"/></svg></span> Événements</a>
       <a href="{{ url_for('admin_announcements') }}" class="{% if request.endpoint == 'admin_announcements' %}active{% endif %}"><span class="admin-nav-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 8a4 4 0 0 1 0 8"/></svg></span> Annonces</a>
       <a href="{{ url_for('admin_reservations') }}"  class="{% if request.endpoint == 'admin_reservations'  %}active{% endif %}"><span class="admin-nav-icon"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span> Réservations</a>
@@ -49,5 +58,14 @@
   </div>
 
 </div>
+<script>
+  // Referme le menu mobile après avoir choisi une section
+  document.querySelectorAll('.admin-sidebar .admin-nav a, .admin-sidebar .admin-logout a').forEach(function(a){
+    a.addEventListener('click', function(){
+      document.querySelector('.admin-sidebar').classList.remove('open');
+      var b = document.querySelector('.admin-burger'); if (b) b.classList.remove('is-open');
+    });
+  });
+</script>
 </body>
 </html>
