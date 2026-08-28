@@ -23,7 +23,7 @@
       <button class="menu-tab active" data-target="all">Tout le menu</button>
       {% for entry in menu_data %}
       <button class="menu-tab" data-target="{{ entry.category['id'] }}">
-        {{ entry.category['icon'] }} {{ entry.category['name'] }}
+        {{ entry.category['name'] }}
       </button>
       {% endfor %}
     </div>
@@ -33,7 +33,6 @@
     {% if entry.plats %}
     <div class="menu-category" data-cat="{{ entry.category['id'] }}">
       <div class="menu-category-header">
-        <span class="menu-category-icon">{{ entry.category['icon'] }}</span>
         <h2 class="menu-category-title">{{ entry.category['name'] }}</h2>
       </div>
       <div class="menu-items-grid">
