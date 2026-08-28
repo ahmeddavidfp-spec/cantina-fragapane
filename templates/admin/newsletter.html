@@ -24,7 +24,7 @@
 <div class="admin-empty">Aucun abonné pour l'instant.</div>
 {% else %}
 <div class="admin-table-wrap">
-  <div class="admin-table-wrap"><table class="admin-table">
+  <table class="admin-table">
     <thead><tr><th>Email</th><th>Date d'inscription</th><th></th></tr></thead>
     <tbody>
       {% for s in subs %}
@@ -40,7 +40,7 @@
       </tr>
       {% endfor %}
     </tbody>
-  </table></div>
+  </table>
 </div>
 {% endif %}
 
