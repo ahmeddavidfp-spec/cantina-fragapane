@@ -78,17 +78,19 @@ input, textarea, select { font-family: inherit; }
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: .5rem;
-  padding: .7rem 1.8rem;
-  border-radius: var(--radius);
-  font-size: .9rem;
+  justify-content: center;
+  gap: .55rem;
+  padding: .8rem 1.9rem;
+  border-radius: 999px;
+  font-size: .82rem;
   font-weight: 700;
-  letter-spacing: .05em;
+  letter-spacing: .09em;
   text-transform: uppercase;
-  border: 2px solid transparent;
+  border: 1.5px solid transparent;
   transition: var(--transition);
   white-space: nowrap;
 }
+.btn svg { width: 16px; height: 16px; flex: 0 0 auto; }
 .btn-primary {
   background: var(--wine);
   color: var(--white);
