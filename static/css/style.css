@@ -1831,6 +1831,7 @@ html, body { overflow-x: hidden; }
   .nav-menu-mobile li:last-child        { padding: .6rem 2rem 1.5rem; }
   .nav-menu-mobile .btn {
     width: 100%;
+    margin: 0;
     justify-content: center;
     font-size: 1rem;
   }
