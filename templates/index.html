@@ -260,10 +260,10 @@
 <section id="reserver" style="padding:4.5rem 0; scroll-margin-top:80px;">
   <style>
     #reserver { background:var(--cream); transition:background .7s ease; }
-    #reserver[data-mood="amoureux"] { background:radial-gradient(ellipse at 50% -8%, #f3d9d2 0%, var(--cream) 62%); }
-    #reserver[data-mood="amis"]     { background:radial-gradient(ellipse at 50% -8%, #f6e4cf 0%, var(--cream) 62%); }
-    #reserver[data-mood="famille"]  { background:radial-gradient(ellipse at 50% -8%, #e6efdd 0%, var(--cream) 62%); }
-    #reserver[data-mood="special"]  { background:radial-gradient(ellipse at 50% -8%, #f3e8c8 0%, var(--cream) 62%); }
+    #reserver[data-mood="amoureux"] { background:radial-gradient(ellipse at 50% -5%, #e39a88 0%, #efc4b9 42%, var(--cream) 82%); }
+    #reserver[data-mood="amis"]     { background:radial-gradient(ellipse at 50% -5%, #e8ab63 0%, #f2d6ac 42%, var(--cream) 82%); }
+    #reserver[data-mood="famille"]  { background:radial-gradient(ellipse at 50% -5%, #9ecb87 0%, #cfe6bf 42%, var(--cream) 82%); }
+    #reserver[data-mood="special"]  { background:radial-gradient(ellipse at 50% -5%, #e3c25f 0%, #efdca2 42%, var(--cream) 82%); }
     #reserver .resa-row { display:grid; gap:1rem; }
     #reserver .resa-row-2 { grid-template-columns:1fr 1fr; }
     #reserver .resa-row-3 { grid-template-columns:1fr 1fr 1fr; }
@@ -304,9 +304,20 @@
     #reserver .moment-line.show { opacity:1; transform:none; }
     #reserver .moment-cta { display:none; margin:1.1rem auto 0; }
     #reserver .moment-cta.show { display:inline-flex; }
+    #reserver .moment-suggest { display:none; align-items:center; gap:.9rem; max-width:560px; margin:1rem auto 0;
+      background:var(--light,#fff); border:1px solid var(--border); border-left:3px solid var(--gold);
+      border-radius:12px; padding:.85rem 1.1rem; text-align:left; }
+    #reserver .moment-suggest.show { display:flex; }
+    #reserver .moment-suggest > svg { width:26px; height:26px; stroke:var(--gold); flex:0 0 auto; }
+    #reserver .moment-suggest-label { display:block; font-size:.64rem; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:.12rem; }
+    #reserver .moment-suggest-txt p { margin:0; font-size:.9rem; color:var(--text); line-height:1.45; }
+    #reserver .moment-suggest-link { flex:0 0 auto; font-weight:700; font-size:.8rem; color:var(--gold); white-space:nowrap; text-decoration:none; }
+    #reserver .moment-suggest-link:hover { text-decoration:underline; }
     @media (max-width:600px){
       #reserver .resa-row-2, #reserver .resa-row-3 { grid-template-columns:1fr; }
       #reserver .moment-tiles { grid-template-columns:1fr 1fr; }
+      #reserver .moment-suggest { flex-wrap:wrap; }
+      #reserver .moment-suggest-link { width:100%; }
     }
   </style>
   <div class="container">
@@ -320,28 +331,36 @@
     <div class="moment-picker" id="momentPicker">
       <p style="text-align:center; color:var(--text-lt); margin-bottom:1rem; font-size:.9rem;">Quel moment souhaitez-vous vivre&nbsp;?</p>
       <div class="moment-tiles">
-        <button type="button" class="moment-tile" data-mood="amoureux" data-guests="2" data-note="Dîner en amoureux"
+        <button type="button" class="moment-tile" data-mood="amoureux" data-guests="2" data-note="Dîner en amoureux" data-dish="À deux : partagez une tagliata de bœuf ou nos ravioles à la truffe, avec un verre de rosso."
                 data-line="Une table pour deux, un verre de rosso, et tout le temps du monde.">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1l1.7 1.7L12 21l7.1-7.1 1.7-1.7a5 5 0 0 0 0-6.6z"/></svg>
           <span>En amoureux</span>
         </button>
-        <button type="button" class="moment-tile" data-mood="amis" data-guests="4" data-note="Repas entre amis"
+        <button type="button" class="moment-tile" data-mood="amis" data-guests="4" data-note="Repas entre amis" data-dish="Entre amis : lancez-vous sur les antipasti et les arrosticini à partager."
                 data-line="Rires, partage et une belle tablée — l'Italie se vit à plusieurs.">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.3"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M15.5 20a5.5 5.5 0 0 1 6-4.8"/></svg>
           <span>Entre amis</span>
         </button>
-        <button type="button" class="moment-tile" data-mood="famille" data-guests="4" data-note="Repas en famille"
+        <button type="button" class="moment-tile" data-mood="famille" data-guests="4" data-note="Repas en famille" data-dish="En famille : nos pâtes fraîches maison font l'unanimité, même chez les enfants."
                 data-line="Grande tablée, chaise haute et menu des petits — on s'occupe de tout.">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>
           <span>En famille</span>
         </button>
-        <button type="button" class="moment-tile" data-mood="special" data-guests="6" data-note="Occasion spéciale (anniversaire, communion, fête…)"
+        <button type="button" class="moment-tile" data-mood="special" data-guests="6" data-note="Occasion spéciale (anniversaire, communion, fête…)" data-dish="Pour l'occasion : demandez la suggestion du chef et un dolce pour souffler les bougies."
                 data-line="Anniversaire, communion… dites-nous tout, on prépare la surprise.">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.1 4.9 5.3.5-4 3.5 1.2 5.2L12 19.8 7.4 22.4l1.2-5.2-4-3.5 5.3-.5z"/></svg>
           <span>Occasion spéciale</span>
         </button>
       </div>
       <p class="moment-line" id="momentLine" aria-live="polite"></p>
+      <div class="moment-suggest" id="momentSuggest">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a2 2 0 0 0 4 0V3M8 10v11M16 3c-1.5 1.5-1.5 5 0 6.5V21"/></svg>
+        <div class="moment-suggest-txt">
+          <span class="moment-suggest-label">Notre suggestion</span>
+          <p id="momentDishText"></p>
+        </div>
+        <a href="{{ url_for('menu') }}" class="moment-suggest-link">Voir la carte →</a>
+      </div>
       <div style="text-align:center;">
         <button type="button" class="btn btn-gold moment-cta" id="momentCta" onclick="momentGoToForm()">Réserver ce moment ↓</button>
       </div>
@@ -412,12 +431,14 @@
   var line=document.getElementById('momentLine'), cta=document.getElementById('momentCta');
   var guests=document.getElementById('hr-guests'), notes=document.getElementById('hr-notes');
   var section=document.getElementById('reserver');
+  var sug=document.getElementById('momentSuggest'), dish=document.getElementById('momentDishText');
   picker.querySelectorAll('.moment-tile').forEach(function(t){
     t.addEventListener('click', function(){
       picker.querySelectorAll('.moment-tile').forEach(function(x){ x.classList.remove('active'); });
       t.classList.add('active');
       if(section && t.dataset.mood) section.dataset.mood=t.dataset.mood;
       line.textContent=t.dataset.line; line.classList.add('show');
+      if(dish && t.dataset.dish){ dish.textContent=t.dataset.dish; sug.classList.add('show'); }
       cta.classList.add('show');
       if(guests && t.dataset.guests) guests.value=t.dataset.guests;
       if(notes){
