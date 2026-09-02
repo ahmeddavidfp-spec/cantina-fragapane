@@ -479,6 +479,27 @@ def _send_via_brevo(subject, body, to_addr, reply_to=None, html=None):
         return False
 
 
+def _send_telegram(text):
+    """Notification instantanée via l'API Telegram (HTTPS — fonctionne depuis Render).
+    Ne fait rien si TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID ne sont pas définis. N'échoue jamais."""
+    token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+    chat_id = os.environ.get('TELEGRAM_CHAT_ID', '')
+    if not token or not chat_id:
+        return False
+    payload = {"chat_id": chat_id, "text": text, "disable_web_page_preview": True}
+    req = urllib.request.Request(
+        f"https://api.telegram.org/bot{token}/sendMessage",
+        data=json.dumps(payload).encode('utf-8'),
+        headers={"content-type": "application/json"},
+        method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return 200 <= resp.status < 300
+    except Exception as e:
+        app.logger.warning('Échec notification Telegram : %s', e)
+        return False
+
+
 def send_contact_email(name, sender_email, phone, message):
     to_addr = os.environ.get('MAIL_TO') or os.environ.get('MAIL_USERNAME') or 'info@cantinafragapane.be'
     subject = f'[Cantina Fragapane] Message de {name}'
@@ -758,6 +779,12 @@ def contact():
             # On enregistre TOUJOURS le message (visible dans /admin), même si l'email échoue
             execute('INSERT INTO messages (name, email, phone, message) VALUES (%s,%s,%s,%s)',
                     (name, email, phone, message))
+            _send_telegram(
+                "💬 NOUVEAU MESSAGE (contact)\n\n"
+                f"👤 {name}\n"
+                + (f"✉️ {email}\n" if email else "")
+                + (f"📞 {phone}\n" if phone else "")
+                + f"\n{message}")
             try:
                 sent = send_contact_email(name, email, phone, message)
                 send_customer_ack(name, email)   # accusé de réception automatique au client
@@ -794,6 +821,13 @@ def reservation():
             execute(
                 'INSERT INTO reservations (name,email,phone,date,time,guests,notes) VALUES (%s,%s,%s,%s,%s,%s,%s)',
                 (name, email or None, phone, date, time, int(guests), notes or None))
+            _send_telegram(
+                "🍽️ NOUVELLE RÉSERVATION\n\n"
+                f"👤 {name} — {guests} pers.\n"
+                f"📅 {date} à {time}\n"
+                f"📞 {phone}\n"
+                + (f"✉️ {email}\n" if email else "")
+                + (f"📝 {notes}\n" if notes else ""))
             try:
                 body = (f"Nouvelle demande de réservation :\n\n"
                         f"Nom : {name}\nEmail : {email or '—'}\nTéléphone : {phone}\n"
