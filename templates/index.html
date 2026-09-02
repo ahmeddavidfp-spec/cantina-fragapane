@@ -280,8 +280,28 @@
     #reserver input:focus, #reserver select:focus, #reserver textarea:focus {
       outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,152,74,.18);
     }
+    /* « Choisissez votre moment » */
+    #reserver .moment-picker { max-width:660px; margin:2rem auto .5rem; }
+    #reserver .moment-tiles { display:grid; grid-template-columns:repeat(4,1fr); gap:.7rem; }
+    #reserver .moment-tile {
+      display:flex; flex-direction:column; align-items:center; gap:.55rem;
+      padding:1.15rem .5rem; background:var(--light,#fff); border:1.5px solid var(--border);
+      border-radius:14px; cursor:pointer; font:inherit; color:var(--text);
+      font-weight:700; font-size:.82rem; text-align:center; transition:var(--transition);
+    }
+    #reserver .moment-tile svg { width:24px; height:24px; stroke:var(--gold); }
+    #reserver .moment-tile:hover { border-color:var(--gold); transform:translateY(-2px); }
+    #reserver .moment-tile.active { background:var(--gold); color:#fff; border-color:var(--gold); box-shadow:0 8px 22px rgba(201,152,74,.35); }
+    #reserver .moment-tile.active svg { stroke:#fff; }
+    #reserver .moment-line { text-align:center; font-family:var(--font-heading); font-size:1.18rem; font-style:italic;
+      color:var(--dark); margin:1.2rem auto 0; max-width:560px; min-height:1.4em;
+      opacity:0; transform:translateY(4px); transition:opacity .3s ease, transform .3s ease; }
+    #reserver .moment-line.show { opacity:1; transform:none; }
+    #reserver .moment-cta { display:none; margin:1.1rem auto 0; }
+    #reserver .moment-cta.show { display:inline-flex; }
     @media (max-width:600px){
       #reserver .resa-row-2, #reserver .resa-row-3 { grid-template-columns:1fr; }
+      #reserver .moment-tiles { grid-template-columns:1fr 1fr; }
     }
   </style>
   <div class="container">
@@ -289,6 +309,37 @@
       <span class="section-label">À table !</span>
       <h2 class="section-title">Réservez votre table</h2>
       <p class="section-sub">Nous confirmons votre demande rapidement, par téléphone ou par email.</p>
+    </div>
+
+    {# ── « Choisissez votre moment » — pré-remplit la réservation ── #}
+    <div class="moment-picker" id="momentPicker">
+      <p style="text-align:center; color:var(--text-lt); margin-bottom:1rem; font-size:.9rem;">Quel moment souhaitez-vous vivre&nbsp;?</p>
+      <div class="moment-tiles">
+        <button type="button" class="moment-tile" data-guests="2" data-note="Dîner en amoureux"
+                data-line="Une table pour deux, un verre de rosso, et tout le temps du monde.">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1l1.7 1.7L12 21l7.1-7.1 1.7-1.7a5 5 0 0 0 0-6.6z"/></svg>
+          <span>En amoureux</span>
+        </button>
+        <button type="button" class="moment-tile" data-guests="4" data-note="Repas entre amis"
+                data-line="Rires, partage et une belle tablée — l'Italie se vit à plusieurs.">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.3"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M15.5 20a5.5 5.5 0 0 1 6-4.8"/></svg>
+          <span>Entre amis</span>
+        </button>
+        <button type="button" class="moment-tile" data-guests="4" data-note="Repas en famille"
+                data-line="Grande tablée, chaise haute et menu des petits — on s'occupe de tout.">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>
+          <span>En famille</span>
+        </button>
+        <button type="button" class="moment-tile" data-guests="6" data-note="Occasion spéciale (anniversaire, communion, fête…)"
+                data-line="Anniversaire, communion… dites-nous tout, on prépare la surprise.">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.1 4.9 5.3.5-4 3.5 1.2 5.2L12 19.8 7.4 22.4l1.2-5.2-4-3.5 5.3-.5z"/></svg>
+          <span>Occasion spéciale</span>
+        </button>
+      </div>
+      <p class="moment-line" id="momentLine" aria-live="polite"></p>
+      <div style="text-align:center;">
+        <button type="button" class="btn btn-gold moment-cta" id="momentCta" onclick="momentGoToForm()">Réserver ce moment ↓</button>
+      </div>
     </div>
 
     {% with msgs = get_flashed_messages(with_categories=true) %}
@@ -350,6 +401,30 @@
   </div>
 </section>
 <script>document.getElementById('hr-date').min = new Date().toISOString().split('T')[0];</script>
+<script>
+(function(){
+  var picker=document.getElementById('momentPicker'); if(!picker) return;
+  var line=document.getElementById('momentLine'), cta=document.getElementById('momentCta');
+  var guests=document.getElementById('hr-guests'), notes=document.getElementById('hr-notes');
+  picker.querySelectorAll('.moment-tile').forEach(function(t){
+    t.addEventListener('click', function(){
+      picker.querySelectorAll('.moment-tile').forEach(function(x){ x.classList.remove('active'); });
+      t.classList.add('active');
+      line.textContent=t.dataset.line; line.classList.add('show');
+      cta.classList.add('show');
+      if(guests && t.dataset.guests) guests.value=t.dataset.guests;
+      if(notes){
+        var base=notes.value.replace(/^Occasion\s*:.*(?:\n|$)/,'').trim();
+        notes.value='Occasion : '+t.dataset.note+(base?'\n'+base:'');
+      }
+    });
+  });
+})();
+function momentGoToForm(){
+  var f=document.getElementById('hr-name');
+  if(f){ f.scrollIntoView({behavior:'smooth', block:'center'}); setTimeout(function(){ try{ f.focus({preventScroll:true}); }catch(e){} }, 450); }
+}
+</script>
 
 {# ── Award ── #}
 <section class="award-section">
