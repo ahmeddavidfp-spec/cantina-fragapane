@@ -898,30 +898,30 @@ def telegram_webhook():
         status = 'confirmed' if action == 'confirm' else 'cancelled'
         execute('UPDATE reservations SET status=%s WHERE id=%s', (status, int(sid)))
         r = query('SELECT * FROM reservations WHERE id=%s', (int(sid),), one=True) or {}
-        # Prévenir le client sur son téléphone : SMS d'abord, sinon email, sinon « à rappeler »
-        via = None
+        # Prévenir le client sur TOUS les canaux disponibles : SMS + email
+        via = []
         try:
             if r.get('phone') and _send_sms(r.get('phone'), _client_sms_text(r, status)):
-                via = 'sms'
-            elif r.get('email') and send_reservation_decision(
-                    r.get('name'), r.get('email'), r.get('date'), r.get('time'), r.get('guests'), status):
-                via = 'email'
+                via.append('SMS')
         except Exception:
-            via = None
+            pass
+        try:
+            if r.get('email') and send_reservation_decision(
+                    r.get('name'), r.get('email'), r.get('date'), r.get('time'), r.get('guests'), status):
+                via.append('email')
+        except Exception:
+            pass
         base = 'Réservation confirmée ✅' if action == 'confirm' else 'Réservation annulée ❌'
-        if via == 'sms':
-            toast = base + ' · client prévenu par SMS'
-        elif via == 'email':
-            toast = base + ' · client prévenu par email'
+        if via:
+            toast = base + ' · client prévenu (' + ' + '.join(via) + ')'
         else:
             toast = base + ' · à rappeler : ' + (r.get('phone') or '')
         _tg_api('answerCallbackQuery', {'callback_query_id': cq_id, 'text': toast[:190]})
         if chat_id and message_id:
             txt = _reservation_tg_text(r, status)
-            if via == 'sms':
-                txt += "\n📲 <i>Client prévenu par SMS</i>"
-            elif via == 'email':
-                txt += "\n📧 <i>Client prévenu par email</i>"
+            if via:
+                icons = ('📲 ' if 'SMS' in via else '') + ('📧 ' if 'email' in via else '')
+                txt += f"\n{icons}<i>Client prévenu ({' + '.join(via)})</i>"
             else:
                 txt += f"\n📞 <i>À rappeler au {html.escape(r.get('phone') or '')}</i>"
             _tg_api('editMessageText', {
