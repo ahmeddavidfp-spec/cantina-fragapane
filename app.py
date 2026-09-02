@@ -1,6 +1,7 @@
 import os
 import json
 import html
+import hashlib
 import uuid
 import smtplib
 import urllib.request
@@ -124,6 +125,16 @@ def execute(sql, args=()):
     cur = db.cursor()
     cur.execute(sql, args)
     db.commit()
+
+
+def execute_returning(sql, args=()):
+    """Comme execute(), mais renvoie la ligne du RETURNING (dict) — ex. l'id inséré."""
+    db = get_db()
+    cur = db.cursor()
+    cur.execute(sql, args)
+    row = cur.fetchone()
+    db.commit()
+    return row
 
 
 # ── Init & Seed ───────────────────────────────────────────────────────────────
@@ -494,35 +505,72 @@ def _fmt_date_fr(iso):
         return iso
 
 
-def _send_telegram(text):
-    """Notification instantanée via l'API Telegram (HTTPS — fonctionne depuis Render).
-    Ne fait rien si TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID ne sont pas définis. N'échoue jamais.
-    Le texte peut contenir du HTML Telegram (<b>, <i>, <code>…)."""
+def _tg_api(method, payload, timeout=10):
+    """Appel générique à l'API Telegram (HTTPS). Renvoie le dict de réponse, ou None. N'échoue jamais."""
     token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
-    chat_id = os.environ.get('TELEGRAM_CHAT_ID', '')
-    if not token or not chat_id:
-        return False
-    payload = {"chat_id": chat_id, "text": text, "parse_mode": "HTML",
-               "disable_web_page_preview": True}
+    if not token:
+        return None
     req = urllib.request.Request(
-        f"https://api.telegram.org/bot{token}/sendMessage",
+        f"https://api.telegram.org/bot{token}/{method}",
         data=json.dumps(payload).encode('utf-8'),
         headers={"content-type": "application/json"},
         method="POST")
     try:
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            return 200 <= resp.status < 300
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode('utf-8'))
     except urllib.error.HTTPError as e:
         detail = ''
         try:
             detail = e.read().decode('utf-8', 'ignore')[:400]
         except Exception:
             pass
-        app.logger.warning('Échec notification Telegram HTTP %s : %s', e.code, detail)
-        return False
+        app.logger.warning('Telegram %s HTTP %s : %s', method, e.code, detail)
+        return None
     except Exception as e:
-        app.logger.warning('Échec notification Telegram : %s', e)
+        app.logger.warning('Telegram %s : %s', method, e)
+        return None
+
+
+def _tg_secret():
+    """Jeton secret du webhook, dérivé du token du bot (aucune variable supplémentaire à configurer)."""
+    t = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+    return hashlib.sha256(('cantina-wh:' + t).encode()).hexdigest()[:40] if t else ''
+
+
+def _send_telegram(text, reply_markup=None):
+    """Envoie une notification Telegram (HTML). reply_markup = clavier inline optionnel (boutons).
+    Ne fait rien si le bot n'est pas configuré. N'échoue jamais."""
+    if not os.environ.get('TELEGRAM_BOT_TOKEN') or not os.environ.get('TELEGRAM_CHAT_ID'):
         return False
+    payload = {"chat_id": os.environ.get('TELEGRAM_CHAT_ID', ''), "text": text,
+               "parse_mode": "HTML", "disable_web_page_preview": True}
+    if reply_markup:
+        payload["reply_markup"] = reply_markup
+    return _tg_api('sendMessage', payload) is not None
+
+
+def _reservation_tg_text(r, status=None):
+    """Message HTML d'une réservation, réutilisé à l'envoi ET à la mise à jour (après confirmation/annulation)."""
+    try:
+        g = int(r.get('guests') or 0)
+    except Exception:
+        g = 0
+    head = ("✅ <b>RÉSERVATION CONFIRMÉE</b>" if status == 'confirmed'
+            else "❌ <b>RÉSERVATION ANNULÉE</b>" if status == 'cancelled'
+            else "🍽️ <b>NOUVELLE RÉSERVATION</b>")
+    lines = [head, "━━━━━━━━━━━━━━━",
+             f"👤 <b>{html.escape(r.get('name') or '')}</b>",
+             f"👥 {g} " + ("personne" if g == 1 else "personnes"),
+             f"📅 {_fmt_date_fr(r.get('date') or '')}",
+             f"🕐 {html.escape(r.get('time') or '')}",
+             f"📞 <code>{html.escape(r.get('phone') or '')}</code>"]
+    if r.get('email'):
+        lines.append(f"✉️ {html.escape(r['email'])}")
+    if r.get('notes'):
+        lines.append(f"📝 <i>{html.escape(r['notes'])}</i>")
+    lines.append("━━━━━━━━━━━━━━━")
+    lines.append("🍝 <i>La Cantina Fragapane</i>")
+    return "\n".join(lines)
 
 
 def send_contact_email(name, sender_email, phone, message):
@@ -735,6 +783,56 @@ def service_worker():
     return resp
 
 
+@app.route('/telegram/webhook', methods=['POST'])
+def telegram_webhook():
+    """Reçoit les clics des boutons Confirmer / Annuler depuis Telegram, met à jour la réservation
+    et rafraîchit le message. Sécurisé par un jeton secret + vérification du propriétaire."""
+    if request.headers.get('X-Telegram-Bot-Api-Secret-Token', '') != _tg_secret():
+        return ('', 403)
+    upd = request.get_json(silent=True) or {}
+    cq = upd.get('callback_query')
+    if not cq:
+        return ('', 200)
+    owner = os.environ.get('TELEGRAM_CHAT_ID', '')
+    frm = str((cq.get('from') or {}).get('id', ''))
+    data = cq.get('data', '') or ''
+    msg = cq.get('message') or {}
+    chat_id = (msg.get('chat') or {}).get('id')
+    message_id = msg.get('message_id')
+    cq_id = cq.get('id')
+    if owner and frm != owner:                      # seul le propriétaire peut agir
+        _tg_api('answerCallbackQuery', {'callback_query_id': cq_id, 'text': 'Action non autorisée.'})
+        return ('', 200)
+    action, _, sid = data.partition(':')
+    if action in ('confirm', 'cancel') and sid.isdigit():
+        status = 'confirmed' if action == 'confirm' else 'cancelled'
+        execute('UPDATE reservations SET status=%s WHERE id=%s', (status, int(sid)))
+        r = query('SELECT * FROM reservations WHERE id=%s', (int(sid),), one=True)
+        _tg_api('answerCallbackQuery', {'callback_query_id': cq_id,
+                'text': 'Réservation confirmée ✅' if action == 'confirm' else 'Réservation annulée ❌'})
+        if r and chat_id and message_id:
+            _tg_api('editMessageText', {
+                'chat_id': chat_id, 'message_id': message_id,
+                'text': _reservation_tg_text(r, status), 'parse_mode': 'HTML',
+                'reply_markup': {'inline_keyboard': []}})   # retire les boutons
+    else:
+        _tg_api('answerCallbackQuery', {'callback_query_id': cq_id})
+    return ('', 200)
+
+
+def _ensure_telegram_webhook():
+    """Enregistre le webhook Telegram (idempotent, au démarrage). Aucune config manuelle requise :
+    le jeton secret est dérivé du token du bot."""
+    if not os.environ.get('TELEGRAM_BOT_TOKEN'):
+        return
+    base = os.environ.get('TELEGRAM_WEBHOOK_BASE', 'https://cantina-fragapane.onrender.com').rstrip('/')
+    _tg_api('setWebhook', {
+        'url': base + '/telegram/webhook',
+        'secret_token': _tg_secret(),
+        'allowed_updates': ['callback_query'],
+    })
+
+
 @app.route('/')
 def index():
     hours = get_hours()
@@ -845,22 +943,18 @@ def reservation():
         guests = request.form.get('guests', '').strip()
         notes  = request.form.get('notes', '').strip()
         if name and phone and date and time and guests.isdigit():
-            execute(
-                'INSERT INTO reservations (name,email,phone,date,time,guests,notes) VALUES (%s,%s,%s,%s,%s,%s,%s)',
+            _resa = execute_returning(
+                'INSERT INTO reservations (name,email,phone,date,time,guests,notes) '
+                'VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING *',
                 (name, email or None, phone, date, time, int(guests), notes or None))
-            _g = int(guests)
-            _send_telegram(
-                "🍽️ <b>NOUVELLE RÉSERVATION</b>\n"
-                "━━━━━━━━━━━━━━━\n"
-                f"👤 <b>{html.escape(name)}</b>\n"
-                f"👥 {_g} " + ("personne" if _g == 1 else "personnes") + "\n"
-                f"📅 {_fmt_date_fr(date)}\n"
-                f"🕐 {html.escape(time)}\n"
-                f"📞 <code>{html.escape(phone)}</code>\n"
-                + (f"✉️ {html.escape(email)}\n" if email else "")
-                + (f"📝 <i>{html.escape(notes)}</i>\n" if notes else "")
-                + "━━━━━━━━━━━━━━━\n"
-                "🍝 <i>La Cantina Fragapane</i>")
+            _rid = (_resa or {}).get('id')
+            _kb = {"inline_keyboard": [[
+                {"text": "✅ Confirmer", "callback_data": f"confirm:{_rid}"},
+                {"text": "❌ Annuler",   "callback_data": f"cancel:{_rid}"}]]} if _rid else None
+            _send_telegram(_reservation_tg_text(_resa or {
+                'id': _rid, 'name': name, 'email': email, 'phone': phone,
+                'date': date, 'time': time, 'guests': int(guests), 'notes': notes}),
+                reply_markup=_kb)
             try:
                 body = (f"Nouvelle demande de réservation :\n\n"
                         f"Nom : {name}\nEmail : {email or '—'}\nTéléphone : {phone}\n"
@@ -1683,7 +1777,9 @@ def page_not_found(e):
 
 if __name__ == '__main__':
     init_db()
+    _ensure_telegram_webhook()
     port = int(os.environ.get('PORT', 8080))
     app.run(debug=False, host='0.0.0.0', port=port)
 else:
     init_db()
+    _ensure_telegram_webhook()
