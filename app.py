@@ -683,6 +683,34 @@ def send_reservation_ack(name, to_email, date, time, guests):
     return _send_via_brevo(subject, text, to_email, html=_ack_html(name, intro))
 
 
+def send_reservation_decision(name, to_email, date, time, guests, status):
+    """Email au client quand le resto CONFIRME ou ANNULE sa réservation (via les boutons Telegram)."""
+    if not to_email or not os.environ.get('BREVO_API_KEY'):
+        return False
+    if status == 'confirmed':
+        subject = "Votre réservation est confirmée – La Cantina Fragapane"
+        text = (f"Bonjour {name},\n\nBonne nouvelle : votre table est CONFIRMÉE pour le {date} à {time} "
+                f"({guests} pers.). Nous avons hâte de vous accueillir !\n\n"
+                "Un empêchement ? Prévenez-nous au +32 491 22 72 07.\n\nÀ très bientôt,\n"
+                "L'équipe de La Cantina Fragapane\nRue du Taillis Pré 86, 6200 Châtelet — cantinafragapane.be")
+        intro = (f'<p style="{_ACK_P}">Bonne nouvelle&nbsp;! Votre table est <strong>confirmée</strong> '
+                 f'pour le <strong>{escape(str(date))}</strong> à <strong>{escape(str(time))}</strong> '
+                 f'({escape(str(guests))}&nbsp;pers.). Nous avons hâte de vous accueillir&nbsp;!</p>'
+                 f'<p style="{_ACK_P}">Un empêchement&nbsp;? Prévenez-nous au <strong>+32&nbsp;491&nbsp;22&nbsp;72&nbsp;07</strong>.</p>')
+    else:  # cancelled
+        subject = "Au sujet de votre réservation – La Cantina Fragapane"
+        text = (f"Bonjour {name},\n\nNous sommes navrés : nous ne pouvons malheureusement pas honorer votre "
+                f"réservation du {date} à {time} ({guests} pers.). Appelez-nous au +32 491 22 72 07, "
+                "nous trouverons volontiers un autre créneau.\n\nAvec toutes nos excuses,\n"
+                "L'équipe de La Cantina Fragapane — cantinafragapane.be")
+        intro = (f'<p style="{_ACK_P}">Nous sommes navrés&nbsp;: nous ne pouvons malheureusement pas honorer '
+                 f'votre réservation du <strong>{escape(str(date))}</strong> à <strong>{escape(str(time))}</strong> '
+                 f'({escape(str(guests))}&nbsp;pers.).</p>'
+                 f'<p style="{_ACK_P}">Appelez-nous au <strong>+32&nbsp;491&nbsp;22&nbsp;72&nbsp;07</strong>, '
+                 f'nous trouverons volontiers un autre créneau. Avec toutes nos excuses.</p>')
+    return _send_via_brevo(subject, text, to_email, html=_ack_html(name, intro))
+
+
 def build_restaurant_jsonld(info, hours):
     """Génère le JSON-LD Restaurant (fiable, échappement JSON correct)."""
     days_map = {"Lundi": "Monday", "Mardi": "Tuesday", "Mercredi": "Wednesday", "Jeudi": "Thursday",
@@ -807,13 +835,32 @@ def telegram_webhook():
     if action in ('confirm', 'cancel') and sid.isdigit():
         status = 'confirmed' if action == 'confirm' else 'cancelled'
         execute('UPDATE reservations SET status=%s WHERE id=%s', (status, int(sid)))
-        r = query('SELECT * FROM reservations WHERE id=%s', (int(sid),), one=True)
-        _tg_api('answerCallbackQuery', {'callback_query_id': cq_id,
-                'text': 'Réservation confirmée ✅' if action == 'confirm' else 'Réservation annulée ❌'})
-        if r and chat_id and message_id:
+        r = query('SELECT * FROM reservations WHERE id=%s', (int(sid),), one=True) or {}
+        # Prévenir le client : email s'il en a laissé un, sinon à rappeler par téléphone
+        emailed = False
+        if r.get('email'):
+            try:
+                emailed = bool(send_reservation_decision(
+                    r.get('name'), r.get('email'), r.get('date'), r.get('time'), r.get('guests'), status))
+            except Exception:
+                emailed = False
+        base = 'Réservation confirmée ✅' if action == 'confirm' else 'Réservation annulée ❌'
+        if emailed:
+            toast = base + ' · client prévenu par email'
+        elif not r.get('email'):
+            toast = base + ' · à rappeler : ' + (r.get('phone') or '')
+        else:
+            toast = base
+        _tg_api('answerCallbackQuery', {'callback_query_id': cq_id, 'text': toast[:190]})
+        if chat_id and message_id:
+            txt = _reservation_tg_text(r, status)
+            if emailed:
+                txt += "\n📧 <i>Client prévenu par email</i>"
+            elif not r.get('email'):
+                txt += f"\n📞 <i>Pas d'email — à rappeler au {html.escape(r.get('phone') or '')}</i>"
             _tg_api('editMessageText', {
                 'chat_id': chat_id, 'message_id': message_id,
-                'text': _reservation_tg_text(r, status), 'parse_mode': 'HTML',
+                'text': txt, 'parse_mode': 'HTML',
                 'reply_markup': {'inline_keyboard': []}})   # retire les boutons
     else:
         _tg_api('answerCallbackQuery', {'callback_query_id': cq_id})
