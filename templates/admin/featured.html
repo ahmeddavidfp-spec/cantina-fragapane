@@ -1,0 +1,65 @@
+{% extends "admin/base.html" %}
+{% block title %}À la une{% endblock %}
+
+{% block content %}
+<div class="admin-topbar">
+  <div>
+    <div class="admin-page-title">À la une</div>
+    <div class="admin-page-sub">Mettez en avant votre dernier post Facebook, tout en haut de l'accueil</div>
+  </div>
+</div>
+
+<div class="admin-card">
+  <div class="admin-card-header">
+    <div class="admin-card-title">Bloc « À la une »</div>
+  </div>
+  <div class="admin-card-body">
+    <form method="POST" action="{{ url_for('admin_edit_featured') }}" enctype="multipart/form-data">
+
+      <div class="admin-form-group">
+        <div class="admin-checkbox-group">
+          <input type="checkbox" name="featured_active" id="fa-active" {% if f.get('featured_active') %}checked{% endif %}>
+          <label for="fa-active"><b>Afficher le bloc</b> sur la page d'accueil</label>
+        </div>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Texte du post</label>
+        <textarea class="admin-input" name="featured_text" rows="4"
+                  placeholder="Copiez-collez le texte de votre publication Facebook…">{{ f.get('featured_text','') }}</textarea>
+      </div>
+
+      <div class="admin-form-group">
+        <label>Lien vers la publication (Facebook)</label>
+        <input class="admin-input" type="url" name="featured_link"
+               value="{{ f.get('featured_link','') }}" placeholder="https://www.facebook.com/…">
+      </div>
+
+      <div class="admin-form-group">
+        <label>Image (upload)</label>
+        {% if f.get('featured_image') %}
+        <div style="margin:.5rem 0;">
+          <img src="/static/images/{{ f['featured_image'] }}" alt="Aperçu"
+               style="max-width:220px; border-radius:8px; border:1px solid #E5E7EB;">
+          <div class="admin-checkbox-group" style="margin-top:.5rem;">
+            <input type="checkbox" name="featured_image_remove" id="fa-rm">
+            <label for="fa-rm">Retirer l'image actuelle</label>
+          </div>
+        </div>
+        <input type="hidden" name="featured_image_existing" value="{{ f['featured_image'] }}">
+        {% endif %}
+        <input class="admin-input" type="file" name="featured_image_file" accept="image/*">
+        <div style="font-size:.8rem; color:var(--text-lt); margin-top:.35rem;">
+          Astuce : enregistrez la photo de votre post Facebook, puis chargez-la ici. (JPG/PNG)
+        </div>
+      </div>
+
+      <button type="submit" class="admin-btn admin-btn-success">
+        <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+        Enregistrer
+      </button>
+      <a href="{{ url_for('index') }}#top" target="_blank" class="admin-btn admin-btn-outline" style="margin-left:.5rem;">Voir l'accueil</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

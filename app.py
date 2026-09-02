@@ -1415,6 +1415,35 @@ def admin_edit_info():
     return redirect(url_for('admin_info'))
 
 
+# ── Admin – « À la une » (post Facebook mis en avant) ─────────────────────────
+
+@app.route('/admin/a-la-une')
+@login_required
+def admin_featured():
+    f = {r['key']: r['value'] for r in query('SELECT key, value FROM info')}
+    return render_template('admin/featured.html', f=f)
+
+
+@app.route('/admin/a-la-une/modifier', methods=['POST'])
+@login_required
+def admin_edit_featured():
+    if request.form.get('featured_image_remove'):
+        image = ''
+    else:
+        image = save_upload('featured_image_file') or request.form.get('featured_image_existing', '').strip()
+    data = {
+        'featured_active': '1' if request.form.get('featured_active') else '',
+        'featured_text':   request.form.get('featured_text', '').strip(),
+        'featured_link':   request.form.get('featured_link', '').strip(),
+        'featured_image':  image or '',
+    }
+    for key, val in data.items():
+        execute('INSERT INTO info (key,value) VALUES (%s,%s) '
+                'ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value', (key, val))
+    flash('Bloc « À la une » mis à jour.', 'success')
+    return redirect(url_for('admin_featured'))
+
+
 # ── Admin – events ───────────────────────────────────────────────────────────
 
 @app.route('/admin/evenements')
