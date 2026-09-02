@@ -145,6 +145,21 @@
                   </div>
                 </div>
               </div>
+              <div style="display:grid; grid-template-columns:1fr 2fr; gap:1rem; margin-bottom:1rem;">
+                <div class="admin-form-group" style="margin:0;">
+                  <label>Région d'Italie <span style="font-weight:400;color:var(--text-lt);">— carte-origine</span></label>
+                  <select class="admin-input" name="region">
+                    <option value="">— aucune —</option>
+                    {% for r in ["Vallée d'Aoste","Piémont","Ligurie","Lombardie","Trentin-Haut-Adige","Vénétie","Frioul","Émilie-Romagne","Toscane","Ombrie","Marches","Latium","Abruzzes","Molise","Campanie","Pouilles","Basilicate","Calabre","Sicile","Sardaigne"] %}
+                    <option value="{{ r }}" {% if item['region']==r %}selected{% endif %}>{{ r }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="admin-form-group" style="margin:0;">
+                  <label>Origine (petite histoire)</label>
+                  <input class="admin-input" type="text" name="origin_story" value="{{ item['origin_story'] or '' }}" placeholder="Ex: Fines brochettes d'agneau des Abruzzes.">
+                </div>
+              </div>
               <div style="display:flex; gap:.75rem;">
                 <button type="submit" class="admin-btn admin-btn-success"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.12em"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg> Enregistrer</button>
                 <button type="button" class="admin-btn admin-btn-outline"

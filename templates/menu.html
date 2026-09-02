@@ -46,6 +46,13 @@
             {% if item['allergens'] %}
             <div class="menu-item-allergens">Allergènes : <span>{{ item['allergens'] }}</span></div>
             {% endif %}
+            {% if item['region'] %}
+            <button type="button" class="menu-origin-tag" onclick="showOrigin(this)"
+                    data-region="{{ item['region'] }}" data-name="{{ item['name'] }}" data-story="{{ item['origin_story'] or '' }}">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              {{ item['region'] }}
+            </button>
+            {% endif %}
           </div>
           {% if item['price'] %}
           <div class="menu-item-price">{{ "%.2f"|format(item['price']) }} €</div>
@@ -59,7 +66,7 @@
 
     {# Allergens note #}
     <div style="margin-top:3rem; padding:1.25rem 1.5rem; background:var(--cream); border-radius:var(--radius); border:1px solid var(--border); font-size:.84rem; color:var(--text-lt);">
-      <strong style="color:var(--text);">ℹ️ Allergènes</strong> — Si vous avez des allergies ou intolérances alimentaires, signalez-le à notre équipe avant de commander. Nous ferons notre possible pour adapter les plats à vos besoins.
+      <strong style="color:var(--text);">Allergènes</strong> — Si vous avez des allergies ou intolérances alimentaires, signalez-le à notre équipe avant de commander. Nous ferons notre possible pour adapter les plats à vos besoins.
     </div>
 
     <div style="text-align:center; margin-top:3rem;">
@@ -71,5 +78,49 @@
     </div>
   </div>
 </section>
+
+{# ── Modale « D'où vient ce plat ? » — carte d'Italie ── #}
+<div class="origin-modal" id="originModal" aria-hidden="true">
+  <div class="origin-modal-bd" onclick="closeOrigin()"></div>
+  <div class="origin-modal-box" role="dialog" aria-modal="true" aria-label="Origine du plat">
+    <button class="origin-modal-close" type="button" onclick="closeOrigin()" aria-label="Fermer">✕</button>
+    <span class="section-label">D'Italie à votre table</span>
+    <svg class="origin-map" viewBox="0 0 100 160" aria-hidden="true">
+      <path class="origin-land" d="M18,50 L28,34 L42,28 L52,26 L64,30 L74,34 L72,46 L74,58 L83,60 L76,64 L78,76 L80,90 L90,94 L80,96 L72,90 L70,101 L64,111 L56,122 L56,108 L52,98 L46,84 L40,68 L34,54 L26,52 Z"/>
+      <path class="origin-land" d="M40,130 L55,127 L46,139 Z"/>
+      <path class="origin-land" d="M8,80 L19,76 L21,97 L8,99 Z"/>
+      <circle id="originPinGlow" cx="78" cy="76" r="7" class="origin-pin-glow"/>
+      <circle id="originPin" cx="78" cy="76" r="3.4" class="origin-pin"/>
+    </svg>
+    <h3 class="origin-region" id="originRegion"></h3>
+    <div class="origin-dish" id="originDish"></div>
+    <p class="origin-story" id="originStory"></p>
+  </div>
+</div>
+<script>
+  var REGION_XY = {
+    "Vallée d'Aoste":[24,34],"Piémont":[30,42],"Ligurie":[28,50],"Lombardie":[44,38],
+    "Trentin-Haut-Adige":[52,29],"Vénétie":[63,34],"Frioul":[72,33],"Émilie-Romagne":[52,50],
+    "Toscane":[46,64],"Ombrie":[56,68],"Marches":[66,60],"Latium":[58,80],
+    "Abruzzes":[78,76],"Molise":[76,84],"Campanie":[66,92],"Pouilles":[86,92],
+    "Basilicate":[74,100],"Calabre":[60,113],"Sicile":[46,133],"Sardaigne":[14,88]
+  };
+  function showOrigin(btn){
+    var r=btn.dataset.region, xy=REGION_XY[r]||[60,80];
+    var pin=document.getElementById('originPin'), glow=document.getElementById('originPinGlow');
+    pin.setAttribute('cx',xy[0]); pin.setAttribute('cy',xy[1]);
+    glow.setAttribute('cx',xy[0]); glow.setAttribute('cy',xy[1]);
+    document.getElementById('originRegion').textContent=r;
+    document.getElementById('originDish').textContent=btn.dataset.name||'';
+    document.getElementById('originStory').textContent=btn.dataset.story||'';
+    var m=document.getElementById('originModal'); m.classList.add('open'); m.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+  }
+  function closeOrigin(){
+    var m=document.getElementById('originModal'); m.classList.remove('open'); m.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+  }
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeOrigin(); });
+</script>
 
 {% endblock %}

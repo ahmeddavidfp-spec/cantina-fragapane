@@ -2965,3 +2965,32 @@ html, body { overflow-x: hidden; }
   transition: var(--transition);
 }
 .footer-install:hover { background: var(--gold); color: #0C180C; border-color: var(--gold); }
+
+/* ── #5 Carte-origine : puce sous le plat + modale carte d'Italie ── */
+.menu-origin-tag {
+  display: inline-flex; align-items: center; gap: .3rem; margin-top: .5rem;
+  background: rgba(201,152,74,.09); color: var(--gold); border: 1px solid rgba(201,152,74,.28);
+  border-radius: 999px; padding: .2rem .6rem .2rem .45rem; font: inherit; font-size: .72rem;
+  font-weight: 700; letter-spacing: .03em; cursor: pointer; transition: var(--transition);
+}
+.menu-origin-tag:hover { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+.origin-modal { position: fixed; inset: 0; z-index: 1000; display: none; align-items: center; justify-content: center; padding: 1rem; }
+.origin-modal.open { display: flex; }
+.origin-modal-bd { position: absolute; inset: 0; background: rgba(20,15,10,.6); backdrop-filter: blur(2px); }
+.origin-modal-box {
+  position: relative; background: var(--light,#fff); border-radius: 18px; max-width: 380px; width: 100%;
+  padding: 2rem 1.6rem 1.9rem; text-align: center; box-shadow: 0 24px 70px rgba(0,0,0,.4);
+}
+.origin-modal-close {
+  position: absolute; top: 10px; right: 12px; width: 34px; height: 34px; border: none;
+  background: var(--cream,#f2ece2); border-radius: 50%; font-size: .95rem; cursor: pointer; color: var(--text-lt);
+}
+.origin-map { width: 150px; height: auto; display: block; margin: .8rem auto .2rem; }
+.origin-land { fill: rgba(201,152,74,.14); stroke: var(--gold); stroke-width: 1.4; stroke-linejoin: round; }
+.origin-pin { fill: #B22234; }
+.origin-pin-glow { fill: rgba(178,34,52,.28); transform-box: fill-box; transform-origin: center; animation: originPulse 1.8s ease-out infinite; }
+@keyframes originPulse { 0% { transform: scale(.6); opacity: .8; } 100% { transform: scale(2.2); opacity: 0; } }
+.origin-region { font-family: var(--font-heading); font-size: 1.5rem; color: var(--dark); margin: .2rem 0 .1rem; }
+.origin-dish { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: .7rem; }
+.origin-story { font-size: .92rem; color: var(--text-lt); line-height: 1.6; margin: 0; }

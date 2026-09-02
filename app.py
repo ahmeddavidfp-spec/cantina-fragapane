@@ -223,6 +223,40 @@ def init_db():
         )
     ''')
     cur.execute('ALTER TABLE reservations ADD COLUMN IF NOT EXISTS email TEXT')
+    cur.execute("ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS region TEXT DEFAULT ''")
+    cur.execute("ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS origin_story TEXT DEFAULT ''")
+    # Auto-étiquetage « origine » par mots-clés (seulement si non déjà renseigné)
+    _ORIGIN_SEED = [
+        ('%arrosticini%', 'Abruzzes',       "Fines brochettes d'agneau grillées, l'âme des Abruzzes."),
+        ('%tiramisu%',    'Vénétie',        "Le dessert emblématique né en Vénétie."),
+        ('%carbonara%',   'Latium',         "La pasta romaine par excellence, du Latium."),
+        ('%amatriciana%', 'Latium',         "Née à Amatrice, dans le Latium."),
+        ('%bolog%',       'Émilie-Romagne', "Le ragù mijoté de Bologne."),
+        ('%ragù%',        'Émilie-Romagne', "Le ragù mijoté de Bologne."),
+        ('%lasagne%',     'Émilie-Romagne', "Les lasagnes, gloire de l'Émilie-Romagne."),
+        ('%tortell%',     'Émilie-Romagne', "Pâtes farcies typiques de l'Émilie-Romagne."),
+        ('%pesto%',       'Ligurie',        "Le basilic parfumé de Gênes, en Ligurie."),
+        ('%focaccia%',    'Ligurie',        "La focaccia dorée de Ligurie."),
+        ('%pizza%',       'Campanie',       "Née à Naples, en Campanie."),
+        ('%margherita%',  'Campanie',       "Aux couleurs de l'Italie, née à Naples."),
+        ('%parmigiana%',  'Campanie',       "L'aubergine gratinée du Sud."),
+        ('%cannoli%',     'Sicile',         "Le dessert-roi de la Sicile."),
+        ('%arancin%',     'Sicile',         "Boulettes de riz dorées, spécialité sicilienne."),
+        ('%pistache%',    'Sicile',         "La pistache de Bronte, or vert de la Sicile."),
+        ('%risotto%',     'Lombardie',      "Le risotto crémeux, tradition lombarde."),
+        ('%osso%',        'Lombardie',      "L'osso buco milanais, en Lombardie."),
+        ('%vitello%',     'Piémont',        "Un classique frais du Piémont."),
+        ('%panna cotta%', 'Piémont',        "La douceur onctueuse du Piémont."),
+        ('%burrata%',     'Pouilles',       "La burrata crémeuse des Pouilles."),
+        ('%orecchiette%', 'Pouilles',       "Les petites oreilles de pâtes des Pouilles."),
+        ('%gnocchi%',     'Vénétie',        "Petites quenelles de pomme de terre du Nord."),
+        ('%saltimbocca%', 'Latium',         "Veau et sauge à la romaine, du Latium."),
+    ]
+    for like, region, story in _ORIGIN_SEED:
+        cur.execute(
+            "UPDATE menu_items SET region=%s, origin_story=%s "
+            "WHERE (region IS NULL OR region='') AND LOWER(name) LIKE %s",
+            (region, story, like))
     db.commit()
 
     cur.execute('SELECT COUNT(*) AS c FROM menu_categories')
@@ -1015,10 +1049,11 @@ def admin_add_item():
         max_o = (query('SELECT MAX(sort_order) AS m FROM menu_items WHERE category_id=%s',
                        (cat_id,), one=True)['m'] or 0)
         execute('''INSERT INTO menu_items
-            (category_id,name,description,price,allergens,available,featured,sort_order)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s)''',
+            (category_id,name,description,price,allergens,region,origin_story,available,featured,sort_order)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',
                 (cat_id, name, f.get('description', ''), price,
                  f.get('allergens', ''),
+                 f.get('region', '').strip(), f.get('origin_story', '').strip(),
                  1 if f.get('available') else 0,
                  1 if f.get('featured')  else 0,
                  max_o + 1))
@@ -1033,10 +1068,11 @@ def admin_edit_item(item_id):
     price = f.get('price', '').strip()
     price = float(price) if price else None
     execute('''UPDATE menu_items
-               SET name=%s, description=%s, price=%s, allergens=%s, available=%s, featured=%s
+               SET name=%s, description=%s, price=%s, allergens=%s, region=%s, origin_story=%s, available=%s, featured=%s
                WHERE id=%s''',
             (f.get('name', ''), f.get('description', ''), price,
              f.get('allergens', ''),
+             f.get('region', '').strip(), f.get('origin_story', '').strip(),
              1 if f.get('available') else 0,
              1 if f.get('featured')  else 0,
              item_id))
