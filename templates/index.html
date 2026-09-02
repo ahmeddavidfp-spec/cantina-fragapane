@@ -79,7 +79,7 @@
   {% endif %}
 </section>
 <script>
-  function openFeaturedZoom(){var z=document.getElementById('featuredZoom'); if(z){ z.classList.add('open'); document.body.style.overflow='hidden'; }}
+  function openFeaturedZoom(){var z=document.getElementById('featuredZoom'); if(z){ if(z.parentNode!==document.body){ document.body.appendChild(z); } z.classList.add('open'); document.body.style.overflow='hidden'; }}
   function closeFeaturedZoom(){var z=document.getElementById('featuredZoom'); if(z){ z.classList.remove('open'); document.body.style.overflow=''; }}
   document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeFeaturedZoom(); });
 </script>
