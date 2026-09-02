@@ -711,6 +711,68 @@ def send_reservation_decision(name, to_email, date, time, guests, status):
     return _send_via_brevo(subject, text, to_email, html=_ack_html(name, intro))
 
 
+def _phone_be_digits(raw):
+    """Normalise un n° belge au format Brevo (indicatif pays, sans +). Ex: '0493507475' -> '32493507475'."""
+    p = ''.join(c for c in (raw or '') if c.isdigit())
+    if p.startswith('00'):
+        return p[2:]
+    if p.startswith('32'):
+        return p
+    if p.startswith('0'):
+        return '32' + p[1:]
+    return '32' + p if p else ''
+
+
+def _fmt_date_short(iso):
+    """'2026-09-17' -> '17/09'."""
+    try:
+        d = datetime.strptime(iso, '%Y-%m-%d').date()
+        return d.strftime('%d/%m')
+    except Exception:
+        return iso
+
+
+def _send_sms(to_phone, text):
+    """SMS transactionnel via Brevo (même clé API que les emails). Payant (crédits Brevo).
+    Ne fait rien tant que SMS_SENDER n'est pas défini. N'échoue jamais."""
+    key = os.environ.get('BREVO_API_KEY', '')
+    sender = os.environ.get('SMS_SENDER', '')      # nom expéditeur (max 11 car.) — active le SMS
+    to = _phone_be_digits(to_phone)
+    if not key or not sender or not to:
+        return False
+    payload = {"type": "transactional", "sender": sender[:11], "recipient": to, "content": text[:300]}
+    req = urllib.request.Request(
+        "https://api.brevo.com/v3/transactionalSMS/sms",
+        data=json.dumps(payload).encode('utf-8'),
+        headers={"api-key": key, "content-type": "application/json", "accept": "application/json"},
+        method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return 200 <= resp.status < 300
+    except urllib.error.HTTPError as e:
+        detail = ''
+        try:
+            detail = e.read().decode('utf-8', 'ignore')[:300]
+        except Exception:
+            pass
+        app.logger.warning('Échec SMS Brevo HTTP %s : %s', e.code, detail)
+        return False
+    except Exception as e:
+        app.logger.warning('Échec SMS Brevo : %s', e)
+        return False
+
+
+def _client_sms_text(r, status):
+    d = _fmt_date_short(r.get('date') or '')
+    t = r.get('time') or ''
+    g = r.get('guests') or ''
+    if status == 'confirmed':
+        return (f"La Cantina Fragapane : votre table du {d} a {t} ({g} pers.) est CONFIRMEE. "
+                "A bientot ! Info : 0491227207")
+    return (f"La Cantina Fragapane : nous ne pouvons hélas pas honorer votre reservation du {d} a {t}. "
+            "Merci d'appeler le 0491227207.")
+
+
 def build_restaurant_jsonld(info, hours):
     """Génère le JSON-LD Restaurant (fiable, échappement JSON correct)."""
     days_map = {"Lundi": "Monday", "Mardi": "Tuesday", "Mercredi": "Wednesday", "Jeudi": "Thursday",
@@ -836,28 +898,32 @@ def telegram_webhook():
         status = 'confirmed' if action == 'confirm' else 'cancelled'
         execute('UPDATE reservations SET status=%s WHERE id=%s', (status, int(sid)))
         r = query('SELECT * FROM reservations WHERE id=%s', (int(sid),), one=True) or {}
-        # Prévenir le client : email s'il en a laissé un, sinon à rappeler par téléphone
-        emailed = False
-        if r.get('email'):
-            try:
-                emailed = bool(send_reservation_decision(
-                    r.get('name'), r.get('email'), r.get('date'), r.get('time'), r.get('guests'), status))
-            except Exception:
-                emailed = False
+        # Prévenir le client sur son téléphone : SMS d'abord, sinon email, sinon « à rappeler »
+        via = None
+        try:
+            if r.get('phone') and _send_sms(r.get('phone'), _client_sms_text(r, status)):
+                via = 'sms'
+            elif r.get('email') and send_reservation_decision(
+                    r.get('name'), r.get('email'), r.get('date'), r.get('time'), r.get('guests'), status):
+                via = 'email'
+        except Exception:
+            via = None
         base = 'Réservation confirmée ✅' if action == 'confirm' else 'Réservation annulée ❌'
-        if emailed:
+        if via == 'sms':
+            toast = base + ' · client prévenu par SMS'
+        elif via == 'email':
             toast = base + ' · client prévenu par email'
-        elif not r.get('email'):
-            toast = base + ' · à rappeler : ' + (r.get('phone') or '')
         else:
-            toast = base
+            toast = base + ' · à rappeler : ' + (r.get('phone') or '')
         _tg_api('answerCallbackQuery', {'callback_query_id': cq_id, 'text': toast[:190]})
         if chat_id and message_id:
             txt = _reservation_tg_text(r, status)
-            if emailed:
+            if via == 'sms':
+                txt += "\n📲 <i>Client prévenu par SMS</i>"
+            elif via == 'email':
                 txt += "\n📧 <i>Client prévenu par email</i>"
-            elif not r.get('email'):
-                txt += f"\n📞 <i>Pas d'email — à rappeler au {html.escape(r.get('phone') or '')}</i>"
+            else:
+                txt += f"\n📞 <i>À rappeler au {html.escape(r.get('phone') or '')}</i>"
             _tg_api('editMessageText', {
                 'chat_id': chat_id, 'message_id': message_id,
                 'text': txt, 'parse_mode': 'HTML',
