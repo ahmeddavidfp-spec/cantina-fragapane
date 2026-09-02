@@ -543,16 +543,25 @@ def _tg_secret():
     return hashlib.sha256(('cantina-wh:' + t).encode()).hexdigest()[:40] if t else ''
 
 
+def _tg_chat_ids():
+    """Liste des destinataires (TELEGRAM_CHAT_ID peut contenir plusieurs id séparés par des virgules)."""
+    return [c.strip() for c in os.environ.get('TELEGRAM_CHAT_ID', '').split(',') if c.strip()]
+
+
 def _send_telegram(text, reply_markup=None):
-    """Envoie une notification Telegram (HTML). reply_markup = clavier inline optionnel (boutons).
+    """Envoie une notification Telegram (HTML) à TOUS les destinataires. reply_markup = boutons inline optionnels.
     Ne fait rien si le bot n'est pas configuré. N'échoue jamais."""
-    if not os.environ.get('TELEGRAM_BOT_TOKEN') or not os.environ.get('TELEGRAM_CHAT_ID'):
+    ids = _tg_chat_ids()
+    if not os.environ.get('TELEGRAM_BOT_TOKEN') or not ids:
         return False
-    payload = {"chat_id": os.environ.get('TELEGRAM_CHAT_ID', ''), "text": text,
-               "parse_mode": "HTML", "disable_web_page_preview": True}
-    if reply_markup:
-        payload["reply_markup"] = reply_markup
-    return _tg_api('sendMessage', payload) is not None
+    ok = False
+    for cid in ids:
+        payload = {"chat_id": cid, "text": text, "parse_mode": "HTML", "disable_web_page_preview": True}
+        if reply_markup:
+            payload["reply_markup"] = reply_markup
+        if _tg_api('sendMessage', payload) is not None:
+            ok = True
+    return ok
 
 
 def _reservation_tg_text(r, status=None):
@@ -902,14 +911,14 @@ def telegram_webhook():
     cq = upd.get('callback_query')
     if not cq:
         return ('', 200)
-    owner = os.environ.get('TELEGRAM_CHAT_ID', '')
+    allowed = _tg_chat_ids()
     frm = str((cq.get('from') or {}).get('id', ''))
     data = cq.get('data', '') or ''
     msg = cq.get('message') or {}
     chat_id = (msg.get('chat') or {}).get('id')
     message_id = msg.get('message_id')
     cq_id = cq.get('id')
-    if owner and frm != owner:                      # seul le propriétaire peut agir
+    if allowed and frm not in allowed:              # seuls les destinataires configurés peuvent agir
         _tg_api('answerCallbackQuery', {'callback_query_id': cq_id, 'text': 'Action non autorisée.'})
         return ('', 200)
     action, _, sid = data.partition(':')
