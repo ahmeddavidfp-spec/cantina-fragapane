@@ -495,6 +495,14 @@ def _send_telegram(text):
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
             return 200 <= resp.status < 300
+    except urllib.error.HTTPError as e:
+        detail = ''
+        try:
+            detail = e.read().decode('utf-8', 'ignore')[:400]
+        except Exception:
+            pass
+        app.logger.warning('Échec notification Telegram HTTP %s : %s', e.code, detail)
+        return False
     except Exception as e:
         app.logger.warning('Échec notification Telegram : %s', e)
         return False
