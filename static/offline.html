@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hors ligne — La Cantina Fragapane</title>
+<style>
+  :root { color-scheme: dark; }
+  * { margin: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    background: #0C180C; color: #F5F0E6; padding: 2rem 1.5rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .it { font-size: .7rem; letter-spacing: .28em; text-transform: uppercase; color: #C9984A; font-weight: 700; }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-size: 2rem; margin: .3rem 0 1rem; }
+  p { color: rgba(245,240,230,.7); max-width: 22rem; line-height: 1.6; margin-bottom: 1.8rem; }
+  .bar { display: flex; width: 90px; height: 5px; border-radius: 3px; overflow: hidden; margin: 1.2rem 0 0; }
+  .bar span { flex: 1; } .g { background: #1E4A26; } .w { background: #fff; } .r { background: #B22234; }
+  a.btn {
+    display: inline-flex; align-items: center; gap: .5rem; text-decoration: none;
+    background: #C9984A; color: #0C180C; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; font-size: .82rem; padding: .85rem 1.8rem; border-radius: 999px;
+  }
+  a.ghost { background: transparent; color: #F5F0E6; border: 1.5px solid rgba(245,240,230,.3); }
+  .row { display: flex; gap: .8rem; flex-wrap: wrap; justify-content: center; }
+</style>
+</head>
+<body>
+  <div class="it">La Cantina</div>
+  <h1>Fragapane</h1>
+  <p>Vous êtes actuellement <strong>hors ligne</strong>. Notre carte reste consultable si vous l'avez déjà ouverte&nbsp;; le reste reviendra dès que la connexion sera rétablie.</p>
+  <div class="row">
+    <a class="btn" href="/menu">Voir la carte</a>
+    <a class="ghost btn" href="/" onclick="location.reload()">Réessayer</a>
+  </div>
+  <div class="bar"><span class="g"></span><span class="w"></span><span class="r"></span></div>
+</body>
+</html>

@@ -644,6 +644,17 @@ def healthz():
     return 'ok', 200, {'Cache-Control': 'no-store'}
 
 
+@app.route('/sw.js')
+def service_worker():
+    """Sert le service worker depuis la racine (portée '/' nécessaire pour contrôler tout le site)."""
+    from flask import make_response
+    resp = make_response(app.send_static_file('sw.js'))
+    resp.headers['Content-Type'] = 'application/javascript'
+    resp.headers['Service-Worker-Allowed'] = '/'
+    resp.headers['Cache-Control'] = 'no-cache'
+    return resp
+
+
 @app.route('/')
 def index():
     hours = get_hours()
