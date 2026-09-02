@@ -2965,6 +2965,9 @@ html, body { overflow-x: hidden; }
   transition: var(--transition);
 }
 .footer-install:hover { background: var(--gold); color: #0C180C; border-color: var(--gold); }
+.footer-install[hidden] { display: none; }   /* respecte l'attribut hidden (sinon toujours visible) */
+.pwa-hint { display: none; margin-top: .7rem; max-width: 22rem; font-size: .8rem; line-height: 1.5; color: rgba(245,240,230,.78); }
+.pwa-hint.show { display: block; }
 
 /* ── #5 Carte-origine : puce sous le plat + modale carte d'Italie ── */
 .menu-origin-tag {

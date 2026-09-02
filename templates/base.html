@@ -278,18 +278,36 @@
       });
     }
     (function () {
-      var deferred = null;
       var btn = document.getElementById('pwaInstall');
+      if (!btn) return;
+      var deferred = null;
+      var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      if (standalone) return; // déjà installé
+
       window.addEventListener('beforeinstallprompt', function (e) {
-        e.preventDefault(); deferred = e;
-        if (btn) btn.hidden = false;
+        e.preventDefault(); deferred = e; btn.hidden = false;
       });
-      if (btn) btn.addEventListener('click', function () {
-        if (!deferred) return;
-        deferred.prompt();
-        deferred.userChoice.finally(function () { deferred = null; btn.hidden = true; });
+      if (isIOS) btn.hidden = false; // iOS ne déclenche pas l'événement -> bouton + instruction
+
+      btn.addEventListener('click', function () {
+        if (deferred) {
+          deferred.prompt();
+          deferred.userChoice.finally(function () { deferred = null; btn.hidden = true; });
+          return;
+        }
+        var hint = document.getElementById('pwaHint');
+        if (!hint) {
+          hint = document.createElement('div');
+          hint.id = 'pwaHint'; hint.className = 'pwa-hint';
+          hint.innerHTML = isIOS
+            ? "Sur iPhone : touchez <b>Partager</b> (le carré avec une flèche ↑) en bas de Safari, puis <b>« Sur l'écran d'accueil »</b>."
+            : "Dans le menu de votre navigateur, choisissez <b>« Installer l'application »</b> ou <b>« Ajouter à l'écran d'accueil »</b>.";
+          btn.insertAdjacentElement('afterend', hint);
+        }
+        hint.classList.toggle('show');
       });
-      window.addEventListener('appinstalled', function () { if (btn) btn.hidden = true; });
+      window.addEventListener('appinstalled', function () { btn.hidden = true; });
     })();
   </script>
   {% block extra_js %}{% endblock %}
