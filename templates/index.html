@@ -52,7 +52,8 @@
     <div class="featured-post-card {% if not info.get('featured_image') %}featured-post-card--notext{% endif %}">
       {% if info.get('featured_image') %}
       <a class="featured-post-media" href="{{ info.get('featured_link') or '#' }}" {% if info.get('featured_link') %}target="_blank" rel="noopener"{% endif %}>
-        <img src="/static/images/{{ info['featured_image'] }}" alt="À la une – La Cantina Fragapane" loading="lazy">
+        <img src="/featured-image?v={{ info['featured_image'] }}" alt="À la une – La Cantina Fragapane" loading="lazy"
+             onerror="var m=this.closest('.featured-post-media'); if(m) m.style.display='none';">
       </a>
       {% endif %}
       <div class="featured-post-body">

@@ -39,7 +39,7 @@
         <label>Image (upload)</label>
         {% if f.get('featured_image') %}
         <div style="margin:.5rem 0;">
-          <img src="/static/images/{{ f['featured_image'] }}" alt="Aperçu"
+          <img src="/featured-image?v={{ f['featured_image'] }}" alt="Aperçu"
                style="max-width:220px; border-radius:8px; border:1px solid #E5E7EB;">
           <div class="admin-checkbox-group" style="margin-top:.5rem;">
             <input type="checkbox" name="featured_image_remove" id="fa-rm">

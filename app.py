@@ -1,6 +1,7 @@
 import os
 import json
 import html
+import base64
 import hashlib
 import uuid
 import smtplib
@@ -235,6 +236,11 @@ def init_db():
         )
     ''')
     cur.execute('ALTER TABLE reservations ADD COLUMN IF NOT EXISTS email TEXT')
+    cur.execute("""CREATE TABLE IF NOT EXISTS featured_image (
+        id INTEGER PRIMARY KEY,
+        mimetype TEXT,
+        data TEXT
+    )""")
     cur.execute("ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS region TEXT DEFAULT ''")
     cur.execute("ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS origin_story TEXT DEFAULT ''")
     # Auto-étiquetage « origine » par mots-clés (seulement si non déjà renseigné)
@@ -873,6 +879,19 @@ def service_worker():
     return resp
 
 
+@app.route('/featured-image')
+def featured_image():
+    """Sert l'image « À la une » stockée en base (persistante sur Render, contrairement au disque)."""
+    row = query('SELECT mimetype, data FROM featured_image WHERE id=1', one=True)
+    if not row or not row.get('data'):
+        return ('', 404)
+    from flask import make_response
+    resp = make_response(base64.b64decode(row['data']))
+    resp.headers['Content-Type'] = row.get('mimetype') or 'image/jpeg'
+    resp.headers['Cache-Control'] = 'public, max-age=86400'
+    return resp
+
+
 @app.route('/telegram/webhook', methods=['POST'])
 def telegram_webhook():
     """Reçoit les clics des boutons Confirmer / Annuler depuis Telegram, met à jour la réservation
@@ -1427,15 +1446,24 @@ def admin_featured():
 @app.route('/admin/a-la-une/modifier', methods=['POST'])
 @login_required
 def admin_edit_featured():
+    current = {r['key']: r['value'] for r in query('SELECT key, value FROM info')}
+    token = current.get('featured_image', '')     # jeton de version de l'image (ou '')
     if request.form.get('featured_image_remove'):
-        image = ''
+        execute('DELETE FROM featured_image WHERE id=1')
+        token = ''
     else:
-        image = save_upload('featured_image_file') or request.form.get('featured_image_existing', '').strip()
+        f = request.files.get('featured_image_file')
+        if f and f.filename and allowed_file(f.filename):
+            b64 = base64.b64encode(f.read()).decode('ascii')
+            execute('INSERT INTO featured_image (id,mimetype,data) VALUES (1,%s,%s) '
+                    'ON CONFLICT (id) DO UPDATE SET mimetype=EXCLUDED.mimetype, data=EXCLUDED.data',
+                    (f.mimetype or 'image/jpeg', b64))
+            token = str(int(time.time()))          # nouveau jeton -> casse le cache navigateur/CDN
     data = {
         'featured_active': '1' if request.form.get('featured_active') else '',
         'featured_text':   request.form.get('featured_text', '').strip(),
         'featured_link':   request.form.get('featured_link', '').strip(),
-        'featured_image':  image or '',
+        'featured_image':  token,
     }
     for key, val in data.items():
         execute('INSERT INTO info (key,value) VALUES (%s,%s) '
