@@ -51,10 +51,13 @@
   <div class="container">
     <div class="featured-post-card {% if not info.get('featured_image') %}featured-post-card--notext{% endif %}">
       {% if info.get('featured_image') %}
-      <a class="featured-post-media" href="{{ info.get('featured_link') or '#' }}" {% if info.get('featured_link') %}target="_blank" rel="noopener"{% endif %}>
+      <button type="button" class="featured-post-media" onclick="openFeaturedZoom()" aria-label="Agrandir l'image">
         <img src="/featured-image?v={{ info['featured_image'] }}" alt="À la une – La Cantina Fragapane" loading="lazy"
              onerror="var m=this.closest('.featured-post-media'); if(m) m.style.display='none';">
-      </a>
+        <span class="featured-post-zoomhint" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg>
+        </span>
+      </button>
       {% endif %}
       <div class="featured-post-body">
         <span class="featured-post-badge">
@@ -68,7 +71,18 @@
       </div>
     </div>
   </div>
+  {% if info.get('featured_image') %}
+  <div class="featured-zoom" id="featuredZoom" onclick="closeFeaturedZoom()">
+    <button class="featured-zoom-close" type="button" aria-label="Fermer">✕</button>
+    <img src="/featured-image?v={{ info['featured_image'] }}" alt="À la une – La Cantina Fragapane">
+  </div>
+  {% endif %}
 </section>
+<script>
+  function openFeaturedZoom(){var z=document.getElementById('featuredZoom'); if(z){ z.classList.add('open'); document.body.style.overflow='hidden'; }}
+  function closeFeaturedZoom(){var z=document.getElementById('featuredZoom'); if(z){ z.classList.remove('open'); document.body.style.overflow=''; }}
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeFeaturedZoom(); });
+</script>
 {% endif %}
 
 {# ── Livraison bandeau ── #}
