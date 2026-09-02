@@ -1,5 +1,6 @@
 import os
 import json
+import html
 import uuid
 import smtplib
 import urllib.request
@@ -479,14 +480,30 @@ def _send_via_brevo(subject, body, to_addr, reply_to=None, html=None):
         return False
 
 
+_JOURS_FR = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+_MOIS_FR = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+
+
+def _fmt_date_fr(iso):
+    """'2026-09-14' -> 'vendredi 14 septembre 2026' (sans dépendre de la locale système)."""
+    try:
+        d = datetime.strptime(iso, '%Y-%m-%d').date()
+        return f"{_JOURS_FR[d.weekday()]} {d.day} {_MOIS_FR[d.month - 1]} {d.year}"
+    except Exception:
+        return iso
+
+
 def _send_telegram(text):
     """Notification instantanée via l'API Telegram (HTTPS — fonctionne depuis Render).
-    Ne fait rien si TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID ne sont pas définis. N'échoue jamais."""
+    Ne fait rien si TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID ne sont pas définis. N'échoue jamais.
+    Le texte peut contenir du HTML Telegram (<b>, <i>, <code>…)."""
     token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
     chat_id = os.environ.get('TELEGRAM_CHAT_ID', '')
     if not token or not chat_id:
         return False
-    payload = {"chat_id": chat_id, "text": text, "disable_web_page_preview": True}
+    payload = {"chat_id": chat_id, "text": text, "parse_mode": "HTML",
+               "disable_web_page_preview": True}
     req = urllib.request.Request(
         f"https://api.telegram.org/bot{token}/sendMessage",
         data=json.dumps(payload).encode('utf-8'),
@@ -788,11 +805,13 @@ def contact():
             execute('INSERT INTO messages (name, email, phone, message) VALUES (%s,%s,%s,%s)',
                     (name, email, phone, message))
             _send_telegram(
-                "💬 NOUVEAU MESSAGE (contact)\n\n"
-                f"👤 {name}\n"
-                + (f"✉️ {email}\n" if email else "")
-                + (f"📞 {phone}\n" if phone else "")
-                + f"\n{message}")
+                "💬 <b>NOUVEAU MESSAGE</b>\n"
+                "━━━━━━━━━━━━━━━\n"
+                f"👤 <b>{html.escape(name)}</b>\n"
+                + (f"✉️ {html.escape(email)}\n" if email else "")
+                + (f"📞 <code>{html.escape(phone)}</code>\n" if phone else "")
+                + "━━━━━━━━━━━━━━━\n"
+                f"<i>{html.escape(message)}</i>")
             try:
                 sent = send_contact_email(name, email, phone, message)
                 send_customer_ack(name, email)   # accusé de réception automatique au client
@@ -829,13 +848,19 @@ def reservation():
             execute(
                 'INSERT INTO reservations (name,email,phone,date,time,guests,notes) VALUES (%s,%s,%s,%s,%s,%s,%s)',
                 (name, email or None, phone, date, time, int(guests), notes or None))
+            _g = int(guests)
             _send_telegram(
-                "🍽️ NOUVELLE RÉSERVATION\n\n"
-                f"👤 {name} — {guests} pers.\n"
-                f"📅 {date} à {time}\n"
-                f"📞 {phone}\n"
-                + (f"✉️ {email}\n" if email else "")
-                + (f"📝 {notes}\n" if notes else ""))
+                "🍽️ <b>NOUVELLE RÉSERVATION</b>\n"
+                "━━━━━━━━━━━━━━━\n"
+                f"👤 <b>{html.escape(name)}</b>\n"
+                f"👥 {_g} " + ("personne" if _g == 1 else "personnes") + "\n"
+                f"📅 {_fmt_date_fr(date)}\n"
+                f"🕐 {html.escape(time)}\n"
+                f"📞 <code>{html.escape(phone)}</code>\n"
+                + (f"✉️ {html.escape(email)}\n" if email else "")
+                + (f"📝 <i>{html.escape(notes)}</i>\n" if notes else "")
+                + "━━━━━━━━━━━━━━━\n"
+                "🍝 <i>La Cantina Fragapane</i>")
             try:
                 body = (f"Nouvelle demande de réservation :\n\n"
                         f"Nom : {name}\nEmail : {email or '—'}\nTéléphone : {phone}\n"
