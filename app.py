@@ -908,6 +908,19 @@ def telegram_webhook():
     if request.headers.get('X-Telegram-Bot-Api-Secret-Token', '') != _tg_secret():
         return ('', 403)
     upd = request.get_json(silent=True) or {}
+    # Message texte au bot -> on répond l'identifiant (pratique pour récupérer un chat_id)
+    m = upd.get('message')
+    if m:
+        chat = m.get('chat') or {}
+        cid = chat.get('id')
+        if cid is not None:
+            nom = (m.get('from') or {}).get('first_name', '')
+            _tg_api('sendMessage', {
+                'chat_id': cid, 'parse_mode': 'HTML',
+                'text': (f"👋 Bonjour {html.escape(nom)} !\n\nVotre identifiant Telegram est :\n"
+                         f"<code>{cid}</code>\n\n"
+                         "Communiquez ce numéro au restaurant pour recevoir les réservations. ✅")})
+        return ('', 200)
     cq = upd.get('callback_query')
     if not cq:
         return ('', 200)
@@ -970,7 +983,7 @@ def _ensure_telegram_webhook():
     _tg_api('setWebhook', {
         'url': base + '/telegram/webhook',
         'secret_token': _tg_secret(),
-        'allowed_updates': ['callback_query'],
+        'allowed_updates': ['message', 'callback_query'],
     })
 
 
