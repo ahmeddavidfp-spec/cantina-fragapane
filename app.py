@@ -18,7 +18,7 @@ from functools import wraps
 from werkzeug.utils import secure_filename
 from markupsafe import escape
 from flask import (Flask, render_template, request, redirect,
-                   url_for, session, flash, g)
+                   url_for, session, flash, g, jsonify)
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'images')
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'webp', 'gif'}
@@ -875,6 +875,47 @@ def healthz():
     """Endpoint ultra-léger pour le keep-alive (aucune requête BDD, réponse instantanée).
     Suffit à réveiller / maintenir éveillé le service Render."""
     return 'ok', 200, {'Cache-Control': 'no-store'}
+
+
+@app.route('/public/stats')
+def public_stats():
+    """Compteur agrégé, exposé avec l'accord de la Cantina pour scribeo.be.
+
+    Aucune donnée personnelle ne sort d'ici : ni nom, ni téléphone, ni date de
+    réservation individuelle. Uniquement des totaux, sur une fenêtre glissante
+    de trente jours, volontairement grossiers pour qu'un concurrent ne puisse
+    pas en tirer une courbe d'activité.
+    """
+    try:
+        recues = query(
+            "SELECT COUNT(*) AS c FROM reservations "
+            "WHERE status <> 'cancelled' AND created_at >= NOW() - INTERVAL '30 days'",
+            one=True)['c']
+        confirmees = query(
+            "SELECT COUNT(*) AS c FROM reservations "
+            "WHERE status = 'confirmed' AND created_at >= NOW() - INTERVAL '30 days'",
+            one=True)['c']
+        total = query(
+            "SELECT COUNT(*) AS c FROM reservations WHERE status <> 'cancelled'",
+            one=True)['c']
+        depuis = query("SELECT MIN(created_at) AS d FROM reservations", one=True)['d']
+    except Exception:
+        return jsonify({'ok': False}), 503
+
+    r = jsonify({
+        'ok': True,
+        'fenetre_jours': 30,
+        'recues_30j': int(recues or 0),
+        'confirmees_30j': int(confirmees or 0),
+        'total_recues': int(total or 0),
+        'depuis': depuis.isoformat()[:10] if depuis else None,
+    })
+    # Public par nature : ce chiffre est destiné à être affiché.
+    r.headers['Access-Control-Allow-Origin'] = '*'
+    # Cinq minutes de cache : le chiffre bouge de quelques unités par jour,
+    # inutile de réveiller la base à chaque visiteur de scribeo.be.
+    r.headers['Cache-Control'] = 'public, max-age=300'
+    return r
 
 
 @app.route('/sw.js')
