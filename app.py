@@ -899,6 +899,10 @@ def public_stats():
             "SELECT COUNT(*) AS c FROM reservations WHERE status <> 'cancelled'",
             one=True)['c']
         # Les couverts : l'unité dans laquelle un restaurateur pense réellement.
+        couverts_total = query(
+            "SELECT COALESCE(SUM(guests), 0) AS c FROM reservations "
+            "WHERE status <> 'cancelled'",
+            one=True)['c']
         couverts = query(
             "SELECT COALESCE(SUM(guests), 0) AS c FROM reservations "
             "WHERE status <> 'cancelled' AND created_at >= NOW() - INTERVAL '30 days'",
@@ -914,6 +918,7 @@ def public_stats():
         'confirmees_30j': int(confirmees or 0),
         'total_recues': int(total or 0),
         'couverts_30j': int(couverts or 0),
+        'couverts_total': int(couverts_total or 0),
         'depuis': depuis.isoformat()[:10] if depuis else None,
     })
     # Public par nature : ce chiffre est destiné à être affiché.
