@@ -3049,3 +3049,8 @@ html, body { overflow-x: hidden; }
   .review-cta { flex-direction: column; text-align: center; gap: 1.4rem; padding: 1.6rem 1.3rem; }
   .review-cta-sub { margin-left: auto; margin-right: auto; }
 }
+
+/* ── Crédit création site (footer) ── */
+.footer-credit { font-size: .82rem; opacity: .7; margin: .2rem 0; }
+.footer-credit a { color: var(--gold); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .2s; }
+.footer-credit a:hover { border-bottom-color: currentColor; }
