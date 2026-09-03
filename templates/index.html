@@ -586,6 +586,23 @@ function momentGoToForm(){
       </div>
       {% endfor %}
     </div>
+
+    {# ── Laisser un avis (bouton + QR) ── #}
+    <div class="review-cta">
+      <div class="review-cta-body">
+        <span class="review-cta-stars">★★★★★</span>
+        <h3 class="review-cta-title">Vous aussi, partagez votre expérience</h3>
+        <p class="review-cta-sub">Un avis, c'est 2 minutes pour vous… et un immense coup de pouce pour nous. Merci&nbsp;!</p>
+        <a href="https://g.page/r/CVvDxmVQffOPEBM/review" target="_blank" rel="noopener" class="btn btn-gold review-cta-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2 15.09 8.26 22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01z"/></svg>
+          Laisser un avis sur Google
+        </a>
+      </div>
+      <div class="review-cta-qr">
+        <img src="{{ url_for('static', filename='qr-avis-google.png') }}" alt="QR code – laisser un avis Google La Cantina Fragapane" width="132" height="132" loading="lazy">
+        <span>Ou scannez ce code</span>
+      </div>
+    </div>
   </div>
 </section>
 

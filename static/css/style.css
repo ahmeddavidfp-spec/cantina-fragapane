@@ -3033,3 +3033,19 @@ html, body { overflow-x: hidden; }
   .featured-post-media img { height: auto; max-height: 340px; }
   .featured-post-body { padding: 1.3rem 1.3rem 1.5rem; }
 }
+
+/* ── Laisser un avis (bloc QR + bouton, section avis) ── */
+.review-cta { display: flex; align-items: center; gap: 2rem; max-width: 760px; margin: 3rem auto 0;
+  background: var(--light,#fff); border: 1px solid var(--border); border-radius: var(--radius-lg,18px);
+  padding: 1.8rem 2rem; box-shadow: 0 10px 30px rgba(60,48,30,.06); }
+.review-cta-body { flex: 1; min-width: 0; }
+.review-cta-stars { color: var(--gold); letter-spacing: .15em; font-size: 1rem; }
+.review-cta-title { font-family: var(--font-heading); font-size: 1.4rem; color: var(--dark); margin: .35rem 0 .5rem; line-height: 1.2; }
+.review-cta-sub { color: var(--text-lt); font-size: .92rem; line-height: 1.6; margin: 0 0 1.1rem; max-width: 34rem; }
+.review-cta-qr { flex: 0 0 auto; text-align: center; }
+.review-cta-qr img { width: 132px; height: 132px; display: block; border: 1px solid var(--border); border-radius: 12px; padding: 8px; background: #fff; }
+.review-cta-qr span { display: block; font-size: .74rem; color: var(--text-lt); margin-top: .5rem; }
+@media (max-width: 640px) {
+  .review-cta { flex-direction: column; text-align: center; gap: 1.4rem; padding: 1.6rem 1.3rem; }
+  .review-cta-sub { margin-left: auto; margin-right: auto; }
+}
