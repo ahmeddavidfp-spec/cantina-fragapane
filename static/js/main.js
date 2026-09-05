@@ -201,7 +201,7 @@ if ('IntersectionObserver' in window && fadeEls.length) {
       var day = sched[dayOrder(v)];
       if (!day || day.closed) {
         var nom = day && day.name ? day.name.toLowerCase() : 'ce jour-là';
-        msg.textContent = 'Fermé le ' + nom + ' — merci de choisir un autre jour.';
+        msg.textContent = 'Fermé le ' + nom + ' - merci de choisir un autre jour.';
         msg.hidden = false;
         dateEl.setCustomValidity('Le restaurant est fermé ce jour-là.');
         timeEl.innerHTML = '<option value="">Fermé ce jour</option>';
