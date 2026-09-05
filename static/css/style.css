@@ -3059,6 +3059,7 @@ html, body { overflow-x: hidden; }
 .resa-closed-msg { margin: .5rem 0 0; font-size: .85rem; font-weight: 600; color: #b3261e;
   background: #fdecea; border: 1px solid #f5c6c2; border-radius: 8px; padding: .5rem .7rem;
   display: flex; align-items: center; gap: .4rem; }
+.resa-closed-msg[hidden] { display: none !important; }  /* l'attribut hidden doit vraiment masquer */
 .resa-closed-msg::before { content: "!"; display: inline-flex; align-items: center; justify-content: center;
   width: 1.15rem; height: 1.15rem; border-radius: 50%; background: #b3261e; color: #fff;
   font-size: .75rem; font-weight: 700; flex: 0 0 auto; }
