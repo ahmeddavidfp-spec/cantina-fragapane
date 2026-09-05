@@ -130,9 +130,11 @@
   </div>
 </section>
 
+<script>window.CF_SCHEDULE = {{ resa_schedule|tojson }};</script>
+
 {% block extra_js %}
 <script>
-  // Set minimum date to today
+  // Date minimum = aujourd'hui
   document.getElementById('r-date').min = new Date().toISOString().split('T')[0];
 </script>
 {% endblock %}

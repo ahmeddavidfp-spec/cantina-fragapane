@@ -1063,7 +1063,8 @@ def index():
                  "fraîche. Une adresse à ne pas manquer !"},
     ]
     return render_template('index.html', hours=hours,
-                           featured=featured, reviews=reviews)
+                           featured=featured, reviews=reviews,
+                           resa_schedule=_hours_schedule())
 
 
 @app.route('/menu')
@@ -1136,6 +1137,51 @@ def livraison():
     return render_template('livraison.html')
 
 
+def _hours_schedule():
+    """Renvoie les horaires par jour (1=lundi … 7=dimanche) pour le JS du formulaire."""
+    sched = {}
+    for h in query('SELECT * FROM hours ORDER BY day_order'):
+        lo, lc = h.get('lunch_open'), h.get('lunch_close')
+        do, dc = h.get('dinner_open'), h.get('dinner_close')
+        sched[h['day_order']] = {
+            'closed': bool(h['is_closed']),
+            'name':   h['day_name'],
+            'lunch':  [lo, lc] if (lo and lc) else None,
+            'dinner': [do, dc] if (do and dc) else None,
+        }
+    return sched
+
+
+def _reservation_slot_valid(date_str, time_str):
+    """Vérifie que la date/heure demandée tombe un jour ouvert et dans un service (midi/soir).
+    Retourne (ok: bool, message_erreur: str)."""
+    try:
+        d = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except ValueError:
+        return False, "La date choisie est invalide."
+    if d < datetime.now().date():
+        return False, "Cette date est déjà passée, merci de choisir une date à venir."
+    day_order = d.isoweekday()  # lundi=1 … dimanche=7
+    h = query('SELECT * FROM hours WHERE day_order=%s', (day_order,), one=True)
+    day_label = (h['day_name'].lower() if h else 'ce jour-là')
+    if not h or h['is_closed']:
+        return False, f"Le restaurant est fermé le {day_label}. Merci de choisir un autre jour."
+
+    def _in(o, c):
+        return bool(o) and bool(c) and o <= time_str <= c
+
+    if _in(h.get('lunch_open'), h.get('lunch_close')) or _in(h.get('dinner_open'), h.get('dinner_close')):
+        return True, ''
+
+    parts = []
+    if h.get('lunch_open') and h.get('lunch_close'):
+        parts.append(f"{h['lunch_open']}-{h['lunch_close']}")
+    if h.get('dinner_open') and h.get('dinner_close'):
+        parts.append(f"{h['dinner_open']}-{h['dinner_close']}")
+    creneaux = ' et '.join(parts) if parts else 'aucun créneau'
+    return False, f"L'heure choisie est en dehors des horaires du {day_label} ({creneaux})."
+
+
 @app.route('/reservation', methods=['GET', 'POST'])
 def reservation():
     if request.method == 'POST':
@@ -1149,6 +1195,12 @@ def reservation():
         guests = request.form.get('guests', '').strip()
         notes  = request.form.get('notes', '').strip()
         if name and phone and date and time and guests.isdigit():
+            _ok, _err = _reservation_slot_valid(date, time)
+            if not _ok:
+                flash(_err, 'error')
+                if request.form.get('from') == 'home':
+                    return redirect(url_for('index') + '#reserver')
+                return redirect(url_for('reservation'))
             _resa = execute_returning(
                 'INSERT INTO reservations (name,email,phone,date,time,guests,notes) '
                 'VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING *',
@@ -1178,7 +1230,8 @@ def reservation():
             return redirect(url_for('index') + '#reserver')
         return redirect(url_for('reservation'))
     hours = query('SELECT * FROM hours ORDER BY day_order')
-    return render_template('reservation.html', hours=hours)
+    return render_template('reservation.html', hours=hours,
+                           resa_schedule=_hours_schedule())
 
 
 @app.route('/newsletter/subscribe', methods=['POST'])

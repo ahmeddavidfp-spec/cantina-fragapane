@@ -159,3 +159,81 @@ if ('IntersectionObserver' in window && fadeEls.length) {
   }, { threshold: .15 });
   fadeEls.forEach(el => { el.style.opacity = '0'; obs.observe(el); });
 }
+
+/* ── Réservation : bloque les jours de fermeture et les heures hors service ── */
+(function () {
+  var sched = window.CF_SCHEDULE;
+  if (!sched) return;
+
+  function dayOrder(dateStr) {          // "YYYY-MM-DD" -> 1=lundi … 7=dimanche
+    var p = dateStr.split('-');
+    var wd = new Date(+p[0], +p[1] - 1, +p[2]).getDay(); // 0=dim … 6=sam
+    return wd === 0 ? 7 : wd;
+  }
+  function toMin(s) { var a = s.split(':'); return (+a[0]) * 60 + (+a[1]); }
+  function toStr(m) { var h = Math.floor(m / 60), mm = m % 60; return (h < 10 ? '0' : '') + h + ':' + (mm < 10 ? '0' : '') + mm; }
+  function slots(open, close) {          // créneaux de 30 min, dernier service = fermeture - 30 min
+    var out = [], m = toMin(open), end = toMin(close) - 30;
+    for (; m <= end; m += 30) out.push(toStr(m));
+    return out;
+  }
+
+  function wire(dateId, timeId) {
+    var dateEl = document.getElementById(dateId);
+    var timeEl = document.getElementById(timeId);
+    if (!dateEl || !timeEl) return;
+
+    var msg = document.getElementById(dateId + '-msg');
+    if (!msg) {
+      msg = document.createElement('p');
+      msg.id = dateId + '-msg';
+      msg.className = 'resa-closed-msg';
+      msg.hidden = true;
+      dateEl.parentNode.appendChild(msg);
+    }
+
+    function rebuild() {
+      var v = dateEl.value;
+      if (!v) {
+        timeEl.innerHTML = '<option value="">Choisissez d\'abord une date</option>';
+        msg.hidden = true; dateEl.setCustomValidity(''); return;
+      }
+      var day = sched[dayOrder(v)];
+      if (!day || day.closed) {
+        var nom = day && day.name ? day.name.toLowerCase() : 'ce jour-là';
+        msg.textContent = 'Fermé le ' + nom + ' — merci de choisir un autre jour.';
+        msg.hidden = false;
+        dateEl.setCustomValidity('Le restaurant est fermé ce jour-là.');
+        timeEl.innerHTML = '<option value="">Fermé ce jour</option>';
+        timeEl.value = '';
+        return;
+      }
+      msg.hidden = true;
+      dateEl.setCustomValidity('');
+      var prev = timeEl.value;
+      var out = '<option value="">Choisir une heure</option>';
+      if (day.lunch) {
+        out += '<optgroup label="Midi (' + day.lunch[0] + '-' + day.lunch[1] + ')">';
+        slots(day.lunch[0], day.lunch[1]).forEach(function (t) { out += '<option>' + t + '</option>'; });
+        out += '</optgroup>';
+      }
+      if (day.dinner) {
+        out += '<optgroup label="Soir (' + day.dinner[0] + '-' + day.dinner[1] + ')">';
+        slots(day.dinner[0], day.dinner[1]).forEach(function (t) { out += '<option>' + t + '</option>'; });
+        out += '</optgroup>';
+      }
+      timeEl.innerHTML = out;
+      if (prev) {
+        var keep = Array.prototype.some.call(timeEl.options, function (o) { return o.value === prev; });
+        if (keep) timeEl.value = prev;
+      }
+    }
+
+    dateEl.addEventListener('change', rebuild);
+    dateEl.addEventListener('input', rebuild);
+    rebuild();
+  }
+
+  wire('r-date', 'r-time');   // page Réservation
+  wire('hr-date', 'hr-time'); // formulaire d'accueil
+})();

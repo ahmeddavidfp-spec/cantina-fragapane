@@ -3054,3 +3054,11 @@ html, body { overflow-x: hidden; }
 .footer-credit { font-size: .82rem; opacity: .7; margin: .2rem 0; }
 .footer-credit a { color: var(--gold); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .2s; }
 .footer-credit a:hover { border-bottom-color: currentColor; }
+
+/* ── Message "jour de fermeture" dans les formulaires de réservation ── */
+.resa-closed-msg { margin: .5rem 0 0; font-size: .85rem; font-weight: 600; color: #b3261e;
+  background: #fdecea; border: 1px solid #f5c6c2; border-radius: 8px; padding: .5rem .7rem;
+  display: flex; align-items: center; gap: .4rem; }
+.resa-closed-msg::before { content: "!"; display: inline-flex; align-items: center; justify-content: center;
+  width: 1.15rem; height: 1.15rem; border-radius: 50%; background: #b3261e; color: #fff;
+  font-size: .75rem; font-weight: 700; flex: 0 0 auto; }
