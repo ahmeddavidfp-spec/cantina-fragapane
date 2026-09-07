@@ -2,6 +2,7 @@
   "name": "La Cantina Fragapane",
   "short_name": "Cantina",
   "description": "Restaurant italien authentique à Châtelet. Pâtes fraîches maison, arrosticinis, livraison à domicile.",
+  "id": "https://www.cantinafragapane.be/",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0C180C",
