@@ -281,6 +281,30 @@ def init_db():
     if cur.fetchone()['c'] == 0:
         _seed(db)
 
+    # Nettoyage unique des tirets longs (em, en, figure, barre) dans le contenu
+    # affiche, verrouille par un drapeau pour ne pas rejouer a chaque demarrage.
+    cur.execute("SELECT value FROM info WHERE key='content_dashes_fixed'")
+    _flag = cur.fetchone()
+    if not _flag or _flag['value'] != '1':
+        _dash_cols = [
+            ('info', 'value'),
+            ('menu_categories', 'name'),
+            ('menu_items', 'name'), ('menu_items', 'description'),
+            ('menu_items', 'allergens'), ('menu_items', 'region'),
+            ('menu_items', 'origin_story'),
+            ('announcements', 'message'),
+            ('evenements', 'titre'), ('evenements', 'description'),
+        ]
+        for _t, _c in _dash_cols:
+            cur.execute(
+                f"UPDATE {_t} SET {_c} = replace(replace(replace(replace("
+                f"{_c}, chr(8212), '-'), chr(8211), '-'), chr(8210), '-'), chr(8213), '-') "
+                f"WHERE {_c} LIKE '%' || chr(8212) || '%' OR {_c} LIKE '%' || chr(8211) || '%' "
+                f"OR {_c} LIKE '%' || chr(8210) || '%' OR {_c} LIKE '%' || chr(8213) || '%'")
+        cur.execute(
+            "INSERT INTO info (key, value) VALUES ('content_dashes_fixed', '1') "
+            "ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value")
+
     db.commit()
     db.close()
 
@@ -2030,6 +2054,34 @@ Sitemap: {SITE_URL}/sitemap.xml
     return app.response_class(content, mimetype='text/plain')
 
 
+@app.route('/llms.txt')
+def llms_txt():
+    """Fiche de synthèse pour les IA (convention llmstxt.org)."""
+    content = f"""# La Cantina Fragapane
+
+> Restaurant italien authentique à Châtelet (Belgique). Cuisine maison de Carlo et Brenda : pâtes fraîches, viandes grillées, arrosticinis. Réservation en ligne, livraison à domicile et événements privés.
+
+## Pages principales
+- [Accueil]({SITE_URL}/) : présentation du restaurant, plats phares et avis clients.
+- [Menu / Carte]({SITE_URL}/menu) : la carte complète (entrées, pâtes fraîches, grillades, desserts).
+- [Réservation]({SITE_URL}/reservation) : réserver une table en ligne, confirmation par téléphone.
+- [Événements privés]({SITE_URL}/evenements-prives) : anniversaires, communions, repas d'entreprise.
+- [Livraison]({SITE_URL}/livraison) : commander en livraison à domicile.
+- [Galerie]({SITE_URL}/galerie) : photos de la salle et des plats.
+- [À propos]({SITE_URL}/a-propos) : l'histoire de Carlo et Brenda.
+- [Contact]({SITE_URL}/contact) : adresse, téléphone et horaires.
+
+## Infos pratiques
+- Adresse : Rue du Taillis Pré 86, 6200 Châtelet, Belgique.
+- Cuisine : italienne, pâtes fraîches maison, viandes grillées, arrosticinis.
+- Avis : plus de 330 avis clients sur Google, Facebook et TripAdvisor.
+
+## Créateur
+- Site créé par [Scribeo](https://scribeo.be), création de sites pour restaurants et commerces.
+"""
+    return app.response_class(content, mimetype='text/plain')
+
+
 @app.route('/sitemap.xml')
 def sitemap_xml():
     from flask import make_response
@@ -2078,5 +2130,8 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
     app.run(debug=False, host='0.0.0.0', port=port)
 else:
-    init_db()
-    _ensure_telegram_webhook()
+    # En production (import par gunicorn) : initialisation normale.
+    # CF_SKIP_STARTUP=1 permet aux tests d'importer l'app sans base de données.
+    if os.environ.get('CF_SKIP_STARTUP') != '1':
+        init_db()
+        _ensure_telegram_webhook()
