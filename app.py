@@ -63,6 +63,12 @@ def _security_headers(resp):
     resp.headers.setdefault('Referrer-Policy', 'strict-origin-when-cross-origin')
     resp.headers.setdefault('Permissions-Policy', 'geolocation=(), microphone=(), camera=()')
     resp.headers.setdefault('Strict-Transport-Security', 'max-age=15552000')
+    # Le service worker ne doit jamais rester fige en cache, sinon une correction
+    # n'atteint plus les visiteurs qui ont deja installe l'app. Les autres fichiers
+    # de static/ gardent leur cache long (SEND_FILE_MAX_AGE_DEFAULT). Couvre a la
+    # fois /sw.js (la route) et /static/sw.js (le fichier brut).
+    if request.path.endswith('/sw.js'):
+        resp.headers['Cache-Control'] = 'no-cache, must-revalidate'
     return resp
 
 # Connexion PostgreSQL - on préfère les variables individuelles (plus fiables sur Railway)
