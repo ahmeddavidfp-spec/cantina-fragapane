@@ -24,7 +24,7 @@
   <meta name="theme-color" content="#C9984A">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Cantina">
 
   {# ── Open Graph (Facebook / Instagram) ── #}
@@ -205,7 +205,7 @@
 
   {# ── Bouton flottant + popup Réservation (toutes les pages) ── #}
   <style>
-    .resa-fab{position:fixed;left:18px;bottom:18px;z-index:95;display:inline-flex;align-items:center;gap:.5rem;
+    .resa-fab{position:fixed;left:calc(18px + env(safe-area-inset-left));bottom:calc(18px + env(safe-area-inset-bottom));z-index:95;display:inline-flex;align-items:center;gap:.5rem;
       background:var(--gold);color:#fff;border:none;border-radius:99px;padding:.8rem 1.25rem;font-weight:700;
       font-size:.92rem;cursor:pointer;box-shadow:0 6px 20px rgba(201,152,74,.45);font-family:inherit;
       transition:transform .2s ease,box-shadow .2s ease;}

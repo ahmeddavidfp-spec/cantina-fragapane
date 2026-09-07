@@ -153,6 +153,10 @@ input, textarea, select { font-family: inherit; }
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: var(--transition);
+  /* Encoche iPhone en mode app : ne pas passer sous la barre d'etat */
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
 }
 .site-header::after {
   content: '';
@@ -1605,7 +1609,9 @@ input, textarea, select { font-family: inherit; }
   z-index: 2000;
   background: rgba(12,24,12,.97);
   border-top: 2px solid var(--gold);
-  padding: 1rem 1.5rem;
+  padding: 1rem calc(1.5rem + env(safe-area-inset-right, 0px))
+           calc(1rem + env(safe-area-inset-bottom, 0px))
+           calc(1.5rem + env(safe-area-inset-left, 0px));
   backdrop-filter: blur(6px);
 }
 .cookie-banner-inner {
@@ -1842,8 +1848,8 @@ html, body { overflow-x: hidden; }
     align-items: stretch;
     justify-content: flex-start;
     z-index: 1100;
-    padding-top: 80px;
-    padding-bottom: 2rem;
+    padding-top: calc(80px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
     overflow-y: auto;
     list-style: none;
   }
@@ -2793,8 +2799,8 @@ html, body { overflow-x: hidden; }
 /* ── Back to top ─────────────────────────────────────────────────────────────── */
 .back-to-top {
   position: fixed;
-  bottom: 6.5rem;
-  right: 1.5rem;
+  bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px));
+  right: calc(1.5rem + env(safe-area-inset-right, 0px));
   width: 2.75rem;
   height: 2.75rem;
   background: var(--dark);
