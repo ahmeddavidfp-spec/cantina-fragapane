@@ -21,10 +21,15 @@ services:
         value: https://www.cantinafragapane.be
       - key: PYTHON_VERSION
         value: 3.12.3
-      # Emails de réservation (optionnel - SMTP Office365 déjà câblé). À définir si besoin.
-      - key: MAIL_USERNAME
+      # E-mails ET SMS via l'API HTTPS de Brevo (le SMTP direct ne passe pas depuis
+      # Render). La même clé sert aux deux ; les SMS sont payants en crédits Brevo.
+      # Obligatoire : sans elle, ni e-mail ni SMS ne partent.
+      - key: BREVO_API_KEY
         sync: false
-      - key: MAIL_PASSWORD
+      # Facultatif : nom d'expéditeur des SMS (11 caractères max). Sans lui, aucun SMS n'est envoyé.
+      - key: SMS_SENDER
         sync: false
+      # Facultatif : adresse qui reçoit les notifications (réservations, contact).
+      # Repli sur info@cantinafragapane.be si absente.
       - key: MAIL_TO
         sync: false
