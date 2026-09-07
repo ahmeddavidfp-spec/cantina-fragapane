@@ -5,7 +5,11 @@ Lancer :  CF_SKIP_STARTUP=1 pytest -q
 """
 import os
 
-os.environ.setdefault('CF_SKIP_STARTUP', '1')  # pas de init_db() ni de webhook au chargement
+# Évite d'ouvrir une base au chargement de l'app :
+os.environ.setdefault('CF_SKIP_STARTUP', '1')                       # pas de init_db() ni de webhook
+os.environ.setdefault('DATABASE_URL',
+                      'postgresql://test:test@localhost:5432/test')  # URL factice, jamais connectée
+os.environ.setdefault('SITE_URL', 'https://www.cantinafragapane.be')
 
 import pytest
 
