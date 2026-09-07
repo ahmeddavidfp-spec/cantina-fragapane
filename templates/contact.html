@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Contact & Accès – La Cantina Fragapane, Restaurant Italien Châtelet{% endblock %}
+{% block title %}Contact & Accès - La Cantina Fragapane, Restaurant Italien Châtelet{% endblock %}
 {% block description %}Nous trouver & nous contacter : adresse, téléphone, email et horaires de La Cantina Fragapane, restaurant italien à Châtelet. Itinéraire Google Maps & Waze, parking gratuit, accès PMR.{% endblock %}
 
 {% block content %}
@@ -27,7 +27,7 @@
 
     <div class="contact-grid">
 
-      {# Left column – info & hours #}
+      {# Left column - info & hours #}
       <div>
         <div class="contact-info-block">
           <h3>Informations</h3>
@@ -69,9 +69,9 @@
                 {% if h['is_closed'] %}
                   Fermé
                 {% else %}
-                  {% if h['lunch_open'] and h['lunch_close'] %}{{ h['lunch_open'] }}–{{ h['lunch_close'] }}{% endif %}
+                  {% if h['lunch_open'] and h['lunch_close'] %}{{ h['lunch_open'] }}-{{ h['lunch_close'] }}{% endif %}
                   {% if h['lunch_open'] and h['dinner_open'] %} &nbsp;|&nbsp; {% endif %}
-                  {% if h['dinner_open'] and h['dinner_close'] %}{{ h['dinner_open'] }}–{{ h['dinner_close'] }}{% endif %}
+                  {% if h['dinner_open'] and h['dinner_close'] %}{{ h['dinner_open'] }}-{{ h['dinner_close'] }}{% endif %}
                 {% endif %}
               </span>
             </div>
@@ -113,7 +113,7 @@
         {% endif %}
       </div>
 
-      {# Right column – map #}
+      {# Right column - map #}
       <div>
         <h3 style="font-family:var(--font-heading); font-size:1.1rem; margin-bottom:1rem; color:var(--dark);">Nous trouver</h3>
 
@@ -127,7 +127,7 @@
               style="border:0; display:block; min-height:320px;"
               allowfullscreen="" loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
-              title="La Cantina Fragapane – Rue du Taillis Pré 86, Châtelet">
+              title="La Cantina Fragapane - Rue du Taillis Pré 86, Châtelet">
             </iframe>
           {% endif %}
         </div>
@@ -182,13 +182,13 @@
 
     </div>
 
-    {# Contact form – full width below grid #}
+    {# Contact form - full width below grid #}
     <div class="contact-form-section">
       <div class="contact-form-header">
         <span class="section-label">Nous écrire</span>
         <h2 class="section-title" style="font-size:1.6rem;">Envoyer un message</h2>
         <p style="color:var(--text-lt); font-size:.92rem; margin-top:.5rem;">
-          Réservation, question sur le menu, événement privé — on vous répond dans la journée.
+          Réservation, question sur le menu, événement privé - on vous répond dans la journée.
         </p>
       </div>
       <form class="contact-form" method="POST" action="{{ url_for('contact') }}">

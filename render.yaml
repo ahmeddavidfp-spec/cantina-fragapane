@@ -21,7 +21,7 @@ services:
         value: https://www.cantinafragapane.be
       - key: PYTHON_VERSION
         value: 3.12.3
-      # Emails de réservation (optionnel — SMTP Office365 déjà câblé). À définir si besoin.
+      # Emails de réservation (optionnel - SMTP Office365 déjà câblé). À définir si besoin.
       - key: MAIL_USERNAME
         sync: false
       - key: MAIL_PASSWORD

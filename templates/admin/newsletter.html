@@ -1,5 +1,5 @@
 {% extends "admin/base.html" %}
-{% block title %}Newsletter – Admin{% endblock %}
+{% block title %}Newsletter - Admin{% endblock %}
 {% block content %}
 <div class="admin-header">
   <h1>Newsletter</h1>
@@ -30,7 +30,7 @@
       {% for s in subs %}
       <tr>
         <td>{{ s['email'] }}</td>
-        <td style="font-size:.82rem; color:var(--text-lt);">{{ s['created_at'].strftime('%d/%m/%Y') if s['created_at'] else '—' }}</td>
+        <td style="font-size:.82rem; color:var(--text-lt);">{{ s['created_at'].strftime('%d/%m/%Y') if s['created_at'] else '-' }}</td>
         <td>
           <form method="POST" action="{{ url_for('admin_delete_sub', sub_id=s['id']) }}"
                 onsubmit="return confirm('Désabonner cet email ?')">

@@ -1,5 +1,5 @@
 {% extends "admin/base.html" %}
-{% block title %}Réservations – Admin{% endblock %}
+{% block title %}Réservations - Admin{% endblock %}
 {% block content %}
 <div class="admin-header">
   <h1>Réservations</h1>
@@ -30,7 +30,7 @@
         <td><strong>{{ r['name'] }}</strong>{% if r['email'] %}<br><a href="mailto:{{ r['email'] }}" style="font-size:.78rem; color:var(--text-lt);">{{ r['email'] }}</a>{% endif %}</td>
         <td><a href="tel:{{ r['phone'] }}">{{ r['phone'] }}</a></td>
         <td>{{ r['guests'] }}</td>
-        <td style="font-size:.82rem; color:var(--text-lt);">{{ r['notes'] or '—' }}</td>
+        <td style="font-size:.82rem; color:var(--text-lt);">{{ r['notes'] or '-' }}</td>
         <td>
           <form method="POST" action="{{ url_for('admin_resa_status', resa_id=r['id']) }}" style="display:inline;">
             <select name="status" onchange="this.form.submit()" class="resa-status-select resa-status-{{ r['status'] }}">

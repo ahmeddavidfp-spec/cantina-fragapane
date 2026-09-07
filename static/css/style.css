@@ -1,6 +1,6 @@
 /* ── Variables ─────────────────────────────────────────────────────────────── */
 :root {
-  /* Palette italienne — tricolore raffiné */
+  /* Palette italienne - tricolore raffiné */
   --wine:    #C8253A;   /* rosso italiano */
   --wine-dk: #A01D2E;
   --wine-lt: #E03050;
@@ -10,7 +10,7 @@
   --cream-dk:#EDE5C8;
   --gold:    #C9984A;
   --gold-lt: #D9AE60;
-  --dark:    #0C180C;   /* noir teinté vert — profondeur italienne */
+  --dark:    #0C180C;   /* noir teinté vert - profondeur italienne */
   --text:    #1E3020;
   --text-lt: #5A7060;
   --light:   #F4F8F4;   /* blanc légèrement vert */
@@ -1828,7 +1828,7 @@ html, body { overflow-x: hidden; }
 .nav-menu-desktop .btn { white-space: nowrap; }
 
 @media (max-width: 1200px) {
-  /* Nav burger — dès 1200px (barre chargée : 5 liens + Commander + Réserver) */
+  /* Nav burger - dès 1200px (barre chargée : 5 liens + Commander + Réserver) */
   .nav-toggle       { display: flex; z-index: 1101; position: relative; }
   .nav-menu-desktop { display: none; } /* cache le menu desktop */
 
@@ -1936,7 +1936,7 @@ html, body { overflow-x: hidden; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
 }
 
-/* ── Nav – lien livraison mis en avant ──────────────────────────────────────── */
+/* ── Nav - lien livraison mis en avant ──────────────────────────────────────── */
 .nav-link-delivery {
   color: var(--gold) !important;
   font-weight: 700;
@@ -2212,7 +2212,7 @@ html, body { overflow-x: hidden; }
   position: relative;
 }
 .delivery-menu-list li::before {
-  content: '—';
+  content: '-';
   position: absolute;
   left: 0;
   color: var(--gold);
@@ -2867,7 +2867,7 @@ html, body { overflow-x: hidden; }
   .resa-form-row { grid-template-columns: 1fr; }
 }
 
-/* ── Admin – reservations status ─────────────────────────────────────────────── */
+/* ── Admin - reservations status ─────────────────────────────────────────────── */
 .resa-row.resa-confirmed td:first-child { border-left: 3px solid var(--olive); }
 .resa-row.resa-cancelled  td:first-child { border-left: 3px solid var(--wine); opacity: .6; }
 .resa-row.resa-pending    td:first-child { border-left: 3px solid var(--gold); }
@@ -2949,7 +2949,7 @@ html, body { overflow-x: hidden; }
 .ta-badge-text { flex: 1; font-weight: 600; }
 .ta-badge-arrow { color: #00aa6c; font-size: 1.1rem; }
 
-/* Nav — Commander & Réserver de taille identique */
+/* Nav - Commander & Réserver de taille identique */
 .nav-menu-desktop .btn {
   min-width: 158px;
   padding: .8rem 1.5rem;

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}FAQ – Questions fréquentes – La Cantina Fragapane{% endblock %}
+{% block title %}FAQ - Questions fréquentes - La Cantina Fragapane{% endblock %}
 {% block description %}Toutes les réponses à vos questions sur La Cantina Fragapane : réservation, parking, allergènes, livraison, végétarien, anniversaires. Restaurant italien à Châtelet.{% endblock %}
 
 {% block content %}
@@ -18,7 +18,7 @@
     {"@type":"Question","name":"Quels allergènes sont présents dans vos plats ?","acceptedAnswer":{"@type":"Answer","text":"Notre cuisine peut contenir : gluten, œufs, lait, fruits à coque, céleri, moutarde, sésame, soja. Les allergènes sont indiqués sur le menu pour chaque plat. En cas d'allergie grave, signalez-le impérativement."}},
     {"@type":"Question","name":"Acceptez-vous les cartes bancaires ?","acceptedAnswer":{"@type":"Answer","text":"Oui, nous acceptons les paiements par carte bancaire (Visa, Mastercard, Bancontact) ainsi que les espèces."}},
     {"@type":"Question","name":"Le restaurant est-il accessible aux personnes à mobilité réduite ?","acceptedAnswer":{"@type":"Answer","text":"Oui, La Cantina Fragapane est accessible aux fauteuils roulants. Appelez-nous à l'avance pour que nous réservions une place adaptée."}},
-    {"@type":"Question","name":"Proposez-vous un menu du midi ?","acceptedAnswer":{"@type":"Answer","text":"Nous sommes ouverts le midi le vendredi et le dimanche (12h–14h). Le reste de la semaine, nous ouvrons uniquement le soir, du mercredi au dimanche dès 18h30 (fermé lundi et mardi)."}},
+    {"@type":"Question","name":"Proposez-vous un menu du midi ?","acceptedAnswer":{"@type":"Answer","text":"Nous sommes ouverts le midi le vendredi et le dimanche (12h-14h). Le reste de la semaine, nous ouvrons uniquement le soir, du mercredi au dimanche dès 18h30 (fermé lundi et mardi)."}},
     {"@type":"Question","name":"Avez-vous une carte des vins ?","acceptedAnswer":{"@type":"Answer","text":"Oui, nous proposons une sélection de vins italiens soigneusement choisis pour accompagner nos plats. Demandez la carte des vins lors de votre visite."}}
   ]
 }
@@ -39,28 +39,28 @@
       <details class="faq-item" open>
         <summary class="faq-question">Faut-il réserver une table ?</summary>
         <div class="faq-answer">
-          <p>La réservation est <strong>vivement recommandée</strong>, surtout le week-end et lors des événements. Notre salle est chaleureuse mais intimiste — mieux vaut ne pas prendre de risque ! Appelez-nous au <a href="tel:{{ info.get('phone','').replace(' ','') }}">{{ info.get('phone','') }}</a> ou envoyez un message via WhatsApp.</p>
+          <p>La réservation est <strong>vivement recommandée</strong>, surtout le week-end et lors des événements. Notre salle est chaleureuse mais intimiste - mieux vaut ne pas prendre de risque ! Appelez-nous au <a href="tel:{{ info.get('phone','').replace(' ','') }}">{{ info.get('phone','') }}</a> ou envoyez un message via WhatsApp.</p>
         </div>
       </details>
 
       <details class="faq-item">
         <summary class="faq-question">Organisez-vous des événements privés (anniversaires, communions…) ?</summary>
         <div class="faq-answer">
-          <p>Oui ! Nous adorons accueillir des événements en famille ou entre amis. Anniversaires, communions, repas d'entreprise, dîners de groupe — nous pouvons adapter le menu et la salle selon vos besoins. <a href="{{ url_for('evenements_prives') }}">Découvrez notre offre traiteur & événements privés.</a></p>
+          <p>Oui ! Nous adorons accueillir des événements en famille ou entre amis. Anniversaires, communions, repas d'entreprise, dîners de groupe - nous pouvons adapter le menu et la salle selon vos besoins. <a href="{{ url_for('evenements_prives') }}">Découvrez notre offre traiteur & événements privés.</a></p>
         </div>
       </details>
 
       <details class="faq-item">
         <summary class="faq-question">Y a-t-il un parking à proximité ?</summary>
         <div class="faq-answer">
-          <p>Oui, le stationnement est <strong>gratuit en rue</strong> devant et autour du restaurant. La Cantina Fragapane se trouve Rue du Taillis Pré 86, 6200 Châtelet — facilement accessible en voiture.</p>
+          <p>Oui, le stationnement est <strong>gratuit en rue</strong> devant et autour du restaurant. La Cantina Fragapane se trouve Rue du Taillis Pré 86, 6200 Châtelet - facilement accessible en voiture.</p>
         </div>
       </details>
 
       <details class="faq-item">
         <summary class="faq-question">Proposez-vous des options végétariennes ?</summary>
         <div class="faq-answer">
-          <p>Plusieurs plats de notre carte conviennent aux végétariens : burrata, carpaccio végétal, pâtes fraîches aux légumes, raviolis ricotta-épinards, tiramisu… N'hésitez pas à nous le signaler lors de votre réservation ou à l'arrivée — nous ferons notre possible pour vous accommoder.</p>
+          <p>Plusieurs plats de notre carte conviennent aux végétariens : burrata, carpaccio végétal, pâtes fraîches aux légumes, raviolis ricotta-épinards, tiramisu… N'hésitez pas à nous le signaler lors de votre réservation ou à l'arrivée - nous ferons notre possible pour vous accommoder.</p>
         </div>
       </details>
 
@@ -74,7 +74,7 @@
       <details class="faq-item">
         <summary class="faq-question">Quels allergènes sont présents dans vos plats ?</summary>
         <div class="faq-answer">
-          <p>Notre cuisine est préparée dans un environnement où sont présents : <strong>gluten, œufs, lait, fruits à coque, céleri, moutarde, sésame, soja</strong>. Les allergènes sont indiqués sur notre menu pour chaque plat. En cas d'allergie grave, merci de nous le signaler impérativement lors de la commande — nous prendrons toutes les précautions nécessaires.</p>
+          <p>Notre cuisine est préparée dans un environnement où sont présents : <strong>gluten, œufs, lait, fruits à coque, céleri, moutarde, sésame, soja</strong>. Les allergènes sont indiqués sur notre menu pour chaque plat. En cas d'allergie grave, merci de nous le signaler impérativement lors de la commande - nous prendrons toutes les précautions nécessaires.</p>
         </div>
       </details>
 
@@ -95,7 +95,7 @@
       <details class="faq-item">
         <summary class="faq-question">Proposez-vous un menu du midi ?</summary>
         <div class="faq-answer">
-          <p>Nous sommes ouverts le midi le <strong>vendredi et le dimanche</strong> (12h–14h). Le reste de la semaine, nous ouvrons uniquement le soir, du <strong>mercredi au dimanche dès 18h30</strong> (fermé lundi et mardi). Consultez nos <a href="{{ url_for('contact') }}">horaires complets ici.</a></p>
+          <p>Nous sommes ouverts le midi le <strong>vendredi et le dimanche</strong> (12h-14h). Le reste de la semaine, nous ouvrons uniquement le soir, du <strong>mercredi au dimanche dès 18h30</strong> (fermé lundi et mardi). Consultez nos <a href="{{ url_for('contact') }}">horaires complets ici.</a></p>
         </div>
       </details>
 

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   {# ── SEO de base ── #}
-  <title>{% block title %}La Cantina Fragapane – Restaurant Italien Châtelet{% endblock %}</title>
+  <title>{% block title %}La Cantina Fragapane - Restaurant Italien Châtelet{% endblock %}</title>
   <meta name="description" content="{% block description %}Restaurant italien authentique à Châtelet. Pâtes fraîches maison, viandes grillées, arrosticinis. Fondé par Carlo & Brenda. Livraison à domicile disponible.{% endblock %}">
   <meta name="robots" content="index, follow">
   <meta name="author" content="La Cantina Fragapane">
@@ -30,7 +30,7 @@
   {# ── Open Graph (Facebook / Instagram) ── #}
   <meta property="og:type"        content="restaurant">
   <meta property="og:site_name"   content="La Cantina Fragapane">
-  <meta property="og:title"       content="{% block og_title %}La Cantina Fragapane – Restaurant Italien Châtelet{% endblock %}">
+  <meta property="og:title"       content="{% block og_title %}La Cantina Fragapane - Restaurant Italien Châtelet{% endblock %}">
   <meta property="og:description" content="{% block og_desc %}Cuisine italienne authentique à Châtelet. Pâtes fraîches, arrosticinis, livraison à domicile. Fondé par Carlo & Brenda.{% endblock %}">
   <meta property="og:image"       content="{{ site_url }}/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg">
   <meta property="og:url"         content="{{ site_url }}{{ request.path }}">
@@ -38,7 +38,7 @@
 
   {# ── Twitter Card ── #}
   <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:title"       content="La Cantina Fragapane – Restaurant Italien Châtelet">
+  <meta name="twitter:title"       content="La Cantina Fragapane - Restaurant Italien Châtelet">
   <meta name="twitter:description" content="Cuisine italienne authentique à Châtelet. Pâtes fraîches, arrosticinis, livraison à domicile.">
   <meta name="twitter:image"       content="{{ site_url }}/static/images/cantina-fragapane-salle-restaurant-neon-chatelet.jpeg">
 
@@ -97,7 +97,7 @@
     </div>
   </header>
 
-  {# Menu mobile — en dehors du header pour éviter le bug iOS backdrop-filter + position:fixed #}
+  {# Menu mobile - en dehors du header pour éviter le bug iOS backdrop-filter + position:fixed #}
   <ul class="nav-menu nav-menu-mobile" id="navMenu">
     <li><a href="{{ url_for('index') }}"            class="nav-link {% if request.endpoint == 'index'            %}active{% endif %}">Accueil</a></li>
     <li><a href="{{ url_for('menu') }}"             class="nav-link {% if request.endpoint == 'menu'             %}active{% endif %}">Notre Menu</a></li>
@@ -162,7 +162,7 @@
         </div>
         <div class="footer-newsletter">
           <h4>Newsletter</h4>
-          <p>Offres, événements, nouveautés — rien que pour vous.</p>
+          <p>Offres, événements, nouveautés - rien que pour vous.</p>
           <form class="footer-newsletter-form" method="POST" action="{{ url_for('newsletter_subscribe') }}">
             <input type="email" name="email" placeholder="votre@email.com" required>
             <button type="submit">S'inscrire</button>
@@ -249,10 +249,10 @@
           <div class="contact-form-group"><label for="rm-name">Nom *</label><input type="text" id="rm-name" name="name" required placeholder="Votre nom"></div>
           <div class="contact-form-group"><label for="rm-phone">Téléphone *</label><input type="tel" id="rm-phone" name="phone" required placeholder="+32 4xx…"></div>
         </div>
-        <div class="contact-form-group"><label for="rm-email">Email <span style="font-weight:400;color:var(--text-lt);">— confirmation</span></label><input type="email" id="rm-email" name="email" placeholder="votre@email.com"></div>
+        <div class="contact-form-group"><label for="rm-email">Email <span style="font-weight:400;color:var(--text-lt);">- confirmation</span></label><input type="email" id="rm-email" name="email" placeholder="votre@email.com"></div>
         <div class="rrow rrow-3">
           <div class="contact-form-group"><label for="rm-date">Date *</label><input type="date" id="rm-date" name="date" required></div>
-          <div class="contact-form-group"><label for="rm-time">Heure *</label><select id="rm-time" name="time" required><option value="">Choisir</option><optgroup label="Midi (ven & dim)"><option>12:00</option><option>12:30</option><option>13:00</option><option>13:30</option></optgroup><optgroup label="Soir (mer–dim)"><option>18:30</option><option>19:00</option><option>19:30</option><option>20:00</option><option>20:30</option><option>21:00</option><option>21:30</option></optgroup></select></div>
+          <div class="contact-form-group"><label for="rm-time">Heure *</label><select id="rm-time" name="time" required><option value="">Choisir</option><optgroup label="Midi (ven & dim)"><option>12:00</option><option>12:30</option><option>13:00</option><option>13:30</option></optgroup><optgroup label="Soir (mer-dim)"><option>18:30</option><option>19:00</option><option>19:30</option><option>20:00</option><option>20:30</option><option>21:00</option><option>21:30</option></optgroup></select></div>
           <div class="contact-form-group"><label for="rm-guests">Pers. *</label><select id="rm-guests" name="guests" required><option value="">?</option>{% for n in range(1,21) %}<option value="{{ n }}">{{ n }}</option>{% endfor %}</select></div>
         </div>
         <div class="contact-form-group"><label for="rm-notes">Demandes particulières</label><textarea id="rm-notes" name="notes" rows="2" placeholder="Allergie, anniversaire, chaise haute…"></textarea></div>

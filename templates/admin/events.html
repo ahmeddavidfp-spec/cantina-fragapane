@@ -20,7 +20,7 @@
         <div class="admin-form-group">
           <label>Titre *</label>
           <input class="admin-input" type="text" name="titre" required
-                 placeholder="Dimanche 10 mai – Fête des mères">
+                 placeholder="Dimanche 10 mai - Fête des mères">
         </div>
         <div class="admin-form-group">
           <label>Date de l'événement</label>
@@ -94,7 +94,7 @@
             {% endif %}
           </td>
           <td style="white-space:nowrap; color:var(--text-lt);">
-            {{ evt['date_event'] or '—' }}
+            {{ evt['date_event'] or '-' }}
           </td>
           <td>
             {% if evt['active'] %}

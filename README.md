@@ -1,4 +1,4 @@
-# La Cantina Fragapane — Site web
+# La Cantina Fragapane - Site web
 
 Site du restaurant italien La Cantina Fragapane (Châtelet, Belgique).
 Application **Flask** avec back-office d'administration, réservations, menu dynamique,
@@ -21,15 +21,15 @@ Application **Flask** avec back-office d'administration, réservations, menu dyn
 > La base s'initialise **automatiquement** au premier démarrage (`init_db()` crée
 > les tables et insère les données de départ). Aucune migration manuelle.
 
-## Déploiement — Neon + Render + Cloudflare (gratuit)
+## Déploiement - Neon + Render + Cloudflare (gratuit)
 
-### 1. Base de données — Neon
+### 1. Base de données - Neon
 1. Crée un projet sur https://neon.tech (gratuit, persistant).
 2. Copie la **connection string** (format `postgresql://...?sslmode=require`).
 
-### 2. App — Render
+### 2. App - Render
 1. https://render.com → **New › Web Service** → connecte ce dépôt GitHub.
-2. Build : `pip install -r requirements.txt` — Start : `gunicorn app:app` (déjà dans le `Procfile`).
+2. Build : `pip install -r requirements.txt` - Start : `gunicorn app:app` (déjà dans le `Procfile`).
    *(ou "New › Blueprint" pour utiliser `render.yaml` directement)*
 3. Onglet **Environment** → ajoute :
    - `DATABASE_URL` = la connection string Neon
@@ -38,7 +38,7 @@ Application **Flask** avec back-office d'administration, réservations, menu dyn
    - `SITE_URL` = `https://www.cantinafragapane.be`
 4. Deploy. Render fournit une URL `https://cantina-fragapane.onrender.com`.
 
-### 3. Domaine — Cloudflare + LWS
+### 3. Domaine - Cloudflare + LWS
 1. Cloudflare → ajoute le site `cantinafragapane.be` → note les 2 nameservers.
 2. LWS → remplace les nameservers du domaine par ceux de Cloudflare.
 3. Render → **Settings › Custom Domains** → ajoute `www.cantinafragapane.be` (et l'apex).

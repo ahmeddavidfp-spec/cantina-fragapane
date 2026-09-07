@@ -75,7 +75,7 @@
         <tr>
           <td><strong>{{ item['name'] }}</strong></td>
           <td style="max-width:260px; color:var(--text-lt); font-size:.84rem;">{{ item['description']|truncate(80) }}</td>
-          <td>{% if item['price'] %}<strong>{{ "%.2f"|format(item['price']) }} €</strong>{% else %}—{% endif %}</td>
+          <td>{% if item['price'] %}<strong>{{ "%.2f"|format(item['price']) }} €</strong>{% else %}-{% endif %}</td>
           <td>
             {% if item['available'] %}
             <span class="badge badge-green">✓ Disponible</span>
@@ -147,9 +147,9 @@
               </div>
               <div style="display:grid; grid-template-columns:1fr 2fr; gap:1rem; margin-bottom:1rem;">
                 <div class="admin-form-group" style="margin:0;">
-                  <label>Région d'Italie <span style="font-weight:400;color:var(--text-lt);">— carte-origine</span></label>
+                  <label>Région d'Italie <span style="font-weight:400;color:var(--text-lt);">- carte-origine</span></label>
                   <select class="admin-input" name="region">
-                    <option value="">— aucune —</option>
+                    <option value="">- aucune -</option>
                     {% for r in ["Vallée d'Aoste","Piémont","Ligurie","Lombardie","Trentin-Haut-Adige","Vénétie","Frioul","Émilie-Romagne","Toscane","Ombrie","Marches","Latium","Abruzzes","Molise","Campanie","Pouilles","Basilicate","Calabre","Sicile","Sardaigne"] %}
                     <option value="{{ r }}" {% if item['region']==r %}selected{% endif %}>{{ r }}</option>
                     {% endfor %}

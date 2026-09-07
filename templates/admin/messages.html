@@ -1,5 +1,5 @@
 {% extends "admin/base.html" %}
-{% block title %}Messages – Admin{% endblock %}
+{% block title %}Messages - Admin{% endblock %}
 {% block content %}
 <div class="admin-header">
   <h1>Messages de contact</h1>
@@ -33,7 +33,7 @@
         <td style="font-size:.82rem;">
           {% if m['email'] %}<a href="mailto:{{ m['email'] }}">{{ m['email'] }}</a><br>{% endif %}
           {% if m['phone'] %}<a href="tel:{{ m['phone'] }}">{{ m['phone'] }}</a>{% endif %}
-          {% if not m['email'] and not m['phone'] %}—{% endif %}
+          {% if not m['email'] and not m['phone'] %}-{% endif %}
         </td>
         <td style="max-width:440px; white-space:pre-wrap; font-size:.9rem;">{{ m['message'] }}</td>
         <td>

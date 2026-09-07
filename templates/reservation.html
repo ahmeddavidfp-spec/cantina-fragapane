@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Réserver une table – La Cantina Fragapane, Châtelet{% endblock %}
+{% block title %}Réserver une table - La Cantina Fragapane, Châtelet{% endblock %}
 {% block description %}Réservez votre table en ligne au restaurant italien La Cantina Fragapane à Châtelet. Confirmation rapide par téléphone ou email. Réservation recommandée le week-end et pour vos événements.{% endblock %}
 
 {% block content %}
@@ -38,7 +38,7 @@
             </div>
           </div>
           <div class="contact-form-group">
-            <label for="r-email">Email <span style="font-weight:400; color:var(--text-lt);">— pour recevoir la confirmation</span></label>
+            <label for="r-email">Email <span style="font-weight:400; color:var(--text-lt);">- pour recevoir la confirmation</span></label>
             <input type="email" id="r-email" name="email" placeholder="votre@email.com">
           </div>
           <div class="resa-form-row">
@@ -56,7 +56,7 @@
                   <option>13:00</option>
                   <option>13:30</option>
                 </optgroup>
-                <optgroup label="Soir (lundi, jeudi–dimanche)">
+                <optgroup label="Soir (lundi, jeudi-dimanche)">
                   <option>18:30</option>
                   <option>19:00</option>
                   <option>19:30</option>
@@ -110,9 +110,9 @@
               <strong>{{ h['day_name'] }}</strong> :
               {% if h['is_closed'] %}Fermé
               {% else %}
-                {% if h['lunch_open'] and h['lunch_close'] %}{{ h['lunch_open'] }}–{{ h['lunch_close'] }}{% endif %}
+                {% if h['lunch_open'] and h['lunch_close'] %}{{ h['lunch_open'] }}-{{ h['lunch_close'] }}{% endif %}
                 {% if h['lunch_open'] and h['dinner_open'] %} + {% endif %}
-                {% if h['dinner_open'] and h['dinner_close'] %}{{ h['dinner_open'] }}–{{ h['dinner_close'] }}{% endif %}
+                {% if h['dinner_open'] and h['dinner_close'] %}{{ h['dinner_open'] }}-{{ h['dinner_close'] }}{% endif %}
               {% endif %}
             </li>
             {% endfor %}
@@ -120,7 +120,7 @@
         </div>
         <div class="resa-info-block" style="background:var(--cream);">
           <p style="font-size:.88rem; color:var(--text-lt);">
-            <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#c9984a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16v-7H4zM4 15a2 2 0 0 1 4 0 2 2 0 0 0 4 0 2 2 0 0 1 4 0 2 2 0 0 0 4 0M12 8V5"/></svg> <strong>Événement privé ?</strong> Anniversaire, communion, repas d'entreprise —
+            <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="#c9984a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16v-7H4zM4 15a2 2 0 0 1 4 0 2 2 0 0 0 4 0 2 2 0 0 1 4 0 2 2 0 0 0 4 0M12 8V5"/></svg> <strong>Événement privé ?</strong> Anniversaire, communion, repas d'entreprise -
             <a href="{{ url_for('evenements_prives') }}" style="color:var(--gold);">découvrez notre offre événements.</a>
           </p>
         </div>

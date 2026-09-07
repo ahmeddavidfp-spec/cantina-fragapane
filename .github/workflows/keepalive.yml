@@ -5,7 +5,7 @@ name: Keep-alive (empêche la mise en veille Render)
 # et saute/retarde souvent les exécutions. Le keep-alive FIABLE doit venir d'un pinger
 # externe (cron-job.org / UptimeRobot) qui appelle /healthz toutes les 5 min.
 #
-# Fenêtre 06:00–22:59 UTC ≈ 08h00–00h00 heure belge (CEST/CET). La nuit, le service dort
+# Fenêtre 06:00-22:59 UTC ≈ 08h00-00h00 heure belge (CEST/CET). La nuit, le service dort
 # (économie des heures gratuites Render).
 
 on:

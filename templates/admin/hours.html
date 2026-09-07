@@ -21,10 +21,10 @@
             <tr>
               <th style="width:120px;">Jour</th>
               <th>Fermé</th>
-              <th>Midi — Ouverture</th>
-              <th>Midi — Fermeture</th>
-              <th>Soir — Ouverture</th>
-              <th>Soir — Fermeture</th>
+              <th>Midi - Ouverture</th>
+              <th>Midi - Fermeture</th>
+              <th>Soir - Ouverture</th>
+              <th>Soir - Fermeture</th>
             </tr>
           </thead>
           <tbody>
@@ -77,9 +77,9 @@
           {% if h['is_closed'] %}
             <em>Fermé</em>
           {% else %}
-            {% if h['lunch_open'] %}{{ h['lunch_open'] }}–{{ h['lunch_close'] }}{% endif %}
+            {% if h['lunch_open'] %}{{ h['lunch_open'] }}-{{ h['lunch_close'] }}{% endif %}
             {% if h['lunch_open'] and h['dinner_open'] %} · {% endif %}
-            {% if h['dinner_open'] %}{{ h['dinner_open'] }}–{{ h['dinner_close'] }}{% endif %}
+            {% if h['dinner_open'] %}{{ h['dinner_open'] }}-{{ h['dinner_close'] }}{% endif %}
           {% endif %}
         </span>
       </div>

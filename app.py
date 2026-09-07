@@ -65,7 +65,7 @@ def _security_headers(resp):
     resp.headers.setdefault('Strict-Transport-Security', 'max-age=15552000')
     return resp
 
-# Connexion PostgreSQL — on préfère les variables individuelles (plus fiables sur Railway)
+# Connexion PostgreSQL - on préfère les variables individuelles (plus fiables sur Railway)
 import urllib.parse as _urlparse
 
 def _build_database_url():
@@ -79,7 +79,7 @@ def _build_database_url():
             f"postgresql://{_urlparse.quote(pguser, safe='')}:"
             f"{_urlparse.quote(pgpass, safe='')}@{pghost}:{pgport}/{pgdb}"
         )
-    # Fallback : DATABASE_URL brute (peut contenir "DATABASE_URL=..." — on nettoie)
+    # Fallback : DATABASE_URL brute (peut contenir "DATABASE_URL=..." - on nettoie)
     raw = os.environ.get('DATABASE_URL', '')
     if '=' in raw and not raw.startswith(('postgres://', 'postgresql://')):
         raw = raw.split('=', 1)[1]
@@ -129,7 +129,7 @@ def execute(sql, args=()):
 
 
 def execute_returning(sql, args=()):
-    """Comme execute(), mais renvoie la ligne du RETURNING (dict) — ex. l'id inséré."""
+    """Comme execute(), mais renvoie la ligne du RETURNING (dict) - ex. l'id inséré."""
     db = get_db()
     cur = db.cursor()
     cur.execute(sql, args)
@@ -383,12 +383,12 @@ def _seed(db):
         ('facebook',          'https://www.facebook.com/p/Cantina-Fragapane-100087290589959/'),
         ('instagram',         ''),
         ('about_short',       "Un petit coin d'Italie au cœur de Châtelet, fondé par Carlo et Brenda "
-                              "— un couple uni depuis 27 ans par la passion de la cuisine méditerranéenne."),
+                              "- un couple uni depuis 27 ans par la passion de la cuisine méditerranéenne."),
         ('about_long',        "Chez La Cantina Fragapane, tout est fait maison avec amour : pâtes fraîches "
                               "du jour, sauces mijotées, desserts gourmands. Nous sélectionnons soigneusement "
                               "nos produits pour vous offrir le meilleur de la gastronomie italienne dans une "
                               "ambiance chaleureuse et familiale. Chaque visite est une invitation au voyage "
-                              "— directement dans les saveurs authentiques de l'Italie."),
+                              "- directement dans les saveurs authentiques de l'Italie."),
         ('reservation_note',  'Réservation vivement recommandée, particulièrement le week-end. '
                               'Contactez-nous par téléphone ou par email.'),
         ('price_range',       '€€'),
@@ -401,7 +401,7 @@ def _seed(db):
 
     cur.execute('''INSERT INTO evenements (titre, description, date_event, image, active, epingle)
                    VALUES (%s,%s,%s,%s,1,1)''', (
-        '⚠️ Dimanche 10 mai – Fête des mères ⚠️',
+        '⚠️ Dimanche 10 mai - Fête des mères ⚠️',
         'Nous aurons le menu qui sera disponible mais nous aurons également la carte à disposition pour ceux qui ne veulent pas le menu.',
         '2025-05-10',
         'cantina-fragapane-evenement-fete-des-meres-mai-2025.jpeg',
@@ -594,11 +594,11 @@ def send_contact_email(name, sender_email, phone, message):
     body = (f"Nom : {name}\nEmail : {sender_email}\nTéléphone : {phone}\n\n"
             f"Message :\n{message}")
 
-    # 1) Brevo (API HTTPS) — méthode recommandée depuis Render
+    # 1) Brevo (API HTTPS) - méthode recommandée depuis Render
     if os.environ.get('BREVO_API_KEY'):
         return _send_via_brevo(subject, body, to_addr, reply_to=sender_email)
 
-    # 2) SMTP direct (repli — souvent bloqué par les hébergeurs cloud)
+    # 2) SMTP direct (repli - souvent bloqué par les hébergeurs cloud)
     server   = os.environ.get('MAIL_SERVER', 'mail.cantinafragapane.be')
     port     = int(os.environ.get('MAIL_PORT', '587'))
     username = os.environ.get('MAIL_USERNAME', '')
@@ -670,28 +670,28 @@ def _ack_html(name, intro):
 _ACK_P = 'font-size:15px;line-height:1.65;margin:0 0 14px;color:#4a453e;'
 
 def send_customer_ack(name, to_email):
-    """Accusé de réception automatique — formulaire de contact."""
+    """Accusé de réception automatique - formulaire de contact."""
     if not to_email or not os.environ.get('BREVO_API_KEY'):
         return False
-    subject = "Merci pour votre message – La Cantina Fragapane"
+    subject = "Merci pour votre message - La Cantina Fragapane"
     text = (f"Bonjour {name},\n\nMerci pour votre message ! Nous l'avons bien reçu et nous vous "
             "répondrons dans les meilleurs délais.\n\nPour une demande urgente, appelez-nous au "
             "+32 491 22 72 07.\n\nÀ très bientôt,\nL'équipe de La Cantina Fragapane\n"
-            "Rue du Taillis Pré 86, 6200 Châtelet — cantinafragapane.be")
+            "Rue du Taillis Pré 86, 6200 Châtelet - cantinafragapane.be")
     intro = (f'<p style="{_ACK_P}">Merci pour votre message&nbsp;! Nous l\'avons bien reçu et nous '
              'vous répondrons dans les <strong>meilleurs délais</strong>.</p>')
     return _send_via_brevo(subject, text, to_email, html=_ack_html(name, intro))
 
 
 def send_reservation_ack(name, to_email, date, time, guests):
-    """Accusé de réception automatique — demande de réservation."""
+    """Accusé de réception automatique - demande de réservation."""
     if not to_email or not os.environ.get('BREVO_API_KEY'):
         return False
-    subject = "Votre demande de réservation – La Cantina Fragapane"
+    subject = "Votre demande de réservation - La Cantina Fragapane"
     text = (f"Bonjour {name},\n\nNous avons bien reçu votre demande de réservation pour le {date} "
             f"à {time} ({guests} pers.). Nous vous recontactons rapidement pour la confirmer.\n\n"
             "Pour toute urgence, appelez-nous au +32 491 22 72 07.\n\nÀ très bientôt,\n"
-            "L'équipe de La Cantina Fragapane\nRue du Taillis Pré 86, 6200 Châtelet — cantinafragapane.be")
+            "L'équipe de La Cantina Fragapane\nRue du Taillis Pré 86, 6200 Châtelet - cantinafragapane.be")
     intro = (f'<p style="{_ACK_P}">Nous avons bien reçu votre <strong>demande de réservation</strong> '
              f'pour le <strong>{escape(str(date))}</strong> à <strong>{escape(str(time))}</strong> '
              f'({escape(str(guests))}&nbsp;pers.). Nous vous recontactons rapidement pour la <strong>confirmer</strong>.</p>')
@@ -703,21 +703,21 @@ def send_reservation_decision(name, to_email, date, time, guests, status):
     if not to_email or not os.environ.get('BREVO_API_KEY'):
         return False
     if status == 'confirmed':
-        subject = "Votre réservation est confirmée – La Cantina Fragapane"
+        subject = "Votre réservation est confirmée - La Cantina Fragapane"
         text = (f"Bonjour {name},\n\nBonne nouvelle : votre table est CONFIRMÉE pour le {date} à {time} "
                 f"({guests} pers.). Nous avons hâte de vous accueillir !\n\n"
                 "Un empêchement ? Prévenez-nous au +32 491 22 72 07.\n\nÀ très bientôt,\n"
-                "L'équipe de La Cantina Fragapane\nRue du Taillis Pré 86, 6200 Châtelet — cantinafragapane.be")
+                "L'équipe de La Cantina Fragapane\nRue du Taillis Pré 86, 6200 Châtelet - cantinafragapane.be")
         intro = (f'<p style="{_ACK_P}">Bonne nouvelle&nbsp;! Votre table est <strong>confirmée</strong> '
                  f'pour le <strong>{escape(str(date))}</strong> à <strong>{escape(str(time))}</strong> '
                  f'({escape(str(guests))}&nbsp;pers.). Nous avons hâte de vous accueillir&nbsp;!</p>'
                  f'<p style="{_ACK_P}">Un empêchement&nbsp;? Prévenez-nous au <strong>+32&nbsp;491&nbsp;22&nbsp;72&nbsp;07</strong>.</p>')
     else:  # cancelled
-        subject = "Au sujet de votre réservation – La Cantina Fragapane"
+        subject = "Au sujet de votre réservation - La Cantina Fragapane"
         text = (f"Bonjour {name},\n\nNous sommes navrés : nous ne pouvons malheureusement pas honorer votre "
                 f"réservation du {date} à {time} ({guests} pers.). Appelez-nous au +32 491 22 72 07, "
                 "nous trouverons volontiers un autre créneau.\n\nAvec toutes nos excuses,\n"
-                "L'équipe de La Cantina Fragapane — cantinafragapane.be")
+                "L'équipe de La Cantina Fragapane - cantinafragapane.be")
         intro = (f'<p style="{_ACK_P}">Nous sommes navrés&nbsp;: nous ne pouvons malheureusement pas honorer '
                  f'votre réservation du <strong>{escape(str(date))}</strong> à <strong>{escape(str(time))}</strong> '
                  f'({escape(str(guests))}&nbsp;pers.).</p>'
@@ -751,7 +751,7 @@ def _send_sms(to_phone, text):
     """SMS transactionnel via Brevo (même clé API que les emails). Payant (crédits Brevo).
     Ne fait rien tant que SMS_SENDER n'est pas défini. N'échoue jamais."""
     key = os.environ.get('BREVO_API_KEY', '')
-    sender = os.environ.get('SMS_SENDER', '')      # nom expéditeur (max 11 car.) — active le SMS
+    sender = os.environ.get('SMS_SENDER', '')      # nom expéditeur (max 11 car.) - active le SMS
     to = _phone_be_digits(to_phone)
     if not key or not sender or not to:
         return False
@@ -1085,7 +1085,7 @@ def menu():
             sections.append({"@type": "MenuSection", "name": entry['category']['name'], "hasMenuItem": items})
     menu_jsonld = json.dumps(
         {"@context": "https://schema.org", "@type": "Menu",
-         "name": "Menu – La Cantina Fragapane", "inLanguage": "fr",
+         "name": "Menu - La Cantina Fragapane", "inLanguage": "fr",
          "hasMenuSection": sections}, ensure_ascii=False)
     return render_template('menu.html', menu_data=menu_data, menu_jsonld=menu_jsonld)
 
@@ -1215,11 +1215,11 @@ def reservation():
                 reply_markup=_kb)
             try:
                 body = (f"Nouvelle demande de réservation :\n\n"
-                        f"Nom : {name}\nEmail : {email or '—'}\nTéléphone : {phone}\n"
+                        f"Nom : {name}\nEmail : {email or '-'}\nTéléphone : {phone}\n"
                         f"Date : {date} à {time}\nPersonnes : {guests}\n"
-                        f"Notes : {notes or '—'}")
+                        f"Notes : {notes or '-'}")
                 send_contact_email(name, email, phone,
-                                   f"[RÉSERVATION] {date} {time} – {guests} pers.\n\n{body}")
+                                   f"[RÉSERVATION] {date} {time} - {guests} pers.\n\n{body}")
                 send_reservation_ack(name, email, date, time, guests)
             except Exception:
                 pass
@@ -1264,39 +1264,39 @@ def newsletter_unsubscribe():
 def galerie():
     photos = [
         {'file': 'cantina-fragapane-salle-restaurant-neon-chatelet.jpeg',
-         'alt': 'Salle du restaurant La Cantina Fragapane – néon et ambiance italienne', 'cat': 'Salle'},
+         'alt': 'Salle du restaurant La Cantina Fragapane - néon et ambiance italienne', 'cat': 'Salle'},
         {'file': 'cantina-fragapane-salle-tables-neon-soir-chatelet.jpeg',
-         'alt': 'Tables dressées le soir – La Cantina Fragapane Châtelet', 'cat': 'Salle'},
+         'alt': 'Tables dressées le soir - La Cantina Fragapane Châtelet', 'cat': 'Salle'},
         {'file': 'cantina-fragapane-salle-interieur-cheminee-chatelet.jpeg',
-         'alt': 'Intérieur chaleureux avec cheminée – La Cantina Fragapane', 'cat': 'Salle'},
+         'alt': 'Intérieur chaleureux avec cheminée - La Cantina Fragapane', 'cat': 'Salle'},
         {'file': 'cantina-fragapane-devanture-vitrine-logo-chatelet.jpeg',
-         'alt': 'Devanture et vitrine La Cantina Fragapane – Châtelet', 'cat': 'Restaurant'},
+         'alt': 'Devanture et vitrine La Cantina Fragapane - Châtelet', 'cat': 'Restaurant'},
         {'file': 'cantina-fragapane-equipe-famille-carlo-brenda-chatelet.jpeg',
-         'alt': 'Carlo, Brenda et leur fils – La Cantina Fragapane', 'cat': 'Équipe'},
+         'alt': 'Carlo, Brenda et leur fils - La Cantina Fragapane', 'cat': 'Équipe'},
         {'file': 'cantina-fragapane-prix-meilleur-restaurant-italien-chatelet-restaurant-guru-2025.jpeg',
-         'alt': 'Prix meilleur restaurant italien 2025 – Restaurant Guru', 'cat': 'Restaurant'},
+         'alt': 'Prix meilleur restaurant italien 2025 - Restaurant Guru', 'cat': 'Restaurant'},
         {'file': 'cantina-fragapane-grande-planche-apero-antipasti-chatelet.jpeg',
-         'alt': 'Grande planche apéro antipasti – La Cantina Fragapane', 'cat': 'Plats'},
+         'alt': 'Grande planche apéro antipasti - La Cantina Fragapane', 'cat': 'Plats'},
         {'file': 'cantina-fragapane-planche-antipasti-signature-logo-chatelet.jpeg',
-         'alt': 'Planche antipasti signature – La Cantina Fragapane Châtelet', 'cat': 'Plats'},
+         'alt': 'Planche antipasti signature - La Cantina Fragapane Châtelet', 'cat': 'Plats'},
         {'file': 'cantina-fragapane-croquettes-fromage-salade-chatelet.jpeg',
-         'alt': 'Croquettes au fromage et salade fraîche – La Cantina Fragapane', 'cat': 'Plats'},
+         'alt': 'Croquettes au fromage et salade fraîche - La Cantina Fragapane', 'cat': 'Plats'},
         {'file': 'cantina-fragapane-casarecce-pesto-ricotta-pro-chatelet.jpeg',
-         'alt': 'Casarecce pesto ricotta – Pâtes fraîches maison La Cantina Fragapane', 'cat': 'Pâtes'},
+         'alt': 'Casarecce pesto ricotta - Pâtes fraîches maison La Cantina Fragapane', 'cat': 'Pâtes'},
         {'file': 'cantina-fragapane-tagliatelles-bolognaise-sauce-tomate-chatelet.jpeg',
-         'alt': 'Tagliatelles bolognaise maison – La Cantina Fragapane', 'cat': 'Pâtes'},
+         'alt': 'Tagliatelles bolognaise maison - La Cantina Fragapane', 'cat': 'Pâtes'},
         {'file': 'cantina-fragapane-tagliolini-safran-petits-pois-pancetta-chatelet.jpeg',
-         'alt': 'Tagliolini safran petits pois pancetta – La Cantina Fragapane', 'cat': 'Pâtes'},
+         'alt': 'Tagliolini safran petits pois pancetta - La Cantina Fragapane', 'cat': 'Pâtes'},
         {'file': 'cantina-fragapane-spaghetti-fruits-de-mer-tomates-chatelet.jpeg',
-         'alt': 'Spaghetti aux fruits de mer – La Cantina Fragapane Châtelet', 'cat': 'Pâtes'},
+         'alt': 'Spaghetti aux fruits de mer - La Cantina Fragapane Châtelet', 'cat': 'Pâtes'},
         {'file': 'cantina-fragapane-escalope-milanaise-spaghetti-tomates-chatelet.jpeg',
-         'alt': 'Escalope milanaise et spaghetti tomates – La Cantina Fragapane', 'cat': 'Viandes'},
+         'alt': 'Escalope milanaise et spaghetti tomates - La Cantina Fragapane', 'cat': 'Viandes'},
         {'file': 'cantina-fragapane-plateau-desserts-verrines-chatelet.jpeg',
-         'alt': 'Plateau de desserts et verrines – La Cantina Fragapane', 'cat': 'Desserts'},
+         'alt': 'Plateau de desserts et verrines - La Cantina Fragapane', 'cat': 'Desserts'},
         {'file': 'cantina-fragapane-logo-trattoria-italienne-chatelet.jpeg',
-         'alt': 'Logo La Cantina Fragapane – Trattoria italienne Châtelet', 'cat': 'Restaurant'},
+         'alt': 'Logo La Cantina Fragapane - Trattoria italienne Châtelet', 'cat': 'Restaurant'},
         {'file': 'cantina-fragapane-evenement-fete-des-meres-mai-2025.jpeg',
-         'alt': 'Fête des mères mai 2025 – Événement La Cantina Fragapane', 'cat': 'Événements'},
+         'alt': 'Fête des mères mai 2025 - Événement La Cantina Fragapane', 'cat': 'Événements'},
     ]
     return render_template('galerie.html', photos=photos)
 
@@ -1331,7 +1331,7 @@ def cookies_page():
 # Les routes /sitemap.xml et /robots.txt sont définies plus bas (basées sur SITE_URL).
 
 
-# ── Admin – auth ──────────────────────────────────────────────────────────────
+# ── Admin - auth ──────────────────────────────────────────────────────────────
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -1393,7 +1393,7 @@ def admin_logout():
     return redirect(url_for('admin_login'))
 
 
-# ── Admin – dashboard ─────────────────────────────────────────────────────────
+# ── Admin - dashboard ─────────────────────────────────────────────────────────
 
 @app.route('/admin/')
 @app.route('/admin')
@@ -1409,7 +1409,7 @@ def admin_dashboard():
     return render_template('admin/dashboard.html', stats=stats)
 
 
-# ── Admin – menu ──────────────────────────────────────────────────────────────
+# ── Admin - menu ──────────────────────────────────────────────────────────────
 
 @app.route('/admin/menu')
 @login_required
@@ -1508,7 +1508,7 @@ def admin_delete_item(item_id):
     return redirect(url_for('admin_menu'))
 
 
-# ── Admin – hours ─────────────────────────────────────────────────────────────
+# ── Admin - hours ─────────────────────────────────────────────────────────────
 
 @app.route('/admin/horaires')
 @login_required
@@ -1536,7 +1536,7 @@ def admin_edit_hours():
     return redirect(url_for('admin_hours'))
 
 
-# ── Admin – info ──────────────────────────────────────────────────────────────
+# ── Admin - info ──────────────────────────────────────────────────────────────
 
 @app.route('/admin/informations')
 @login_required
@@ -1561,7 +1561,7 @@ def admin_edit_info():
     return redirect(url_for('admin_info'))
 
 
-# ── Admin – « À la une » (post Facebook mis en avant) ─────────────────────────
+# ── Admin - « À la une » (post Facebook mis en avant) ─────────────────────────
 
 @app.route('/admin/a-la-une')
 @login_required
@@ -1599,7 +1599,7 @@ def admin_edit_featured():
     return redirect(url_for('admin_featured'))
 
 
-# ── Admin – events ───────────────────────────────────────────────────────────
+# ── Admin - events ───────────────────────────────────────────────────────────
 
 @app.route('/admin/evenements')
 @login_required
@@ -1660,7 +1660,7 @@ def admin_toggle_event(evt_id):
     return redirect(url_for('admin_events'))
 
 
-# ── Admin – announcements ─────────────────────────────────────────────────────
+# ── Admin - announcements ─────────────────────────────────────────────────────
 
 @app.route('/admin/annonces')
 @login_required
@@ -1697,7 +1697,7 @@ def admin_delete_announcement(ann_id):
     return redirect(url_for('admin_announcements'))
 
 
-# ── Admin – reservations ─────────────────────────────────────────────────────
+# ── Admin - reservations ─────────────────────────────────────────────────────
 
 @app.route('/admin/reservations')
 @login_required
@@ -1723,7 +1723,7 @@ def admin_delete_resa(resa_id):
     return redirect(url_for('admin_reservations'))
 
 
-# ── Admin – newsletter ────────────────────────────────────────────────────────
+# ── Admin - newsletter ────────────────────────────────────────────────────────
 
 @app.route('/admin/newsletter')
 @login_required
@@ -1740,7 +1740,7 @@ def admin_delete_sub(sub_id):
     return redirect(url_for('admin_newsletter'))
 
 
-# ── Admin – messages de contact ───────────────────────────────────────────────
+# ── Admin - messages de contact ───────────────────────────────────────────────
 
 @app.route('/admin/messages')
 @login_required
@@ -1941,7 +1941,7 @@ def admin_reset_menu():
         (8, 'Apéro Maison',              'Cocktail signature de la maison',         9.00, '', 1, 0, 1),
         (8, 'Apérol Spritz',             'Aperol, Prosecco, soda',                  9.00, '', 1, 0, 2),
         (8, 'Mojito',                    'Rhum blanc, menthe, citron vert, soda',   9.00, '', 1, 0, 3),
-        (8, 'Mojito Sans Alcool',        'Menthe, citron vert, soda — sans alcool', 5.50, '', 1, 0, 4),
+        (8, 'Mojito Sans Alcool',        'Menthe, citron vert, soda - sans alcool', 5.50, '', 1, 0, 4),
         (8, 'Apérol Spritz Sans Alcool', 'Apérol sans alcool, soda, orange',        5.50, '', 1, 0, 5),
         (8, 'Cocktail Sans Alcool',      'Cocktail fruité sans alcool',             5.50, '', 1, 0, 6),
 
@@ -2005,7 +2005,7 @@ def admin_reset_menu():
                 (len(items),))
     db.commit()
 
-    flash(f'Menu réinitialisé avec succès — {len(items)} plats dans 13 catégories.', 'success')
+    flash(f'Menu réinitialisé avec succès - {len(items)} plats dans 13 catégories.', 'success')
     return redirect(url_for('admin_menu'))
 
 
