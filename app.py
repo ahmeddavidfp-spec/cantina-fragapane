@@ -311,6 +311,19 @@ def init_db():
             "INSERT INTO info (key, value) VALUES ('content_dashes_fixed', '1') "
             "ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value")
 
+    # Correction unique : « 4 ans » de passion (au lieu de 27), verrouillee par un drapeau.
+    cur.execute("SELECT value FROM info WHERE key='about_years_fixed'")
+    _fy = cur.fetchone()
+    if not _fy or _fy['value'] != '1':
+        for _find, _repl in [('depuis 27 ans', 'depuis 4 ans'),
+                             ('uni par la passion', 'uni depuis 4 ans par la passion')]:
+            cur.execute(
+                "UPDATE info SET value = replace(value, %s, %s) WHERE value LIKE %s",
+                (_find, _repl, '%' + _find + '%'))
+        cur.execute(
+            "INSERT INTO info (key, value) VALUES ('about_years_fixed', '1') "
+            "ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value")
+
     db.commit()
     db.close()
 
@@ -413,7 +426,7 @@ def _seed(db):
         ('facebook',          'https://www.facebook.com/p/Cantina-Fragapane-100087290589959/'),
         ('instagram',         ''),
         ('about_short',       "Un petit coin d'Italie au cœur de Châtelet, fondé par Carlo et Brenda "
-                              "- un couple uni depuis 27 ans par la passion de la cuisine méditerranéenne."),
+                              "- un couple uni depuis 4 ans par la passion de la cuisine méditerranéenne."),
         ('about_long',        "Chez La Cantina Fragapane, tout est fait maison avec amour : pâtes fraîches "
                               "du jour, sauces mijotées, desserts gourmands. Nous sélectionnons soigneusement "
                               "nos produits pour vous offrir le meilleur de la gastronomie italienne dans une "
@@ -1167,13 +1180,35 @@ def livraison():
     return render_template('livraison.html')
 
 
+def _minus30(t):
+    """'HH:MM' moins 30 minutes -> 'HH:MM'."""
+    tot = int(t[:2]) * 60 + int(t[3:5]) - 30
+    return f"{tot // 60:02d}:{tot % 60:02d}"
+
+
+def _booking_close(day_order, service, raw_close):
+    """Heure de fin utilisee pour proposer les creneaux (le dernier creneau = close - 30 min).
+    Distincte de l'heure de fermeture affichee. Regles :
+    - midi : derniere reservation 13h30 (fin 14h00) ;
+    - soir : derniere reservation 20h30 en semaine et le dimanche (fin 21h00),
+             21h00 le samedi (fin 21h30, day_order 6).
+    On ne depasse jamais la fermeture reelle du jour."""
+    if not raw_close:
+        return None
+    cap = '14:00' if service == 'lunch' else ('21:30' if day_order == 6 else '21:00')
+    return min(raw_close, cap)
+
+
 def _hours_schedule():
-    """Renvoie les horaires par jour (1=lundi … 7=dimanche) pour le JS du formulaire."""
+    """Renvoie les horaires par jour (1=lundi … 7=dimanche) pour le JS du formulaire.
+    Les heures envoyees sont les fenetres de RESERVATION (plafonnees), pas les
+    horaires d'ouverture affiches ailleurs sur le site."""
     sched = {}
     for h in query('SELECT * FROM hours ORDER BY day_order'):
-        lo, lc = h.get('lunch_open'), h.get('lunch_close')
-        do, dc = h.get('dinner_open'), h.get('dinner_close')
-        sched[h['day_order']] = {
+        d = h['day_order']
+        lo, lc = h.get('lunch_open'), _booking_close(d, 'lunch', h.get('lunch_close'))
+        do, dc = h.get('dinner_open'), _booking_close(d, 'dinner', h.get('dinner_close'))
+        sched[d] = {
             'closed': bool(h['is_closed']),
             'name':   h['day_name'],
             'lunch':  [lo, lc] if (lo and lc) else None,
@@ -1197,19 +1232,23 @@ def _reservation_slot_valid(date_str, time_str):
     if not h or h['is_closed']:
         return False, f"Le restaurant est fermé le {day_label}. Merci de choisir un autre jour."
 
-    def _in(o, c):
-        return bool(o) and bool(c) and o <= time_str <= c
+    # Fenetres de reservation (plafonnees), avec derniere reservation = fin - 30 min.
+    def _win(service, o, raw_c):
+        bc = _booking_close(day_order, service, raw_c)
+        if not (o and bc):
+            return None
+        return (o, _minus30(bc))     # (premiere, derniere) reservation possibles
 
-    if _in(h.get('lunch_open'), h.get('lunch_close')) or _in(h.get('dinner_open'), h.get('dinner_close')):
+    windows = [w for w in (
+        _win('lunch',  h.get('lunch_open'),  h.get('lunch_close')),
+        _win('dinner', h.get('dinner_open'), h.get('dinner_close')),
+    ) if w]
+
+    if any(o <= time_str <= last for (o, last) in windows):
         return True, ''
 
-    parts = []
-    if h.get('lunch_open') and h.get('lunch_close'):
-        parts.append(f"{h['lunch_open']}-{h['lunch_close']}")
-    if h.get('dinner_open') and h.get('dinner_close'):
-        parts.append(f"{h['dinner_open']}-{h['dinner_close']}")
-    creneaux = ' et '.join(parts) if parts else 'aucun créneau'
-    return False, f"L'heure choisie est en dehors des horaires du {day_label} ({creneaux})."
+    creneaux = ' et '.join(f"{o}-{last}" for (o, last) in windows) if windows else 'aucun créneau'
+    return False, f"L'heure choisie est en dehors des créneaux de réservation du {day_label} ({creneaux})."
 
 
 @app.route('/reservation', methods=['GET', 'POST'])
