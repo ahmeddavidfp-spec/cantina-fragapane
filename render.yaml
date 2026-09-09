@@ -14,7 +14,12 @@ services:
       # Généré automatiquement par Render (sessions Flask).
       - key: SECRET_KEY
         generateValue: true
-      # Mot de passe du back-office /admin. À définir dans le dashboard Render.
+      # Code d'accès à 6 chiffres du back-office /admin (connexion simple, sans
+      # application d'authentification). À définir dans le dashboard Render.
+      - key: ADMIN_PIN
+        sync: false
+      # Ancien mot de passe : repli utilisé uniquement si ni ADMIN_PIN ni 2FA ne
+      # sont définis. Laissé pour compatibilité.
       - key: ADMIN_PASSWORD
         sync: false
       - key: SITE_URL
