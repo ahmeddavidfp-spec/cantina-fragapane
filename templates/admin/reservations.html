@@ -20,17 +20,16 @@
       Marquez une date « complète » : les clients ne pourront plus y réserver en ligne,
       et un bandeau « Complet » s'affiche sur le site.
     </p>
-    <form method="POST" action="{{ url_for('admin_full_add') }}"
-          style="display:flex; gap:.6rem; flex-wrap:wrap; align-items:flex-end;">
-      <div>
-        <label style="display:block; font-size:.82rem; margin-bottom:.2rem;">Date</label>
+    <form method="POST" action="{{ url_for('admin_full_add') }}" class="full-add-form">
+      <div class="full-add-field">
+        <label>Date</label>
         <input class="admin-input" type="date" name="date" required>
       </div>
-      <div style="flex:1; min-width:160px;">
-        <label style="display:block; font-size:.82rem; margin-bottom:.2rem;">Note (facultatif)</label>
-        <input class="admin-input" type="text" name="note" placeholder="Ex : privatisation, événement…">
+      <div class="full-add-field">
+        <label>Note (facultatif)</label>
+        <input class="admin-input" type="text" name="note" placeholder="Ex : privatisation, événement">
       </div>
-      <button class="admin-btn admin-btn-primary" type="submit">Marquer complet</button>
+      <button class="admin-btn admin-btn-primary full-add-btn" type="submit">Marquer complet</button>
     </form>
     {% if full_dates %}
     <ul style="list-style:none; padding:0; margin:1rem 0 0;">

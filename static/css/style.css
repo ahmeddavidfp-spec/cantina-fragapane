@@ -154,6 +154,16 @@ input, textarea, select { font-family: inherit; }
 .full-bar p { margin: 0; display: inline-flex; align-items: center; gap: .5rem; }
 .full-bar svg { flex: 0 0 auto; }
 
+/* Formulaire « Dates complètes » (admin) - responsive, sans débordement */
+.full-add-form { display: grid; grid-template-columns: 1fr; gap: .8rem; align-items: end; }
+.full-add-field label { display: block; font-size: .82rem; margin-bottom: .25rem; color: var(--text-lt, #6b6459); }
+.full-add-form .admin-input { width: 100%; box-sizing: border-box; }
+.full-add-btn { width: 100%; justify-content: center; }
+@media (min-width: 620px) {
+  .full-add-form { grid-template-columns: auto minmax(0, 1fr) auto; }
+  .full-add-btn { width: auto; }
+}
+
 /* ── Header / Nav ──────────────────────────────────────────────────────────── */
 .site-header {
   position: fixed;
