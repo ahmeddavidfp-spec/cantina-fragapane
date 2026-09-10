@@ -130,7 +130,7 @@
   </div>
 </section>
 
-<script>window.CF_SCHEDULE = {{ resa_schedule|tojson }};</script>
+<script>window.CF_SCHEDULE = {{ resa_schedule|tojson }}; window.CF_FULL = {{ full_dates_list|tojson }};</script>
 
 {% block extra_js %}
 <script>

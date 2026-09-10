@@ -198,6 +198,15 @@ if ('IntersectionObserver' in window && fadeEls.length) {
         timeEl.innerHTML = '<option value="">Choisissez d\'abord une date</option>';
         msg.hidden = true; dateEl.setCustomValidity(''); return;
       }
+      // Date marquée « complet » : blocage
+      if ((window.CF_FULL || []).indexOf(v) !== -1) {
+        msg.textContent = 'Complet ce jour-là - choisissez une autre date, ou appelez-nous.';
+        msg.hidden = false;
+        dateEl.setCustomValidity('Le restaurant est complet ce jour-là.');
+        timeEl.innerHTML = '<option value="">Complet ce jour</option>';
+        timeEl.value = '';
+        return;
+      }
       var day = sched[dayOrder(v)];
       if (!day || day.closed) {
         var nom = day && day.name ? day.name.toLowerCase() : 'ce jour-là';

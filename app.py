@@ -199,6 +199,13 @@ def init_db():
         )
     ''')
     cur.execute('''
+        CREATE TABLE IF NOT EXISTS full_dates (
+            date       TEXT PRIMARY KEY,
+            note       TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    cur.execute('''
         CREATE TABLE IF NOT EXISTS evenements (
             id          SERIAL PRIMARY KEY,
             titre       TEXT NOT NULL,
@@ -554,6 +561,42 @@ def _fmt_date_fr(iso):
         return iso
 
 
+def _fmt_date_jour(iso):
+    """'2026-09-13' -> 'samedi 13 septembre' (sans l'année, pour le bandeau)."""
+    try:
+        d = datetime.strptime(iso, '%Y-%m-%d').date()
+        return f"{_JOURS_FR[d.weekday()]} {d.day} {_MOIS_FR[d.month - 1]}"
+    except Exception:
+        return iso
+
+
+def _full_dates_upcoming():
+    """Dates marquées « complet » à venir (>= aujourd'hui), triées."""
+    today = datetime.now().date().isoformat()
+    return query('SELECT date, note FROM full_dates WHERE date >= %s ORDER BY date', (today,))
+
+
+def _is_full(date_str):
+    """Vrai si la date (YYYY-MM-DD) est marquée complète."""
+    return bool(query('SELECT 1 FROM full_dates WHERE date=%s', (date_str,), one=True))
+
+
+def _full_banner_text():
+    """Texte du bandeau « complet », ou None. Ex : 'Complet ce samedi 13 septembre'."""
+    rows = _full_dates_upcoming()
+    if not rows:
+        return None
+    labels = [_fmt_date_jour(r['date']) for r in rows[:4]]
+    if len(labels) == 1:
+        try:
+            d = datetime.strptime(rows[0]['date'], '%Y-%m-%d').date()
+            prefix = 'ce ' if (d - datetime.now().date()).days <= 7 else 'le '
+        except Exception:
+            prefix = 'le '
+        return 'Complet ' + prefix + labels[0]
+    return 'Complet : ' + ', '.join(labels)
+
+
 def _tg_api(method, payload, timeout=10):
     """Appel générique à l'API Telegram (HTTPS). Renvoie le dict de réponse, ou None. N'échoue jamais."""
     token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
@@ -888,9 +931,12 @@ def inject_globals():
     open_status = get_open_status()
     hours_all = query('SELECT * FROM hours ORDER BY day_order')
     restaurant_jsonld = build_restaurant_jsonld(info, hours_all)
+    full_rows = _full_dates_upcoming()
     return dict(info=info, announcements=announcements, evenements=evenements,
                 open_status=open_status, hours=hours_all, asset_version=ASSET_VERSION,
                 restaurant_jsonld=restaurant_jsonld,
+                full_banner=_full_banner_text(),
+                full_dates_list=[r['date'] for r in full_rows],
                 now=datetime.now(), site_url=SITE_URL)
 
 
@@ -1226,6 +1272,9 @@ def _reservation_slot_valid(date_str, time_str):
         return False, "La date choisie est invalide."
     if d < datetime.now().date():
         return False, "Cette date est déjà passée, merci de choisir une date à venir."
+    if _is_full(date_str):
+        return False, (f"Le restaurant est complet le {_fmt_date_fr(date_str)}. "
+                       "Merci de choisir une autre date, ou appelez-nous.")
     day_order = d.isoweekday()  # lundi=1 … dimanche=7
     h = query('SELECT * FROM hours WHERE day_order=%s', (day_order,), one=True)
     day_label = (h['day_name'].lower() if h else 'ce jour-là')
@@ -1772,7 +1821,31 @@ def admin_delete_announcement(ann_id):
 @login_required
 def admin_reservations():
     resas = query('SELECT * FROM reservations ORDER BY date DESC, time DESC')
-    return render_template('admin/reservations.html', resas=resas)
+    full_dates = [dict(r, label=_fmt_date_fr(r['date'])) for r in _full_dates_upcoming()]
+    return render_template('admin/reservations.html', resas=resas, full_dates=full_dates)
+
+
+@app.route('/admin/reservations/complet/ajouter', methods=['POST'])
+@login_required
+def admin_full_add():
+    date = (request.form.get('date') or '').strip()
+    note = (request.form.get('note') or '').strip()
+    try:
+        datetime.strptime(date, '%Y-%m-%d')
+        execute("INSERT INTO full_dates (date, note) VALUES (%s, %s) "
+                "ON CONFLICT (date) DO UPDATE SET note=EXCLUDED.note", (date, note or None))
+        flash(f"Date marquée complète : {_fmt_date_fr(date)}.", 'success')
+    except ValueError:
+        flash('Date invalide.', 'error')
+    return redirect(url_for('admin_reservations'))
+
+
+@app.route('/admin/reservations/complet/<date>/supprimer', methods=['POST'])
+@login_required
+def admin_full_remove(date):
+    execute('DELETE FROM full_dates WHERE date=%s', (date,))
+    flash('Date rouverte aux réservations.', 'success')
+    return redirect(url_for('admin_reservations'))
 
 
 @app.route('/admin/reservations/<int:resa_id>/status', methods=['POST'])

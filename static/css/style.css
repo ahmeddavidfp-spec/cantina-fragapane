@@ -142,6 +142,12 @@ input, textarea, select { font-family: inherit; }
 }
 .announcement-bar p + p { margin-top: .25rem; }
 
+/* Bandeau « complet » (dates sans réservation possible) */
+.full-bar { background: linear-gradient(90deg, var(--gold) 0%, #d8a95c 100%); color: #1a1205;
+  text-align: center; padding: .55rem 1rem; font-size: .9rem; font-weight: 700; letter-spacing: .04em; }
+.full-bar p { margin: 0; display: inline-flex; align-items: center; gap: .5rem; }
+.full-bar svg { flex: 0 0 auto; }
+
 /* ── Header / Nav ──────────────────────────────────────────────────────────── */
 .site-header {
   position: fixed;

@@ -12,6 +12,44 @@
   {% endfor %}{% endif %}
 {% endwith %}
 
+{# ── Dates complètes ── #}
+<div class="admin-card" style="margin-bottom:1.6rem;">
+  <div class="admin-card-header"><div class="admin-card-title">Dates complètes</div></div>
+  <div class="admin-card-body">
+    <p style="color:var(--text-lt); font-size:.88rem; margin-top:0;">
+      Marquez une date « complète » : les clients ne pourront plus y réserver en ligne,
+      et un bandeau « Complet » s'affiche sur le site.
+    </p>
+    <form method="POST" action="{{ url_for('admin_full_add') }}"
+          style="display:flex; gap:.6rem; flex-wrap:wrap; align-items:flex-end;">
+      <div>
+        <label style="display:block; font-size:.82rem; margin-bottom:.2rem;">Date</label>
+        <input class="admin-input" type="date" name="date" required>
+      </div>
+      <div style="flex:1; min-width:160px;">
+        <label style="display:block; font-size:.82rem; margin-bottom:.2rem;">Note (facultatif)</label>
+        <input class="admin-input" type="text" name="note" placeholder="Ex : privatisation, événement…">
+      </div>
+      <button class="admin-btn admin-btn-primary" type="submit">Marquer complet</button>
+    </form>
+    {% if full_dates %}
+    <ul style="list-style:none; padding:0; margin:1rem 0 0;">
+      {% for f in full_dates %}
+      <li style="display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.55rem .2rem; border-top:1px solid var(--border,#eee);">
+        <span><strong>{{ f.label }}</strong>{% if f.note %} <span style="color:var(--text-lt); font-size:.82rem;">- {{ f.note }}</span>{% endif %}</span>
+        <form method="POST" action="{{ url_for('admin_full_remove', date=f.date) }}"
+              onsubmit="return confirm('Rouvrir cette date aux réservations ?')">
+          <button class="admin-btn admin-btn-outline" type="submit">Rouvrir</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p style="color:var(--text-lt); font-size:.85rem; margin:.8rem 0 0;">Aucune date complète pour l'instant.</p>
+    {% endif %}
+  </div>
+</div>
+
 {% if not resas %}
 <div class="admin-empty">Aucune réservation pour l'instant.</div>
 {% else %}
