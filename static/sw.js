@@ -1,6 +1,6 @@
 /* Service worker - La Cantina Fragapane
    Rend le site installable (PWA) et la carte consultable hors-ligne. */
-const CACHE = 'cantina-v7';
+const CACHE = 'cantina-v8';
 const ESSENTIAL = ['/static/offline.html'];
 const BEST_EFFORT = ['/', '/menu', '/static/css/style.css', '/static/js/main.js', '/static/favicon.svg', '/static/icon-192.png'];
 
