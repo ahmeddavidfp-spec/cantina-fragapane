@@ -246,3 +246,15 @@ if ('IntersectionObserver' in window && fadeEls.length) {
   wire('r-date', 'r-time');   // page Réservation
   wire('hr-date', 'hr-time'); // formulaire d'accueil
 })();
+
+/* Hauteur des bandeaux fixes du haut -> variable CSS --bh (decale l'en-tete et le contenu) */
+(function () {
+  var el = document.getElementById('topBanners');
+  if (!el) return;
+  function apply() {
+    document.documentElement.style.setProperty('--bh', el.offsetHeight + 'px');
+  }
+  apply();
+  window.addEventListener('resize', apply);
+  window.addEventListener('load', apply);
+})();

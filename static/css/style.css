@@ -35,6 +35,8 @@ body {
   background: var(--light);
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
+  /* Réserve la place des bandeaux fixes du haut (0 s'il n'y en a pas) */
+  padding-top: var(--bh, 0px);
 }
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
@@ -142,6 +144,10 @@ input, textarea, select { font-family: inherit; }
 }
 .announcement-bar p + p { margin-top: .25rem; }
 
+/* Conteneur fixe des bandeaux du haut (annonces + complet), au-dessus de l'en-tête */
+.top-banners { position: fixed; top: 0; left: 0; right: 0; z-index: 1001;
+  padding-top: env(safe-area-inset-top, 0px); }
+
 /* Bandeau « complet » (dates sans réservation possible) */
 .full-bar { background: linear-gradient(90deg, var(--gold) 0%, #d8a95c 100%); color: #1a1205;
   text-align: center; padding: .55rem 1rem; font-size: .9rem; font-weight: 700; letter-spacing: .04em; }
@@ -151,7 +157,7 @@ input, textarea, select { font-family: inherit; }
 /* ── Header / Nav ──────────────────────────────────────────────────────────── */
 .site-header {
   position: fixed;
-  top: 0;
+  top: var(--bh, 0px);   /* sous les bandeaux fixes du haut */
   left: 0;
   right: 0;
   z-index: 1000;
